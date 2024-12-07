@@ -1,4 +1,9 @@
+mod components;
+mod resources;
+mod systems;
+
 use bevy::prelude::*;
+use systems::*;
 
 fn main() {
     App::new()
@@ -11,5 +16,6 @@ fn main() {
             }),
             ..default()
         }))
+        .add_systems(Startup, generate_map)
         .run();
 }
