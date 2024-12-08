@@ -31,9 +31,7 @@ pub fn spawn_dungeon_tiles(mut commands: Commands) {
                 custom_size: Some(Vec2::new(1., 1.)),
                 ..default()
             },
-            Transform::from_translation(
-                Vec2::new(tile.pos.x as f32, tile.pos.y as f32).extend(10.),
-            ),
+            Transform::from_translation(tile.pos.into()),
         ));
     }
 }
