@@ -11,6 +11,7 @@ pub fn spawn_dungeon_tiles(mut commands: Commands) {
             scaling_mode: ScalingMode::FixedVertical {
                 viewport_height: config::VIEWPORT_HEIGHT,
             },
+            scale: 3.,
             ..OrthographicProjection::default_2d()
         }),
     ));

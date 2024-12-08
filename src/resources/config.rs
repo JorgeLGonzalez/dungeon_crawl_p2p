@@ -1,5 +1,5 @@
 pub const MAP_WIDTH: usize = 100;
-pub const MAP_HEIGHT: usize = 100;
+pub const MAP_HEIGHT: usize = 52;
 pub const MAP_Z_LAYER: f32 = 10.;
 
 pub const NUM_ROOMS: usize = 20;
