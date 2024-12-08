@@ -1,6 +1,6 @@
 use crate::{
     components::Tile,
-    resources::{config, DungeonMap},
+    resources::{config, RandomRoomsBuilder, TileType},
 };
 use bevy::{prelude::*, render::camera::ScalingMode};
 
@@ -17,17 +17,25 @@ pub fn generate_map(mut commands: Commands) {
         }),
     ));
 
-    let map = DungeonMap::new();
+    let dungeon = RandomRoomsBuilder::build();
 
-    for (idx, tile) in map.tiles.iter().enumerate() {
+    for tile in dungeon.tiles() {
+        let color = match tile.tile_type {
+            TileType::Exit => Color::srgb(1., 1., 1.),
+            TileType::Floor => Color::srgb(0.5, 0.3, 0.5),
+            TileType::Wall => Color::srgb(0., 0., 0.),
+        };
+
         commands.spawn((
             Tile,
             Sprite {
-                color: Color::srgb(0.5, 0.5, 0.5),
+                color,
                 custom_size: Some(Vec2::new(1., 1.)),
                 ..default()
             },
-            Transform::from_translation(map.idx_to_position(idx).extend(10.)),
+            Transform::from_translation(
+                Vec2::new(tile.pos.x as f32, tile.pos.y as f32).extend(10.),
+            ),
         ));
     }
 }

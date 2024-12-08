@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.15", features = ["bevy_window"] }
+rand = "0.8"
 # locked to 0.2.97 to be compatible w/ wasm-server-runner
 wasm-bindgen = "=0.2.97"
 
