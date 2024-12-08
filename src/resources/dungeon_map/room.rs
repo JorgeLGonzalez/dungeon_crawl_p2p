@@ -1,5 +1,6 @@
 use super::dungeon_position::DungeonPosition;
 
+#[derive(Clone, Copy, Debug)]
 pub struct Room {
     pub x: isize,
     pub y: isize,
@@ -26,6 +27,13 @@ impl Room {
 
     pub fn bottom(&self) -> isize {
         self.y + self.height as isize
+    }
+
+    pub fn center(&self) -> DungeonPosition {
+        DungeonPosition::new(
+            self.x + (self.width as isize) / 2,
+            self.y + (self.height as isize) / 2,
+        )
     }
 
     pub fn left(&self) -> isize {
