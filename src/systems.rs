@@ -1,3 +1,3 @@
-mod generate_map;
+mod spawn_dungeon_tiles;
 
-pub use generate_map::generate_map;
+pub use spawn_dungeon_tiles::spawn_dungeon_tiles;

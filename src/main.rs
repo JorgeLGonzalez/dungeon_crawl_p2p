@@ -16,6 +16,6 @@ fn main() {
             }),
             ..default()
         }))
-        .add_systems(Startup, generate_map)
+        .add_systems(Startup, spawn_dungeon_tiles)
         .run();
 }

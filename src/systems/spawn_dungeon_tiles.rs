@@ -4,9 +4,7 @@ use crate::{
 };
 use bevy::{prelude::*, render::camera::ScalingMode};
 
-pub fn generate_map(mut commands: Commands) {
-    info!("Generating map");
-
+pub fn spawn_dungeon_tiles(mut commands: Commands) {
     commands.spawn((
         Camera2d,
         Projection::from(OrthographicProjection {
