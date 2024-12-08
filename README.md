@@ -7,8 +7,12 @@ But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
 - [x] tunnel between rooms
-- [ ] zoom in/out in dungeon or scroll (or both)
-- [ ] camera should have its own system
+- [x] zoom in/out in dungeon or scroll (or both)
+- [x] camera should have its own system
+- [ ] set up p2p
+- [ ] spawn player
+- [ ] player input
+- [ ] other dungeons
 - [ ] Create Sprite from DungeonTile
 - [ ] how to enable trace logging only for my app (or per module)
 

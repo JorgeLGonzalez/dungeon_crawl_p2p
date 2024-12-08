@@ -1,24 +1,17 @@
 use crate::{
     components::Tile,
-    resources::{config, RandomRoomsBuilder, TileType},
+    resources::{RandomRoomsBuilder, TileType},
 };
-use bevy::{prelude::*, render::camera::ScalingMode};
+use bevy::{
+    color::Color,
+    math::Vec2,
+    prelude::{Commands, Transform},
+    sprite::Sprite,
+    utils::default,
+};
 
 pub fn spawn_dungeon_tiles(mut commands: Commands) {
-    commands.spawn((
-        Camera2d,
-        Projection::from(OrthographicProjection {
-            scaling_mode: ScalingMode::FixedVertical {
-                viewport_height: config::VIEWPORT_HEIGHT,
-            },
-            scale: 3.,
-            ..OrthographicProjection::default_2d()
-        }),
-    ));
-
-    let dungeon = RandomRoomsBuilder::build();
-
-    for tile in dungeon.tiles() {
+    for tile in RandomRoomsBuilder::build().tiles() {
         let color = match tile.tile_type {
             TileType::Exit => Color::srgb(1., 1., 1.),
             TileType::Floor => Color::srgb(0.5, 0.3, 0.5),

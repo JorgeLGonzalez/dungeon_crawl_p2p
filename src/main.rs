@@ -16,6 +16,6 @@ fn main() {
             }),
             ..default()
         }))
-        .add_systems(Startup, spawn_dungeon_tiles)
+        .add_systems(Startup, (spawn_camera, spawn_dungeon_tiles))
         .run();
 }
