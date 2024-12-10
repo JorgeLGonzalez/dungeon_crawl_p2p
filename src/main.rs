@@ -16,6 +16,14 @@ fn main() {
             }),
             ..default()
         }))
-        .add_systems(Startup, (spawn_camera, spawn_dungeon_tiles))
+        .add_systems(
+            Startup,
+            (
+                spawn_camera,
+                spawn_dungeon_tiles,
+                start_matchbox_socket,
+                wait_for_players,
+            ),
+        )
         .run();
 }
