@@ -1,5 +1,7 @@
 use super::{dungeon_map::DungeonMap, room::Room};
-use crate::resources::{config::*, dungeon_map::dungeon_position::DungeonPosition, TileType};
+use crate::resources::{
+    config::*, dungeon_map::dungeon_position::DungeonPosition, SessionSeed, TileType,
+};
 use bevy::log::info;
 use rand::prelude::*;
 use rand_xoshiro::Xoshiro256PlusPlus;
@@ -10,13 +12,13 @@ pub struct RandomRoomsBuilder {
 }
 
 impl RandomRoomsBuilder {
-    pub fn build() -> DungeonMap {
+    pub fn build(session_seed: SessionSeed) -> DungeonMap {
         let mut builder = Self {
             map: DungeonMap::new(),
             rooms: vec![],
         };
 
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(1337);
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(session_seed.0);
 
         builder.create_rooms(&mut rng);
         builder.build_corridors(&mut rng);

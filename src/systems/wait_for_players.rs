@@ -1,5 +1,5 @@
 use crate::{
-    resources::{config, MatchboxSocketResource},
+    resources::{config, MatchboxSocketResource, SessionSeed},
     GameState,
 };
 use bevy::{
@@ -25,6 +25,13 @@ pub fn wait_for_players(
     }
 
     info!("All peers have joined. Starting game!");
+    let id = socket.id().expect("No peer ID!").0.as_u64_pair();
+    let mut seed = id.0 ^ id.1;
+    for peer in socket.connected_peers() {
+        let peer_id = peer.0.as_u64_pair();
+        seed ^= peer_id.0 ^ peer_id.1;
+    }
+    commands.insert_resource(SessionSeed(seed));
 
     let mut session_builder = ggrs::SessionBuilder::<config::GgrsSessionConfig>::new()
         .with_num_players(config::NUM_PLAYERS)

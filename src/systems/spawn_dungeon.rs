@@ -1,17 +1,17 @@
 use crate::{
     components::Tile,
-    resources::{RandomRoomsBuilder, TileType},
+    resources::{RandomRoomsBuilder, SessionSeed, TileType},
 };
 use bevy::{
     color::Color,
     math::Vec2,
-    prelude::{Commands, Transform},
+    prelude::{Commands, Res, Transform},
     sprite::Sprite,
     utils::default,
 };
 
-pub fn spawn_dungeon(mut commands: Commands) {
-    for tile in RandomRoomsBuilder::build().tiles() {
+pub fn spawn_dungeon(mut commands: Commands, session_seed: Res<SessionSeed>) {
+    for tile in RandomRoomsBuilder::build(*session_seed).tiles() {
         let color = match tile.tile_type {
             TileType::Exit => Color::srgb(1., 1., 1.),
             TileType::Floor => Color::srgb(0.5, 0.3, 0.5),
