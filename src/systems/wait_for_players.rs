@@ -1,12 +1,16 @@
-use crate::resources::{config, MatchboxSocketResource};
+use crate::{
+    resources::{config, MatchboxSocketResource},
+    GameState,
+};
 use bevy::{
     log::info,
-    prelude::{Commands, ResMut},
+    prelude::{Commands, NextState, ResMut},
 };
 use bevy_ggrs::ggrs;
 
 pub fn wait_for_players(
     mut commands: Commands,
+    mut next_state: ResMut<NextState<GameState>>,
     mut socket_resource: ResMut<MatchboxSocketResource>,
 ) {
     let socket = &mut socket_resource.0;
@@ -38,4 +42,6 @@ pub fn wait_for_players(
         .expect("Failed to start session");
 
     commands.insert_resource(bevy_ggrs::Session::P2P(ggrs_session));
+
+    next_state.set(GameState::InGame);
 }
