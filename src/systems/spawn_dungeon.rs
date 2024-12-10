@@ -10,7 +10,7 @@ use bevy::{
     utils::default,
 };
 
-pub fn spawn_dungeon_tiles(mut commands: Commands) {
+pub fn spawn_dungeon(mut commands: Commands) {
     for tile in RandomRoomsBuilder::build().tiles() {
         let color = match tile.tile_type {
             TileType::Exit => Color::srgb(1., 1., 1.),

@@ -11,7 +11,7 @@ pub fn spawn_camera(mut commands: Commands) {
             scaling_mode: ScalingMode::FixedVertical {
                 viewport_height: config::VIEWPORT_HEIGHT,
             },
-            scale: 3.,
+            scale: config::CAMERA_SCALE,
             ..OrthographicProjection::default_2d()
         }),
     ));
