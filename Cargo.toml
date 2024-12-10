@@ -14,6 +14,7 @@ bevy_matchbox = { git = "https://github.com/haihala/matchbox.git", branch = "mai
   "ggrs",
 ] }
 rand = "0.8"
+rand_xoshiro = "0.6.0"
 # locked to 0.2.97 to be compatible w/ wasm-server-runner
 wasm-bindgen = "=0.2.97"
 

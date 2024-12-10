@@ -2,6 +2,7 @@ use super::{dungeon_map::DungeonMap, room::Room};
 use crate::resources::{config::*, dungeon_map::dungeon_position::DungeonPosition, TileType};
 use bevy::log::info;
 use rand::prelude::*;
+use rand_xoshiro::Xoshiro256PlusPlus;
 
 pub struct RandomRoomsBuilder {
     map: DungeonMap,
@@ -15,7 +16,7 @@ impl RandomRoomsBuilder {
             rooms: vec![],
         };
 
-        let mut rng = thread_rng();
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(1337);
 
         builder.create_rooms(&mut rng);
         builder.build_corridors(&mut rng);
@@ -23,7 +24,7 @@ impl RandomRoomsBuilder {
         builder.map
     }
 
-    fn build_corridors(&mut self, rng: &mut ThreadRng) {
+    fn build_corridors(&mut self, rng: &mut Xoshiro256PlusPlus) {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
 
@@ -41,7 +42,7 @@ impl RandomRoomsBuilder {
         }
     }
 
-    fn create_rooms(&mut self, rng: &mut ThreadRng) {
+    fn create_rooms(&mut self, rng: &mut Xoshiro256PlusPlus) {
         while self.rooms.len() < NUM_ROOMS {
             let room = self.create_room(rng);
 
@@ -62,7 +63,7 @@ impl RandomRoomsBuilder {
         }
     }
 
-    fn create_room(&self, rng: &mut ThreadRng) -> Room {
+    fn create_room(&self, rng: &mut Xoshiro256PlusPlus) -> Room {
         const X_MAX: isize = (MAP_WIDTH as isize) / 2;
         const X_MIN: isize = -X_MAX;
         const Y_MAX: isize = (MAP_HEIGHT as isize) / 2;
