@@ -18,7 +18,7 @@ impl RandomRoomsBuilder {
             rooms: vec![],
         };
 
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(session_seed.0);
+        let mut rng = Xoshiro256PlusPlus::seed_from_u64(session_seed.value());
 
         builder.create_rooms(&mut rng);
         builder.build_corridors(&mut rng);

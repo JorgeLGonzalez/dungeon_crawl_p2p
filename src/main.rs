@@ -29,7 +29,7 @@ fn main() {
         )
         .add_systems(
             Update,
-            wait_for_players.run_if(in_state(GameState::MatchMaking)),
+            create_p2p_session.run_if(in_state(GameState::MatchMaking)),
         )
         .add_systems(OnEnter(GameState::InGame), spawn_dungeon)
         .add_systems(ReadInputs, read_local_inputs)
