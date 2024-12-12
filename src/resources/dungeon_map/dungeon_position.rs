@@ -2,7 +2,7 @@ use bevy::math::{Vec2, Vec3};
 
 use crate::resources::config;
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct DungeonPosition {
     pub x: isize,
     pub y: isize,

@@ -4,6 +4,7 @@ mod dungeon_tile;
 mod random_rooms_builder;
 mod room;
 
+pub use dungeon_map::DungeonMap;
 pub use random_rooms_builder::RandomRoomsBuilder;
 
 #[derive(Clone, Copy)]

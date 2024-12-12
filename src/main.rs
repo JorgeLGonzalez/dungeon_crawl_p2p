@@ -31,7 +31,10 @@ fn main() {
             Update,
             create_p2p_session.run_if(in_state(GameState::MatchMaking)),
         )
-        .add_systems(OnEnter(GameState::InGame), spawn_dungeon)
+        .add_systems(
+            OnEnter(GameState::InGame),
+            (spawn_dungeon, spawn_players).chain(),
+        )
         .add_systems(ReadInputs, read_local_inputs)
         .run();
 }

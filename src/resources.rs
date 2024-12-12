@@ -1,14 +1,12 @@
 pub mod config;
 mod dungeon_map;
 
-use std::iter::once;
-
 use bevy::prelude::Resource;
 use bevy_matchbox::{
     prelude::{PeerId, SingleChannel},
     MatchboxSocket,
 };
-pub use dungeon_map::{RandomRoomsBuilder, TileType};
+pub use dungeon_map::{DungeonMap, RandomRoomsBuilder, TileType};
 
 #[derive(Resource)]
 pub struct MatchboxSocketResource(pub MatchboxSocket<SingleChannel>);

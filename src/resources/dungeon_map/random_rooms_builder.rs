@@ -22,8 +22,18 @@ impl RandomRoomsBuilder {
 
         builder.create_rooms(&mut rng);
         builder.build_corridors(&mut rng);
+        builder.add_player_starting_positions();
 
         builder.map
+    }
+
+    fn add_player_starting_positions(&mut self) {
+        self.map
+            .player_starting_positions
+            .push(self.rooms[0].center());
+        self.map
+            .player_starting_positions
+            .push(self.rooms[1].center());
     }
 
     fn build_corridors(&mut self, rng: &mut Xoshiro256PlusPlus) {

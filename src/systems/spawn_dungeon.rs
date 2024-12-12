@@ -11,7 +11,9 @@ use bevy::{
 };
 
 pub fn spawn_dungeon(mut commands: Commands, session_seed: Res<SessionSeed>) {
-    for tile in RandomRoomsBuilder::build(*session_seed).tiles() {
+    let dungeon = RandomRoomsBuilder::build(*session_seed);
+
+    for tile in dungeon.tiles() {
         let color = match tile.tile_type {
             TileType::Exit => Color::srgb(1., 1., 1.),
             TileType::Floor => Color::srgb(0.5, 0.3, 0.5),
@@ -28,4 +30,6 @@ pub fn spawn_dungeon(mut commands: Commands, session_seed: Res<SessionSeed>) {
             Transform::from_translation(tile.pos.into()),
         ));
     }
+
+    commands.insert_resource(dungeon);
 }

@@ -1,15 +1,19 @@
 use super::{dungeon_position::DungeonPosition, dungeon_tile::DungeonTile, TileType};
 use crate::resources::config::{MAP_HEIGHT, MAP_WIDTH};
+use bevy::prelude::Resource;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
 
+#[derive(Resource)]
 pub struct DungeonMap {
+    pub player_starting_positions: Vec<DungeonPosition>,
     pub tiles: Vec<TileType>,
 }
 
 impl DungeonMap {
     pub fn new() -> Self {
         Self {
+            player_starting_positions: vec![],
             tiles: vec![TileType::Wall; NUM_TILES],
         }
     }

@@ -3,7 +3,9 @@ use bevy_matchbox::prelude::PeerId;
 pub const CAMERA_SCALE: f32 = 6.;
 pub const MAP_WIDTH: usize = 100;
 pub const MAP_HEIGHT: usize = 52;
+
 pub const MAP_Z_LAYER: f32 = 10.;
+pub const PLAYER_Z_LAYER: f32 = 100.;
 
 pub const VIEWPORT_HEIGHT: f32 = 20.;
 
