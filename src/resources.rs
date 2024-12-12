@@ -1,5 +1,6 @@
 pub mod config;
 mod dungeon_map;
+mod local_inputs;
 
 use bevy::prelude::Resource;
 use bevy_matchbox::{
@@ -7,6 +8,7 @@ use bevy_matchbox::{
     MatchboxSocket,
 };
 pub use dungeon_map::{DungeonMap, RandomRoomsBuilder, TileType};
+pub use local_inputs::{calculate_direction, create_local_inputs};
 
 #[derive(Resource)]
 pub struct MatchboxSocketResource(pub MatchboxSocket<SingleChannel>);

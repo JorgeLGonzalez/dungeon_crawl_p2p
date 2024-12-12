@@ -19,3 +19,5 @@ pub const MATCHBOX_ROOM_URL: &str = "ws://127.0.0.1:3536/dungeon_crawl?next=2";
 pub const NUM_PLAYERS: usize = 2;
 
 pub type GgrsSessionConfig = bevy_ggrs::GgrsConfig<u8, PeerId>;
+
+pub const PLAYER_SPEED: f32 = 10.;

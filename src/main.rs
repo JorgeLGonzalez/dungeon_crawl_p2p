@@ -3,7 +3,7 @@ mod resources;
 mod systems;
 
 use bevy::prelude::*;
-use bevy_ggrs::{GgrsPlugin, ReadInputs};
+use bevy_ggrs::{GgrsPlugin, GgrsSchedule, ReadInputs};
 use resources::config;
 use systems::*;
 
@@ -36,6 +36,7 @@ fn main() {
             (spawn_dungeon, spawn_players).chain(),
         )
         .add_systems(ReadInputs, read_local_inputs)
+        .add_systems(GgrsSchedule, move_players)
         .run();
 }
 
