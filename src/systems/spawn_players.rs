@@ -24,7 +24,7 @@ pub fn spawn_players(mut commands: Commands, dungeon: Res<DungeonMap>) {
                 custom_size: Some(Vec2::new(1., 1.)),
                 ..default()
             },
-            Transform::from_translation(player_pos.into()),
+            Transform::from_translation(Vec2::from(player_pos).extend(config::PLAYER_Z_LAYER)),
         ));
     }
 }

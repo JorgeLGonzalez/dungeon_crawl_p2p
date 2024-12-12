@@ -10,8 +10,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] zoom in/out in dungeon or scroll (or both)
 - [x] camera should have its own system
 - [x] set up p2p
-- [ ] spawn player
-  - [ ] players can spawn off map. Probably rooms can be off map
+- [x] spawn player
+  - [x] players can spawn off map. Probably rooms can be off map
 - [ ] player input
 - [ ] other dungeons
 - [ ] Create Sprite from DungeonTile

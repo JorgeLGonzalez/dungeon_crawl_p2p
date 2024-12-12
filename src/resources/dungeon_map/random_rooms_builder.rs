@@ -67,8 +67,11 @@ impl RandomRoomsBuilder {
                         self.map.set_tile_type(pos, TileType::Floor);
                     });
 
+                info!(
+                    "Room {} of {NUM_ROOMS} generated: {room:?}",
+                    self.rooms.len()
+                );
                 self.rooms.push(room);
-                info!("Room {} of {NUM_ROOMS} generated", self.rooms.len());
             } else {
                 info!("Throwing away overlapping room");
             }
@@ -76,10 +79,10 @@ impl RandomRoomsBuilder {
     }
 
     fn create_room(&self, rng: &mut Xoshiro256PlusPlus) -> Room {
-        const X_MAX: isize = (MAP_WIDTH as isize) / 2;
-        const X_MIN: isize = -X_MAX;
-        const Y_MAX: isize = (MAP_HEIGHT as isize) / 2;
-        const Y_MIN: isize = -Y_MAX;
+        const X_MAX: isize = (MAP_WIDTH / 2 - ROOM_MAX_WIDTH - 1) as isize;
+        const X_MIN: isize = -((MAP_WIDTH / 2) as isize) + 1;
+        const Y_MAX: isize = ((MAP_HEIGHT / 2) - ROOM_MAX_HEIGHT - 1) as isize;
+        const Y_MIN: isize = -((MAP_HEIGHT / 2) as isize) + 1;
 
         Room::new(
             rng.gen_range(X_MIN..X_MAX),
