@@ -14,7 +14,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] players can spawn off map. Probably rooms can be off map
 - [x] player input
   - [x] collision detection
-- [ ] camera follows player
+- [x] camera follows player
 - [ ] May need to allow finer movement adjustments if player is as wide as a tile so they can easily enter corridors
 - [ ] GGRS sync stuff
   - [ ] Event handling

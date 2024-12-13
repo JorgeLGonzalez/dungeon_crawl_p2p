@@ -36,7 +36,7 @@ fn main() {
             (spawn_dungeon, spawn_players).chain(),
         )
         .add_systems(ReadInputs, read_local_inputs)
-        .add_systems(GgrsSchedule, move_players)
+        .add_systems(GgrsSchedule, (move_players, camera_follow).chain())
         .run();
 }
 
