@@ -25,11 +25,18 @@ fn main() {
         // .rollback_component_with_clone::<Transform>()
         .add_systems(
             OnEnter(GameState::MatchMaking),
-            (spawn_camera, start_matchbox_socket),
+            (
+                spawn_camera,
+                start_matchbox_socket.run_if(|| config::P2P_MODE),
+            ),
         )
         .add_systems(
             Update,
-            create_p2p_session.run_if(in_state(GameState::MatchMaking)),
+            (
+                create_p2p_session.run_if(|| config::P2P_MODE),
+                start_sync_test_session.run_if(|| !config::P2P_MODE),
+            )
+                .run_if(in_state(GameState::MatchMaking)), // create_p2p_session.run_if(in_state(GameState::MatchMaking).and(|| config::P2P_MODE)),
         )
         .add_systems(
             OnEnter(GameState::InGame),

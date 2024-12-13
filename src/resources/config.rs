@@ -20,6 +20,7 @@ pub const ROOM_MAX_HEIGHT: usize = 10;
 // Matchbox
 pub const MATCHBOX_ROOM_URL: &str = "ws://127.0.0.1:3536/dungeon_crawl?next=2";
 pub const NUM_PLAYERS: usize = 2;
+pub const P2P_MODE: bool = false;
 
 pub type GgrsSessionConfig = bevy_ggrs::GgrsConfig<u8, PeerId>;
 
