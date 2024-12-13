@@ -1,6 +1,9 @@
 use crate::{
     components::{MoveDir, Player},
-    resources::{config, DungeonMap},
+    resources::{
+        config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
+        DungeonMap,
+    },
 };
 use bevy::{
     color::Color,
@@ -24,7 +27,7 @@ pub fn spawn_players(mut commands: Commands, dungeon: Res<DungeonMap>) {
                 MoveDir(Vec2::new(1., 0.)),
                 Sprite {
                     color,
-                    custom_size: Some(Vec2::new(1., 1.)),
+                    custom_size: Some(Vec2::new(PLAYER_WIDTH, PLAYER_HEIGHT)),
                     ..default()
                 },
                 Transform::from_translation(Vec2::from(player_pos).extend(config::PLAYER_Z_LAYER)),

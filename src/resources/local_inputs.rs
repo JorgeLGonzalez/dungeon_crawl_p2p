@@ -14,14 +14,11 @@ pub fn calculate_direction(input: u8) -> Option<Vec2> {
 
     if input & INPUT_UP != 0 {
         direction.y += 1.;
-    }
-    if input & INPUT_DOWN != 0 {
+    } else if input & INPUT_DOWN != 0 {
         direction.y -= 1.;
-    }
-    if input & INPUT_LEFT != 0 {
+    } else if input & INPUT_LEFT != 0 {
         direction.x -= 1.;
-    }
-    if input & INPUT_RIGHT != 0 {
+    } else if input & INPUT_RIGHT != 0 {
         direction.x += 1.;
     }
 

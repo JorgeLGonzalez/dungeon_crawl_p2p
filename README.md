@@ -12,9 +12,13 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] set up p2p
 - [x] spawn player
   - [x] players can spawn off map. Probably rooms can be off map
-- [ ] player input
+- [x] player input
+  - [ ] collision detection
+- [ ] GGRS sync stuff
+  - [ ] Event handling
+  - [ ] Ensure we have rollbacks registered
+- [ ] camera follows player
 - [ ] other dungeons
-- [ ] Create Sprite from DungeonTile
 
 - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] how to enable trace logging only for my app (or per module)

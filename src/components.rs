@@ -1,12 +1,18 @@
 use bevy::prelude::*;
 
 #[derive(Component)]
+pub struct ExitTile;
+
+#[derive(Component)]
+pub struct FloorTile;
+
+#[derive(Component)]
 pub struct Player {
     pub id: usize,
 }
 
-#[derive(Component)]
-pub struct Tile;
-
 #[derive(Clone, Component, Copy)]
 pub struct MoveDir(pub Vec2);
+
+#[derive(Component)]
+pub struct WallTile;
