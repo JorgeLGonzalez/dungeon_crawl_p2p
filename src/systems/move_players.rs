@@ -39,13 +39,7 @@ pub fn move_players(
                 pos
             );
 
-            let hit_wall = walls.iter().any(|wall_transform| {
-                if intersects(&pos, wall_transform) {
-                    info!("Hit wall");
-                    return true;
-                }
-                return false;
-            });
+            let hit_wall = walls.iter().any(|w| intersects(&pos, w));
 
             if !hit_wall {
                 transform.translation.x = pos.x;
