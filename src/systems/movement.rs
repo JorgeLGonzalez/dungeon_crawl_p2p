@@ -11,11 +11,15 @@ use bevy::{
 };
 use bevy_ggrs::PlayerInputs;
 
+type PlayersQuery<'w, 's, 't, 'm, 'p> =
+    Query<'w, 's, (&'t mut Transform, &'m mut MoveDir, &'p Player), With<Player>>;
+type WallsQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Player>)>;
+
 pub fn move_players(
-    mut players: Query<(&mut Transform, &mut MoveDir, &Player), With<Player>>,
+    mut players: PlayersQuery,
     inputs: Res<PlayerInputs<GgrsSessionConfig>>,
     time: Res<Time>,
-    walls: Query<&Transform, (With<WallTile>, Without<Player>)>,
+    walls: WallsQuery,
 ) {
     assert_eq!(
         players.iter().count(),
@@ -24,63 +28,34 @@ pub fn move_players(
     );
 
     for (mut transform, mut move_dir, player) in &mut players {
-        let old_pos = transform.translation.truncate();
-        let input = inputs[player.id].0;
-        let elapsed_secs = time.delta_secs();
-
-        if let Some(direction) = calculate_direction(input) {
-            move_dir.0 = direction;
-
-            let pos = calculate_pos(old_pos, direction, elapsed_secs);
-            info!(
-                "Player {} moves {:?} from {:?} to {:?}",
-                player.id,
-                pos - old_pos,
-                old_pos,
-                pos
-            );
-
-            let hit_wall = walls.iter().any(|w| intersects(&pos, w));
-
-            if !hit_wall {
-                transform.translation.x = pos.x;
-                transform.translation.y = pos.y;
-            }
-        }
+        move_player(
+            inputs[player.id].0,
+            player,
+            &time,
+            &walls,
+            move_dir.as_mut(),
+            transform.as_mut(),
+        );
     }
 }
 
 pub fn move_single_player(
     keys: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
-    walls: Query<&Transform, (With<WallTile>, Without<Player>)>,
-    mut players: Query<(&mut Transform, &mut MoveDir, &Player), With<Player>>,
+    walls: WallsQuery,
+    mut players: PlayersQuery,
 ) {
-    let input = encode_input(&keys);
+    assert_eq!(players.iter().count(), 1, "Unexpected player count!");
 
-    if let Some(direction) = calculate_direction(input) {
-        let (mut transform, mut move_dir, player) = players.single_mut();
-
-        let old_pos = transform.translation.truncate();
-        let elapsed_secs = time.delta_secs();
-        move_dir.0 = direction;
-
-        let pos = calculate_pos(old_pos, direction, elapsed_secs);
-        info!(
-            "Player {} moves {:?} from {:?} to {:?}",
-            player.id,
-            pos - old_pos,
-            old_pos,
-            pos
-        );
-
-        let hit_wall = walls.iter().any(|w| intersects(&pos, w));
-
-        if !hit_wall {
-            transform.translation.x = pos.x;
-            transform.translation.y = pos.y;
-        }
-    }
+    let (mut transform, mut move_dir, player) = players.single_mut();
+    move_player(
+        encode_input(&keys),
+        player,
+        &time,
+        &walls,
+        move_dir.as_mut(),
+        transform.as_mut(),
+    );
 }
 
 fn calculate_pos(old_pos: Vec2, direction: Vec2, delta_seconds: f32) -> Vec2 {
@@ -108,4 +83,35 @@ fn intersects(player: &Vec2, wall: &Transform) -> bool {
         && player_max.x > wall_min.x
         && player_min.y < wall_max.y
         && player_max.y > wall_min.y
+}
+
+fn move_player(
+    input: u8,
+    player: &Player,
+    time: &Time,
+    walls: &WallsQuery,
+    move_dir: &mut MoveDir,
+    transform: &mut Transform,
+) {
+    if let Some(direction) = calculate_direction(input) {
+        let old_pos = transform.translation.truncate();
+        let elapsed_secs = time.delta_secs();
+        move_dir.0 = direction;
+
+        let pos = calculate_pos(old_pos, direction, elapsed_secs);
+        info!(
+            "Player {} moves {:?} from {:?} to {:?}",
+            player.id,
+            pos - old_pos,
+            old_pos,
+            pos
+        );
+
+        let hit_wall = walls.iter().any(|w| intersects(&pos, w));
+
+        if !hit_wall {
+            transform.translation.x = pos.x;
+            transform.translation.y = pos.y;
+        }
+    }
 }

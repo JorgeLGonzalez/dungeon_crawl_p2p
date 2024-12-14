@@ -44,7 +44,7 @@ fn main() {
                     in_state(GameState::Startup).and(|| GAME_MODE == GameMode::MultiPlayer),
                 ),
                 (
-                    handle_ggrs_events,
+                    handle_ggrs_events.run_if(|| GAME_MODE != GameMode::SinglePlayer),
                     move_single_player.run_if(|| GAME_MODE == GameMode::SinglePlayer),
                 )
                     .run_if(in_state(GameState::InGame)),
