@@ -4,7 +4,7 @@ mod systems;
 
 use bevy::prelude::*;
 use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
-use components::{MoveDir, Player};
+use components::Player;
 use resources::config;
 use std::hash::{Hash, Hasher};
 use systems::*;
@@ -41,7 +41,7 @@ fn main() {
         )
         .add_systems(
             OnEnter(GameState::InGame),
-            (spawn_dungeon, spawn_players, log_player_count).chain(),
+            (spawn_dungeon, spawn_players).chain(),
         )
         .add_systems(
             Update,
@@ -51,13 +51,13 @@ fn main() {
                     start_sync_test_session.run_if(|| !config::P2P_MODE),
                 )
                     .run_if(in_state(GameState::MatchMaking)),
-                (handle_ggrs_events /*log_player_count */,).run_if(in_state(GameState::InGame)),
+                handle_ggrs_events.run_if(in_state(GameState::InGame)),
             ),
         )
         .add_systems(ReadInputs, read_local_inputs)
         .add_systems(
             GgrsSchedule,
-            (/*log_player_count,*/ move_players, camera_follow)
+            (move_players, camera_follow)
                 .chain()
                 .run_if(in_state(GameState::InGame)),
         )

@@ -16,17 +16,6 @@ use bevy::{
 };
 use bevy_ggrs::PlayerInputs;
 
-pub fn log_player_count(
-    players: Query<&Player>,
-    mut p2: Query<(&mut Transform, &mut MoveDir, &Player), With<Player>>,
-) {
-    info!(
-        "*** Player count = {} p2={}",
-        players.iter().count(),
-        p2.iter().count()
-    );
-}
-
 pub fn move_players(
     mut players: Query<(&mut Transform, &mut MoveDir, &Player), With<Player>>,
     inputs: Res<PlayerInputs<GgrsSessionConfig>>,

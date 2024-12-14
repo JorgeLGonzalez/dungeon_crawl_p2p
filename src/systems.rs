@@ -12,7 +12,6 @@ mod start_sync_test_session;
 pub use camera_follow::camera_follow;
 pub use create_p2p_session::create_p2p_session;
 pub use handle_ggrs_events::handle_ggrs_events;
-pub use move_players::log_player_count;
 pub use move_players::move_players;
 pub use read_local_inputs::read_local_inputs;
 pub use spawn_camera::spawn_camera;

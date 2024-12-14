@@ -28,6 +28,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 ## Issues
 
+- [ ] synctest mode does not work. It spawns the 2 players, but they are not seen in the GgrsSchedule systems (move_players and camera_follow).
 - [ ] matchbox does not work with bevy 0.15, unless using fork from haihala. Hope to get revised bevy_ggrs and matchbox once [PRs](https://github.com/johanhelsing/matchbox/pull/466) merged
 - [ ] Browser tab title
 
