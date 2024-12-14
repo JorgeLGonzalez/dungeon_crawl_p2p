@@ -1,8 +1,10 @@
 use crate::components::Player;
-use bevy::prelude::{Camera, Query, Res, Transform, With, Without};
+use crate::resources::config;
+use bevy::prelude::*;
+use bevy::render::camera::ScalingMode;
 use bevy_ggrs::LocalPlayers;
 
-pub fn camera_follow(
+pub fn move_camera(
     local_players: Res<LocalPlayers>,
     players: Query<(&Player, &Transform)>,
     mut cameras: Query<&mut Transform, (With<Camera>, Without<Player>)>,
@@ -16,4 +18,17 @@ pub fn camera_follow(
     let mut camera = cameras.single_mut();
     camera.translation.x = player_pos.x;
     camera.translation.y = player_pos.y;
+}
+
+pub fn spawn_camera(mut commands: Commands) {
+    commands.spawn((
+        Camera2d,
+        Projection::from(OrthographicProjection {
+            scaling_mode: ScalingMode::FixedVertical {
+                viewport_height: config::VIEWPORT_HEIGHT,
+            },
+            scale: config::CAMERA_SCALE,
+            ..OrthographicProjection::default_2d()
+        }),
+    ));
 }
