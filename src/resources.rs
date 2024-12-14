@@ -7,8 +7,8 @@ use bevy_matchbox::{
     prelude::{PeerId, SingleChannel},
     MatchboxSocket,
 };
-pub use dungeon_map::{DungeonMap, DungeonTile, RandomRoomsBuilder, TileType};
-pub use local_inputs::{calculate_direction, create_local_inputs};
+pub use dungeon_map::{DungeonMap, RandomRoomsBuilder, TileType};
+pub use local_inputs::{calculate_direction, create_local_inputs, encode_input};
 use rand::{thread_rng, RngCore};
 
 #[derive(Resource)]

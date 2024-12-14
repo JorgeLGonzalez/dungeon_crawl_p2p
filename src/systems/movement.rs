@@ -1,17 +1,12 @@
 use crate::{
     components::{MoveDir, Player, WallTile},
-    resources::{
-        calculate_direction,
-        config::{
-            self, GgrsSessionConfig, MAP_HEIGHT, MAP_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED,
-            PLAYER_WIDTH, TILE_HEIGHT, TILE_WIDTH,
-        },
-    },
+    resources::{calculate_direction, config::*, encode_input},
 };
 use bevy::{
+    input::ButtonInput,
     log::info,
     math::Vec2,
-    prelude::{Query, Res, Transform, With, Without},
+    prelude::{KeyCode, Query, Res, Transform, With, Without},
     time::Time,
 };
 use bevy_ggrs::PlayerInputs;
@@ -24,7 +19,7 @@ pub fn move_players(
 ) {
     assert_eq!(
         players.iter().count(),
-        config::NUM_PLAYERS,
+        NUM_PLAYERS,
         "Unexpected player count!"
     );
 
@@ -51,6 +46,39 @@ pub fn move_players(
                 transform.translation.x = pos.x;
                 transform.translation.y = pos.y;
             }
+        }
+    }
+}
+
+pub fn move_single_player(
+    keys: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
+    walls: Query<&Transform, (With<WallTile>, Without<Player>)>,
+    mut players: Query<(&mut Transform, &mut MoveDir, &Player), With<Player>>,
+) {
+    let input = encode_input(&keys);
+
+    if let Some(direction) = calculate_direction(input) {
+        let (mut transform, mut move_dir, player) = players.single_mut();
+
+        let old_pos = transform.translation.truncate();
+        let elapsed_secs = time.delta_secs();
+        move_dir.0 = direction;
+
+        let pos = calculate_pos(old_pos, direction, elapsed_secs);
+        info!(
+            "Player {} moves {:?} from {:?} to {:?}",
+            player.id,
+            pos - old_pos,
+            old_pos,
+            pos
+        );
+
+        let hit_wall = walls.iter().any(|w| intersects(&pos, w));
+
+        if !hit_wall {
+            transform.translation.x = pos.x;
+            transform.translation.y = pos.y;
         }
     }
 }

@@ -1,7 +1,6 @@
+use super::config::GgrsSessionConfig;
 use bevy::{input::ButtonInput, math::Vec2, prelude::KeyCode, utils::hashbrown::HashMap};
 use bevy_ggrs::{LocalInputs, LocalPlayers};
-
-use super::config::GgrsSessionConfig;
 
 const INPUT_UP: u8 = 1 << 0;
 const INPUT_DOWN: u8 = 1 << 1;
@@ -44,7 +43,7 @@ pub fn create_local_inputs(
     LocalInputs::<GgrsSessionConfig>(local_inputs)
 }
 
-fn encode_input(keys: &ButtonInput<KeyCode>) -> u8 {
+pub fn encode_input(keys: &ButtonInput<KeyCode>) -> u8 {
     let mut input = 0u8;
 
     if keys.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {

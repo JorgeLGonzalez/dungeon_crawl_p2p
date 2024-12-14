@@ -43,7 +43,11 @@ fn main() {
                 create_p2p_session.run_if(
                     in_state(GameState::Startup).and(|| GAME_MODE == GameMode::MultiPlayer),
                 ),
-                handle_ggrs_events.run_if(in_state(GameState::InGame)),
+                (
+                    handle_ggrs_events,
+                    move_single_player.run_if(|| GAME_MODE == GameMode::SinglePlayer),
+                )
+                    .run_if(in_state(GameState::InGame)),
             ),
         )
         .add_systems(ReadInputs, read_local_inputs)
