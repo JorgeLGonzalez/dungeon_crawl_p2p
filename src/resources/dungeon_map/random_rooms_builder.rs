@@ -1,6 +1,8 @@
 use super::{dungeon_map::DungeonMap, room::Room};
 use crate::resources::{
-    config::*, dungeon_map::dungeon_position::DungeonPosition, SessionSeed, TileType,
+    config::{self, *},
+    dungeon_map::dungeon_position::DungeonPosition,
+    SessionSeed, TileType,
 };
 use bevy::log::info;
 use rand::prelude::*;
@@ -31,9 +33,11 @@ impl RandomRoomsBuilder {
         self.map
             .player_starting_positions
             .push(self.rooms[0].center());
-        self.map
-            .player_starting_positions
-            .push(self.rooms[1].center());
+        if config::GAME_MODE != GameMode::SinglePlayer {
+            self.map
+                .player_starting_positions
+                .push(self.rooms[1].center());
+        }
     }
 
     fn build_corridors(&mut self, rng: &mut Xoshiro256PlusPlus) {

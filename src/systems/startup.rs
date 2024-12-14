@@ -16,7 +16,7 @@ pub fn startup(mut commands: Commands, mut next_state: ResMut<NextState<GameStat
     match config::GAME_MODE {
         GameMode::GgrsSyncTest => start_sync_test_session(&mut commands, &mut next_state),
         GameMode::MultiPlayer => connect_to_matchbox(&mut commands),
-        GameMode::SinglePlayer => info!("Starting single player game."),
+        GameMode::SinglePlayer => start_single_player_mode(&mut commands, &mut next_state),
     }
 }
 
@@ -24,6 +24,12 @@ fn connect_to_matchbox(commands: &mut Commands) {
     let room_url = config::MATCHBOX_ROOM_URL;
     info!("Connecting to matchbox server {room_url}");
     commands.insert_resource(MatchboxSocketResource(MatchboxSocket::new_ggrs(room_url)));
+}
+
+fn start_single_player_mode(commands: &mut Commands, next_state: &mut NextState<GameState>) {
+    info!("Starting single player game.");
+    commands.insert_resource(SessionSeed::new());
+    next_state.set(GameState::InGame);
 }
 
 fn start_sync_test_session(commands: &mut Commands, next_state: &mut NextState<GameState>) {
