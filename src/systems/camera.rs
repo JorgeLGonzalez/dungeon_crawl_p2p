@@ -1,5 +1,5 @@
 use crate::components::Player;
-use crate::resources::config;
+use crate::resources::config::{self, GameMode};
 use bevy::prelude::*;
 use bevy::render::camera::ScalingMode;
 use bevy_ggrs::LocalPlayers;
@@ -11,7 +11,9 @@ pub fn move_camera(
 ) {
     let player_pos = players
         .iter()
-        .find(|(p, _)| local_players.0.contains(&p.id))
+        .find(|(p, _)| {
+            config::GAME_MODE == GameMode::SinglePlayer || local_players.0.contains(&p.id)
+        })
         .map(|(_, t)| t.translation)
         .expect("No local player to follow!");
 

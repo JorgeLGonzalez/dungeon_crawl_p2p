@@ -1,6 +1,6 @@
 use bevy_matchbox::prelude::PeerId;
 
-pub const CAMERA_SCALE: f32 = 4.;
+pub const CAMERA_SCALE: f32 = 1.;
 pub const MAP_WIDTH: usize = 100;
 pub const MAP_HEIGHT: usize = 52;
 
