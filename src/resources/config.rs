@@ -30,6 +30,7 @@ pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
 
 #[derive(Eq, PartialEq)]
 pub enum GameMode {
+    #[allow(dead_code)]
     GgrsSyncTest,
     MultiPlayer,
     SinglePlayer,

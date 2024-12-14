@@ -5,11 +5,11 @@ mod random_rooms_builder;
 mod room;
 
 pub use dungeon_map::DungeonMap;
-pub use dungeon_tile::DungeonTile;
 pub use random_rooms_builder::RandomRoomsBuilder;
 
 #[derive(Clone, Copy)]
 pub enum TileType {
+    #[allow(dead_code)]
     Exit,
     Floor,
     Wall,

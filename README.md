@@ -15,14 +15,15 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] player input
   - [x] collision detection
 - [x] camera follows player
-- [ ] May need to allow finer movement adjustments if player is as wide as a tile so they can easily enter corridors
+- [x] May need to allow finer movement adjustments if player is as wide as a tile so they can easily enter corridors
 - [x] GGRS sync stuff
   - [x] Event handling
   - [x] Ensure we have rollbacks registered
-- [ ] single player mode
+- [x] single player mode
 - [ ] other dungeons
 - [ ] deploy such that it can be used across devices (ideally over internet)
 
+- [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
 - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] how to enable trace logging only for my app (or per module)
 
