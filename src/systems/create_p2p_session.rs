@@ -10,7 +10,7 @@ use bevy::{
     prelude::{Commands, NextState, ResMut},
 };
 use bevy_ggrs::{
-    ggrs::{self, PlayerType},
+    ggrs::{self, DesyncDetection, PlayerType},
     Session,
 };
 use bevy_matchbox::{
@@ -35,7 +35,7 @@ pub fn create_p2p_session(
     }
 
     info!("All peers have joined. Starting game!");
-    commands.insert_resource(SessionSeed::new(socket));
+    commands.insert_resource(SessionSeed::from_socket(socket));
     commands.insert_resource(build_session(players, socket));
 
     next_state.set(GameState::InGame);
@@ -47,7 +47,8 @@ fn build_session(
 ) -> Session<GgrsSessionConfig> {
     let mut session_builder = ggrs::SessionBuilder::<config::GgrsSessionConfig>::new()
         .with_num_players(config::NUM_PLAYERS)
-        .with_input_delay(2);
+        .with_desync_detection_mode(DesyncDetection::On { interval: 1 })
+        .with_input_delay(config::GGRS_INPUT_DELAY);
     for (i, player) in players.into_iter().enumerate() {
         session_builder = session_builder
             .add_player(player, i)

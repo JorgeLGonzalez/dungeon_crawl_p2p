@@ -3,8 +3,8 @@ use crate::{
     resources::{
         calculate_direction,
         config::{
-            GgrsSessionConfig, MAP_HEIGHT, MAP_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED, PLAYER_WIDTH,
-            TILE_HEIGHT, TILE_WIDTH,
+            self, GgrsSessionConfig, MAP_HEIGHT, MAP_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED,
+            PLAYER_WIDTH, TILE_HEIGHT, TILE_WIDTH,
         },
     },
 };
@@ -16,12 +16,29 @@ use bevy::{
 };
 use bevy_ggrs::PlayerInputs;
 
+pub fn log_player_count(
+    players: Query<&Player>,
+    mut p2: Query<(&mut Transform, &mut MoveDir, &Player), With<Player>>,
+) {
+    info!(
+        "*** Player count = {} p2={}",
+        players.iter().count(),
+        p2.iter().count()
+    );
+}
+
 pub fn move_players(
     mut players: Query<(&mut Transform, &mut MoveDir, &Player), With<Player>>,
     inputs: Res<PlayerInputs<GgrsSessionConfig>>,
     time: Res<Time>,
     walls: Query<&Transform, (With<WallTile>, Without<Player>)>,
 ) {
+    assert_eq!(
+        players.iter().count(),
+        config::NUM_PLAYERS,
+        "Unexpected player count!"
+    );
+
     for (mut transform, mut move_dir, player) in &mut players {
         let old_pos = transform.translation.truncate();
         let input = inputs[player.id].0;

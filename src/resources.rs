@@ -9,6 +9,7 @@ use bevy_matchbox::{
 };
 pub use dungeon_map::{DungeonMap, DungeonTile, RandomRoomsBuilder, TileType};
 pub use local_inputs::{calculate_direction, create_local_inputs};
+use rand::{thread_rng, RngCore};
 
 #[derive(Resource)]
 pub struct MatchboxSocketResource(pub MatchboxSocket<SingleChannel>);
@@ -21,7 +22,8 @@ pub struct MatchboxSocketResource(pub MatchboxSocket<SingleChannel>);
 pub struct SessionSeed(u64);
 
 impl SessionSeed {
-    pub fn new(socket: &mut MatchboxSocket<SingleChannel>) -> Self {
+    /// For P2P sessions
+    pub fn from_socket(socket: &mut MatchboxSocket<SingleChannel>) -> Self {
         fn xor(id: PeerId) -> u64 {
             let pair = id.0.as_u64_pair();
             pair.0 ^ pair.1
@@ -34,6 +36,11 @@ impl SessionSeed {
             .fold(socket_id, |acc, id| acc ^ id);
 
         Self(seed)
+    }
+
+    /// For single-player sessions
+    pub fn new() -> Self {
+        Self(thread_rng().next_u64())
     }
 
     pub fn value(&self) -> u64 {

@@ -7,6 +7,7 @@ use crate::{
 };
 use bevy::{
     color::Color,
+    log::info,
     math::Vec2,
     prelude::{Commands, Res, Transform},
     sprite::Sprite,
@@ -33,5 +34,7 @@ pub fn spawn_players(mut commands: Commands, dungeon: Res<DungeonMap>) {
                 Transform::from_translation(Vec2::from(player_pos).extend(config::PLAYER_Z_LAYER)),
             ))
             .add_rollback();
+
+        info!("Spawned player {player_idx} at {player_pos:?}");
     }
 }

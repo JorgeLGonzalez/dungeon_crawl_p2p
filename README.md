@@ -30,3 +30,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] matchbox does not work with bevy 0.15, unless using fork from haihala. Hope to get revised bevy_ggrs and matchbox once [PRs](https://github.com/johanhelsing/matchbox/pull/466) merged
 - [ ] Browser tab title
+
+## References
+
+The P2P stuff (among other things) is based on the [Extreme Bevy tutorial](https://johanhelsing.studio/posts/extreme-bevy)

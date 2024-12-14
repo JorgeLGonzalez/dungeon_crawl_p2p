@@ -6,7 +6,7 @@ pub struct ExitTile;
 #[derive(Component)]
 pub struct FloorTile;
 
-#[derive(Component)]
+#[derive(Clone, Component, Copy)]
 pub struct Player {
     pub id: usize,
 }
