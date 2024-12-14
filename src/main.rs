@@ -32,14 +32,7 @@ fn main() {
         // .rollback_component_with_copy::<MoveDir>()
         .rollback_component_with_copy::<Player>()
         .checksum_component::<Transform>(checksum_transform)
-        .add_systems(
-            OnEnter(GameState::MatchMaking),
-            (
-                spawn_camera,
-                start_matchbox_socket.run_if(|| GAME_MODE == GameMode::MultiPlayer),
-                start_sync_test_session.run_if(|| GAME_MODE == GameMode::GgrsSyncTest),
-            ),
-        )
+        .add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
         .add_systems(
             OnEnter(GameState::InGame),
             (spawn_dungeon, spawn_players).chain(),
@@ -48,7 +41,7 @@ fn main() {
             Update,
             (
                 create_p2p_session.run_if(
-                    in_state(GameState::MatchMaking).and(|| GAME_MODE == GameMode::MultiPlayer),
+                    in_state(GameState::Startup).and(|| GAME_MODE == GameMode::MultiPlayer),
                 ),
                 handle_ggrs_events.run_if(in_state(GameState::InGame)),
             ),
@@ -85,7 +78,7 @@ fn checksum_transform(transform: &Transform) -> u64 {
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]
 enum GameState {
-    #[default]
-    MatchMaking,
     InGame,
+    #[default]
+    Startup,
 }

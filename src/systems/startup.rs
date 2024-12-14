@@ -1,5 +1,8 @@
 use crate::{
-    resources::{config, SessionSeed},
+    resources::{
+        config::{self, GameMode},
+        MatchboxSocketResource, SessionSeed,
+    },
     GameState,
 };
 use bevy::{
@@ -7,11 +10,23 @@ use bevy::{
     prelude::{Commands, NextState, ResMut},
 };
 use bevy_ggrs::ggrs::{self, DesyncDetection};
+use bevy_matchbox::MatchboxSocket;
 
-pub fn start_sync_test_session(
-    mut commands: Commands,
-    mut next_state: ResMut<NextState<GameState>>,
-) {
+pub fn startup(mut commands: Commands, mut next_state: ResMut<NextState<GameState>>) {
+    match config::GAME_MODE {
+        GameMode::GgrsSyncTest => start_sync_test_session(&mut commands, &mut next_state),
+        GameMode::MultiPlayer => connect_to_matchbox(&mut commands),
+        GameMode::SinglePlayer => info!("Starting single player game."),
+    }
+}
+
+fn connect_to_matchbox(commands: &mut Commands) {
+    let room_url = config::MATCHBOX_ROOM_URL;
+    info!("Connecting to matchbox server {room_url}");
+    commands.insert_resource(MatchboxSocketResource(MatchboxSocket::new_ggrs(room_url)));
+}
+
+fn start_sync_test_session(commands: &mut Commands, next_state: &mut NextState<GameState>) {
     info!("Starting sync-test session");
     let mut session_builder = ggrs::SessionBuilder::<config::GgrsSessionConfig>::new()
         .with_num_players(config::NUM_PLAYERS)
