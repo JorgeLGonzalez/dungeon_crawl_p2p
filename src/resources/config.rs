@@ -25,7 +25,6 @@ pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
 
 pub type GgrsSessionConfig = bevy_ggrs::GgrsConfig<u8, PeerId>;
 
-pub const PLAYER_SPEED: f32 = TILE_WIDTH * 6.;
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
 pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
 

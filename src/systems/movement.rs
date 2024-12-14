@@ -40,10 +40,10 @@ pub fn move_players(
 }
 
 pub fn move_single_player(
+    mut players: PlayersQuery,
     keys: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
     walls: WallsQuery,
-    mut players: PlayersQuery,
 ) {
     assert_eq!(players.iter().count(), 1, "Unexpected player count!");
 
@@ -58,16 +58,14 @@ pub fn move_single_player(
     );
 }
 
-fn calculate_pos(old_pos: Vec2, direction: Vec2, delta_seconds: f32) -> Vec2 {
+fn calculate_pos(old_pos: Vec2, direction: Vec2) -> Vec2 {
     static MIN: Vec2 = Vec2::new(MAP_WIDTH as f32 / 2., MAP_HEIGHT as f32 / 2.);
     static MAX: Vec2 = Vec2::new(
         MAP_WIDTH as f32 / 2. - PLAYER_WIDTH,
         MAP_HEIGHT as f32 / 2. - PLAYER_HEIGHT,
     );
 
-    let move_delta = direction * PLAYER_SPEED * delta_seconds;
-
-    (old_pos + move_delta).clamp(-MIN, MAX)
+    (old_pos + direction).clamp(-MIN, MAX)
 }
 
 fn intersects(player: &Vec2, wall: &Transform) -> bool {
@@ -98,7 +96,7 @@ fn move_player(
         let elapsed_secs = time.delta_secs();
         move_dir.0 = direction;
 
-        let pos = calculate_pos(old_pos, direction, elapsed_secs);
+        let pos = calculate_pos(old_pos, direction);
         info!(
             "Player {} moves {:?} from {:?} to {:?}",
             player.id,

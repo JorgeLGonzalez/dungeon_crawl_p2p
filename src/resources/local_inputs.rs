@@ -44,21 +44,26 @@ pub fn create_local_inputs(
 }
 
 pub fn encode_input(keys: &ButtonInput<KeyCode>) -> u8 {
+    use KeyCode::*;
+
     let mut input = 0u8;
 
-    if keys.any_pressed([KeyCode::ArrowUp, KeyCode::KeyW]) {
+    if keys.any_just_pressed([ArrowUp, KeyW]) {
         input |= INPUT_UP;
     }
-    if keys.any_pressed([KeyCode::ArrowDown, KeyCode::KeyS]) {
+    if keys.any_just_pressed([ArrowUp, KeyW]) {
+        input |= INPUT_UP;
+    }
+    if keys.any_just_pressed([ArrowDown, KeyS]) {
         input |= INPUT_DOWN;
     }
-    if keys.any_pressed([KeyCode::ArrowLeft, KeyCode::KeyA]) {
+    if keys.any_just_pressed([ArrowLeft, KeyA]) {
         input |= INPUT_LEFT;
     }
-    if keys.any_pressed([KeyCode::ArrowRight, KeyCode::KeyD]) {
+    if keys.any_just_pressed([ArrowRight, KeyD]) {
         input |= INPUT_RIGHT;
     }
-    if keys.pressed(KeyCode::Space) {
+    if keys.just_pressed(Space) {
         input |= INPUT_FIRE
     }
 
