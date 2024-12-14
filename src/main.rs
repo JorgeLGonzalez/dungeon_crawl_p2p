@@ -5,7 +5,7 @@ mod systems;
 use bevy::prelude::*;
 use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
 use components::Player;
-use resources::config;
+use resources::config::{self, GameMode, GAME_MODE};
 use std::hash::{Hash, Hasher};
 use systems::*;
 
@@ -36,8 +36,8 @@ fn main() {
             OnEnter(GameState::MatchMaking),
             (
                 spawn_camera,
-                start_matchbox_socket.run_if(|| config::P2P_MODE),
-                start_sync_test_session.run_if(|| !config::P2P_MODE),
+                start_matchbox_socket.run_if(|| GAME_MODE == GameMode::MultiPlayer),
+                start_sync_test_session.run_if(|| GAME_MODE == GameMode::GgrsSyncTest),
             ),
         )
         .add_systems(
@@ -47,8 +47,9 @@ fn main() {
         .add_systems(
             Update,
             (
-                create_p2p_session
-                    .run_if(in_state(GameState::MatchMaking).and(|| config::P2P_MODE)),
+                create_p2p_session.run_if(
+                    in_state(GameState::MatchMaking).and(|| GAME_MODE == GameMode::MultiPlayer),
+                ),
                 handle_ggrs_events.run_if(in_state(GameState::InGame)),
             ),
         )
