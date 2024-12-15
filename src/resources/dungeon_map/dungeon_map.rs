@@ -1,11 +1,12 @@
 use super::{dungeon_position::DungeonPosition, dungeon_tile::DungeonTile, TileType};
-use crate::resources::config::{MAP_HEIGHT, MAP_WIDTH};
+use crate::resources::config::{self, MAP_HEIGHT, MAP_WIDTH};
 use bevy::prelude::Resource;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
 
 #[derive(Resource)]
 pub struct DungeonMap {
+    pub monster_starting_positions: Vec<DungeonPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
     pub tiles: Vec<TileType>,
 }
@@ -13,6 +14,7 @@ pub struct DungeonMap {
 impl DungeonMap {
     pub fn new() -> Self {
         Self {
+            monster_starting_positions: vec![],
             player_starting_positions: vec![],
             tiles: vec![TileType::Wall; NUM_TILES],
         }
@@ -26,11 +28,24 @@ impl DungeonMap {
         self.tiles[MapPos::from_dungeon_pos(pos).to_idx()] = tile_type;
     }
 
+    pub fn spawnable_positions(&self) -> impl Iterator<Item = DungeonPosition> + use<'_> {
+        self.tiles()
+            .filter(|t| t.tile_type == TileType::Floor)
+            .filter(|t| self.far_from_players(t.pos))
+            .map(|t| t.pos)
+    }
+
     pub fn tiles(&self) -> impl Iterator<Item = DungeonTile> + use<'_> {
         self.tiles
             .iter()
             .enumerate()
             .map(move |(idx, tile_type)| DungeonTile::new(self.idx_to_position(idx), *tile_type))
+    }
+
+    fn far_from_players(&self, pos: DungeonPosition) -> bool {
+        self.player_starting_positions
+            .iter()
+            .all(|p| p.distance(pos).abs() > config::SAFETY_RADIUS)
     }
 
     fn idx_to_position(&self, index: usize) -> DungeonPosition {

@@ -11,21 +11,27 @@ pub enum GameMode {
 }
 
 // Dungeon view
-pub const CAMERA_SCALE: f32 = 1.;
+pub const CAMERA_SCALE: f32 = 2.;
 pub const MAP_WIDTH: usize = 100;
 pub const MAP_HEIGHT: usize = 52;
 pub const MAP_Z_LAYER: f32 = 10.;
+/// Min distance between starting position of player and any monster
+pub const SAFETY_RADIUS: f32 = 10.;
 pub const TILE_WIDTH: f32 = 1.;
 pub const TILE_HEIGHT: f32 = TILE_WIDTH;
 pub const VIEWPORT_HEIGHT: f32 = 20.;
 
+// Monster
+pub const MONSTER_Z_LAYER: f32 = 90.;
+
 // Player
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
 pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
-pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.2;
+pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.15;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 
 // RandomRoomsBuilder settings
+pub const NUM_MONSTERS: usize = 30;
 pub const NUM_ROOMS: usize = 20;
 pub const ROOM_MAX_WIDTH: usize = 10;
 pub const ROOM_MAX_HEIGHT: usize = 10;

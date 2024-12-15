@@ -25,8 +25,16 @@ impl RandomRoomsBuilder {
         builder.create_rooms(&mut rng);
         builder.build_corridors(&mut rng);
         builder.add_player_starting_positions();
+        builder.add_monster_starting_positions(&mut rng);
 
         builder.map
+    }
+
+    fn add_monster_starting_positions(&mut self, rng: &mut Xoshiro256PlusPlus) {
+        self.map.monster_starting_positions = self
+            .map
+            .spawnable_positions()
+            .choose_multiple(rng, config::NUM_MONSTERS)
     }
 
     fn add_player_starting_positions(&mut self) {

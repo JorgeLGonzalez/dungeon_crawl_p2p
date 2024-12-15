@@ -8,6 +8,9 @@ pub struct ExitTile;
 pub struct FloorTile;
 
 #[derive(Clone, Component, Copy)]
+pub struct Monster;
+
+#[derive(Clone, Component, Copy)]
 pub struct Player {
     pub id: usize,
 }

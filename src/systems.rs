@@ -4,6 +4,7 @@ mod handle_ggrs_events;
 mod movement;
 mod read_local_inputs;
 mod spawn_dungeon;
+mod spawn_monsters;
 mod spawn_players;
 mod startup;
 
@@ -13,5 +14,6 @@ pub use handle_ggrs_events::handle_ggrs_events;
 pub use movement::{move_players, move_single_player};
 pub use read_local_inputs::read_local_inputs;
 pub use spawn_dungeon::spawn_dungeon;
+pub use spawn_monsters::spawn_monsters;
 pub use spawn_players::spawn_players;
 pub use startup::startup;

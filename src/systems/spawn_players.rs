@@ -15,7 +15,7 @@ use bevy::{
 };
 use bevy_ggrs::AddRollbackCommandExtension;
 
-pub fn spawn_players(mut commands: Commands, dungeon: Res<DungeonMap>) {
+pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
     for (player_idx, &player_pos) in dungeon.player_starting_positions.iter().enumerate() {
         let color = match player_idx {
             0 => Color::srgb(0., 0., 1.),
@@ -31,7 +31,7 @@ pub fn spawn_players(mut commands: Commands, dungeon: Res<DungeonMap>) {
                     custom_size: Some(Vec2::new(PLAYER_WIDTH, PLAYER_HEIGHT)),
                     ..default()
                 },
-                Transform::from_translation(Vec2::from(player_pos).extend(config::PLAYER_Z_LAYER)),
+                Transform::from_translation(player_pos.to_vec3(config::PLAYER_Z_LAYER)),
             ))
             .add_rollback();
 

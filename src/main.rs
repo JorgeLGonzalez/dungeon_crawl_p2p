@@ -35,7 +35,7 @@ fn main() {
         .add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
         .add_systems(
             OnEnter(GameState::InGame),
-            (spawn_dungeon, spawn_players).chain(),
+            (spawn_dungeon, spawn_players, spawn_monsters).chain(),
         )
         .add_systems(
             Update,
