@@ -33,7 +33,7 @@ pub fn move_players(
     for (mut transform, mut movement, player) in &mut players {
         maybe_move_player(
             InputDirection::from_bits(inputs[player.id].0),
-            player,
+            player.id,
             &time,
             &walls,
             movement.as_mut(),
@@ -53,12 +53,33 @@ pub fn move_single_player(
     let (mut transform, mut movement, player) = players.single_mut();
     maybe_move_player(
         InputDirection::from_keys(&keys),
-        player,
+        player.id,
         &time,
         &walls,
         movement.as_mut(),
         transform.as_mut(),
     );
+}
+
+fn determine_destination(
+    direction: &Vec2,
+    player_id: usize,
+    transform: &Transform,
+    walls: &WallsQuery,
+) -> Option<Vec2> {
+    let pos = transform.translation.truncate() + direction;
+    let hit_wall = walls.iter().any(|w| intersects(&pos, w));
+
+    if hit_wall {
+        info!("Player {player_id} move to {pos:?} blocked by a wall");
+
+        None
+    } else {
+        let old_pos = transform.translation.truncate();
+        info!("Player {player_id} moves from {old_pos:?} to {pos:?}");
+
+        Some(pos)
+    }
 }
 
 fn intersects(player: &Vec2, wall: &Transform) -> bool {
@@ -80,34 +101,50 @@ fn intersects(player: &Vec2, wall: &Transform) -> bool {
 
 fn maybe_move_player(
     input: Option<InputDirection>,
-    player: &Player,
+    player_id: usize,
     time: &Time,
     walls: &WallsQuery,
     movement: &mut PlayerMovement,
     transform: &mut Transform,
 ) {
+    let pos = update_movement(input, time, movement)
+        .and_then(|direction| determine_destination(&direction, player_id, transform, walls));
+
+    if let Some(pos) = pos {
+        transform.translation = pos.extend(config::PLAYER_Z_LAYER);
+    }
+}
+
+/// A player has a PlayerMovement component that tracks the prior movement direction
+/// and a throttle timer to allow a short vs long press works well. A short press
+/// is throttled so we get a unit move that allows for precision and moving by
+/// a single tile so as to align w/ corridors etc. But if the key is pressed
+/// long enough, we want more moves, so the throttle is reset once the timer
+/// finishes (or if the player changed direction).
+/// (If no key is pressed, PlayerMovement.direction is set to None)
+///
+/// Return the movement direction only if a move is indicated.
+fn update_movement(
+    input: Option<InputDirection>,
+    time: &Time,
+    movement: &mut PlayerMovement,
+) -> Option<Vec2> {
     movement.throttle.tick(time.delta());
 
     if let Some(direction) = input.map(|i| i.to_vec2()) {
         let changed_dir = movement.direction != Some(direction);
-        let is_throttled = !changed_dir && !movement.throttle.finished();
-        if changed_dir || !is_throttled {
+        let throttled = !changed_dir && !movement.throttle.finished();
+        if changed_dir || !throttled {
             movement.throttle.reset();
             movement.direction = Some(direction);
 
-            let pos = transform.translation.truncate() + direction;
-
-            let hit_wall = walls.iter().any(|w| intersects(&pos, w));
-
-            if !hit_wall {
-                let old_pos = transform.translation.truncate();
-                info!("Player {} moves from {:?} to {:?}", player.id, old_pos, pos);
-                transform.translation = pos.extend(config::PLAYER_Z_LAYER);
-            } else {
-                info!("Player {} move to {:?} blocked by a wall", player.id, pos);
-            }
+            movement.direction
+        } else {
+            None
         }
     } else {
         movement.direction = None;
+
+        None
     }
 }
