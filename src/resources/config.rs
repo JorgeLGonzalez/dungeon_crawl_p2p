@@ -1,5 +1,16 @@
 use bevy_matchbox::prelude::PeerId;
 
+// Game
+pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
+#[derive(Eq, PartialEq)]
+pub enum GameMode {
+    #[allow(dead_code)]
+    GgrsSyncTest,
+    MultiPlayer,
+    SinglePlayer,
+}
+
+// Dungeon view
 pub const CAMERA_SCALE: f32 = 1.;
 pub const MAP_WIDTH: usize = 100;
 pub const MAP_HEIGHT: usize = 52;
@@ -8,6 +19,7 @@ pub const TILE_WIDTH: f32 = 1.;
 pub const TILE_HEIGHT: f32 = TILE_WIDTH;
 pub const VIEWPORT_HEIGHT: f32 = 20.;
 
+// Player
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
 pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
 pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
@@ -22,14 +34,5 @@ pub const ROOM_MAX_HEIGHT: usize = 10;
 pub const GGRS_INPUT_DELAY: usize = 0;
 pub const MATCHBOX_ROOM_URL: &str = "ws://127.0.0.1:3536/dungeon_crawl?next=2";
 pub const NUM_PLAYERS: usize = 2;
-pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
 
 pub type GgrsSessionConfig = bevy_ggrs::GgrsConfig<u8, PeerId>;
-
-#[derive(Eq, PartialEq)]
-pub enum GameMode {
-    #[allow(dead_code)]
-    GgrsSyncTest,
-    MultiPlayer,
-    SinglePlayer,
-}

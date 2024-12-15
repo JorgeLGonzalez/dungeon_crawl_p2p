@@ -40,7 +40,7 @@ GGRS depends on rollbacks, which I don't fully understand. We need to do at leas
 1. Call `add_rollback` on the spawn command for each entity bundle that may need rollbacks. This adds the Bevy GGRS Rollback component.
 2. Register specific components for rollback with a specific strategy (clone or copy) in `main` via the `rollback_component_with_clone` or `rollback_component_with_copy` methods.
 
-So for `Player` for example (in [spawn_players](./src/systems/spawn_players.rs)) we use `add_rollback` and in main we register `Player` and `Transform` for rollback. We probably will need to add other Components that are added to Player when we add Sprite etc, especially if a Player will be despawned.
+So for `Player` for example (in [spawn_players](./src/systems/spawn_players.rs)) we use `add_rollback` and in main we register `Player` and `Transform` for rollback. We probably will need to add other Components that are added to Player when we add Sprite etc, especially if a Player will be despawned. `PlayerMovement`, for example, might need registration. But basic testing does not reveal that.
 
 See [Extreme Bevy Detecting Desyncs tutorial](https://johanhelsing.studio/posts/extreme-bevy-desync-detection) for more info
 
