@@ -46,6 +46,7 @@ fn main() {
                 (
                     handle_ggrs_events.run_if(|| GAME_MODE != GameMode::SinglePlayer),
                     (move_single_player, move_camera)
+                        .chain()
                         .run_if(|| GAME_MODE == GameMode::SinglePlayer),
                 )
                     .run_if(in_state(GameState::InGame)),

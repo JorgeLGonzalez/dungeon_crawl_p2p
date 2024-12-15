@@ -22,7 +22,7 @@ pub const VIEWPORT_HEIGHT: f32 = 20.;
 // Player
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
 pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
-pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
+pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.2;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 
 // RandomRoomsBuilder settings
