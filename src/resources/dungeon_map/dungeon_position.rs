@@ -1,13 +1,27 @@
 use crate::resources::config;
 use bevy::math::{Vec2, Vec3};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct DungeonPosition {
     pub x: isize,
     pub y: isize,
 }
 
 impl DungeonPosition {
+    pub fn from_vec2(pos: Vec2) -> Self {
+        Self {
+            x: pos.x as isize,
+            y: pos.y as isize,
+        }
+    }
+
+    pub fn from_vec3(pos: Vec3) -> Self {
+        Self {
+            x: pos.x as isize,
+            y: pos.y as isize,
+        }
+    }
+
     pub fn new(x: isize, y: isize) -> Self {
         Self { x, y }
     }

@@ -7,7 +7,7 @@ use bevy_matchbox::{
     prelude::{PeerId, SingleChannel},
     MatchboxSocket,
 };
-pub use dungeon_map::{DungeonMap, RandomRoomsBuilder, TileType};
+pub use dungeon_map::{DungeonMap, DungeonPosition, RandomRoomsBuilder, TileType};
 pub use player_inputs::InputDirection;
 use rand::{thread_rng, RngCore};
 

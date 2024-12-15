@@ -21,8 +21,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] Ensure we have rollbacks registered
 - [x] single player mode
 - [x] spawn monsters
+- [x] monster random moves (w/o stepping on other monster)
   - [ ] adapt to multi player
-- [ ] monster random moves (w/o stepping on other monster)
 - [ ] player attack on monster
 - [ ] monster attack player
 - [ ] monster follows player

@@ -7,7 +7,7 @@ use crate::{
 };
 use bevy::{
     color::Color,
-    math::Vec2,
+    math::{Vec2, Vec3},
     prelude::{Commands, Res, Transform},
     sprite::Sprite,
     utils::default,
@@ -15,7 +15,7 @@ use bevy::{
 
 pub fn spawn_monsters(dungeon: Res<DungeonMap>, mut commands: Commands) {
     for pos in &dungeon.monster_starting_positions {
-        let color = Color::srgb(1., 1., 1.);
+        let color = Color::srgb_from_array(Vec3::splat(0.3).to_array());
 
         commands.spawn((
             Monster,
