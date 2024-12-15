@@ -1,5 +1,5 @@
 use crate::{
-    components::{MoveDir, Player},
+    components::{Player, PlayerMovement},
     resources::{
         config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
         DungeonMap,
@@ -25,7 +25,7 @@ pub fn spawn_players(mut commands: Commands, dungeon: Res<DungeonMap>) {
         commands
             .spawn((
                 Player { id: player_idx },
-                MoveDir(Vec2::new(1., 0.)),
+                PlayerMovement::default(),
                 Sprite {
                     color,
                     custom_size: Some(Vec2::new(PLAYER_WIDTH, PLAYER_HEIGHT)),

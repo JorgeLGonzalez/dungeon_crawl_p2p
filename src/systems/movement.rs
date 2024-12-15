@@ -1,9 +1,8 @@
 use crate::{
-    components::{MoveDir, Player, WallTile},
+    components::{Player, PlayerMovement, WallTile},
     resources::{
-        calculate_direction,
         config::{self, GgrsSessionConfig},
-        encode_input,
+        InputDirection,
     },
 };
 use bevy::{
@@ -11,16 +10,18 @@ use bevy::{
     log::info,
     math::Vec2,
     prelude::{KeyCode, Query, Res, Transform, With, Without},
+    time::Time,
 };
 use bevy_ggrs::PlayerInputs;
 
 type PlayersQuery<'w, 's, 't, 'm, 'p> =
-    Query<'w, 's, (&'t mut Transform, &'m mut MoveDir, &'p Player), With<Player>>;
+    Query<'w, 's, (&'t mut Transform, &'m mut PlayerMovement, &'p Player), With<Player>>;
 type WallsQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Player>)>;
 
 pub fn move_players(
     mut players: PlayersQuery,
     inputs: Res<PlayerInputs<GgrsSessionConfig>>,
+    time: Res<Time>,
     walls: WallsQuery,
 ) {
     assert_eq!(
@@ -29,12 +30,13 @@ pub fn move_players(
         "Unexpected player count!"
     );
 
-    for (mut transform, mut move_dir, player) in &mut players {
-        move_player(
-            inputs[player.id].0,
+    for (mut transform, mut movement, player) in &mut players {
+        maybe_move_player(
+            InputDirection::from_bits(inputs[player.id].0),
             player,
+            &time,
             &walls,
-            move_dir.as_mut(),
+            movement.as_mut(),
             transform.as_mut(),
         );
     }
@@ -43,30 +45,20 @@ pub fn move_players(
 pub fn move_single_player(
     mut players: PlayersQuery,
     keys: Res<ButtonInput<KeyCode>>,
+    time: Res<Time>,
     walls: WallsQuery,
 ) {
     assert_eq!(players.iter().count(), 1, "Unexpected player count!");
 
-    let (mut transform, mut move_dir, player) = players.single_mut();
-    move_player(
-        encode_input(&keys),
+    let (mut transform, mut movement, player) = players.single_mut();
+    maybe_move_player(
+        InputDirection::from_keys(&keys),
         player,
+        &time,
         &walls,
-        move_dir.as_mut(),
+        movement.as_mut(),
         transform.as_mut(),
     );
-}
-
-fn calculate_pos(old_pos: Vec2, direction: Vec2) -> Vec2 {
-    use config::*;
-
-    static MIN: Vec2 = Vec2::new(MAP_WIDTH as f32 / 2., MAP_HEIGHT as f32 / 2.);
-    static MAX: Vec2 = Vec2::new(
-        MAP_WIDTH as f32 / 2. - PLAYER_WIDTH,
-        MAP_HEIGHT as f32 / 2. - PLAYER_HEIGHT,
-    );
-
-    (old_pos + direction).clamp(-MIN, MAX)
 }
 
 fn intersects(player: &Vec2, wall: &Transform) -> bool {
@@ -86,31 +78,36 @@ fn intersects(player: &Vec2, wall: &Transform) -> bool {
         && player_max.y > wall_min.y
 }
 
-fn move_player(
-    input: u8,
+fn maybe_move_player(
+    input: Option<InputDirection>,
     player: &Player,
+    time: &Time,
     walls: &WallsQuery,
-    move_dir: &mut MoveDir,
+    movement: &mut PlayerMovement,
     transform: &mut Transform,
 ) {
-    if let Some(direction) = calculate_direction(input) {
-        let old_pos = transform.translation.truncate();
-        move_dir.0 = direction;
+    movement.throttle.tick(time.delta());
 
-        let pos = calculate_pos(old_pos, direction);
-        info!(
-            "Player {} moves {:?} from {:?} to {:?}",
-            player.id,
-            pos - old_pos,
-            old_pos,
-            pos
-        );
+    if let Some(direction) = input.map(|i| i.to_vec2()) {
+        let changed_dir = movement.direction != Some(direction);
+        let is_throttled = !changed_dir && !movement.throttle.finished();
+        if changed_dir || !is_throttled {
+            movement.throttle.reset();
+            movement.direction = Some(direction);
 
-        let hit_wall = walls.iter().any(|w| intersects(&pos, w));
+            let pos = transform.translation.truncate() + direction;
 
-        if !hit_wall {
-            transform.translation.x = pos.x;
-            transform.translation.y = pos.y;
+            let hit_wall = walls.iter().any(|w| intersects(&pos, w));
+
+            if !hit_wall {
+                let old_pos = transform.translation.truncate();
+                info!("Player {} moves from {:?} to {:?}", player.id, old_pos, pos);
+                transform.translation = pos.extend(config::PLAYER_Z_LAYER);
+            } else {
+                info!("Player {} move to {:?} blocked by a wall", player.id, pos);
+            }
         }
+    } else {
+        movement.direction = None;
     }
 }

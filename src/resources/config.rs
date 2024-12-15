@@ -3,14 +3,15 @@ use bevy_matchbox::prelude::PeerId;
 pub const CAMERA_SCALE: f32 = 1.;
 pub const MAP_WIDTH: usize = 100;
 pub const MAP_HEIGHT: usize = 52;
-
 pub const MAP_Z_LAYER: f32 = 10.;
-pub const PLAYER_Z_LAYER: f32 = 100.;
-
 pub const TILE_WIDTH: f32 = 1.;
 pub const TILE_HEIGHT: f32 = TILE_WIDTH;
-
 pub const VIEWPORT_HEIGHT: f32 = 20.;
+
+pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
+pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
+pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
+pub const PLAYER_Z_LAYER: f32 = 100.;
 
 // RandomRoomsBuilder settings
 pub const NUM_ROOMS: usize = 20;
@@ -24,9 +25,6 @@ pub const NUM_PLAYERS: usize = 2;
 pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
 
 pub type GgrsSessionConfig = bevy_ggrs::GgrsConfig<u8, PeerId>;
-
-pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
-pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
 
 #[derive(Eq, PartialEq)]
 pub enum GameMode {
