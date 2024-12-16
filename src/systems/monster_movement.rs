@@ -7,8 +7,6 @@ use bevy::{
     prelude::{Query, ResMut, Transform, With, Without},
     utils::hashbrown::HashSet,
 };
-use rand::prelude::*;
-use rand_xoshiro::Xoshiro256PlusPlus;
 
 type MonsterQuery<'w, 's, 't> = Query<'w, 's, &'t mut Transform, With<Monster>>;
 type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Monster>)>;
@@ -23,7 +21,7 @@ pub fn move_monsters(
 
     for (mut monster, movement) in monsters
         .iter_mut()
-        .filter_map(|m| determine_movement(&mut rng.rng).map(|movement| (m, movement)))
+        .filter_map(|m| determine_movement(&mut rng).map(|movement| (m, movement)))
     {
         let pos = DungeonPosition::from_vec2(monster.translation.truncate() + movement);
 
@@ -51,7 +49,7 @@ fn create_current_monster_positions_set(monsters: &MonsterQuery) -> HashSet<Dung
     )
 }
 
-fn determine_movement(rng: &mut Xoshiro256PlusPlus) -> Option<Vec2> {
+fn determine_movement(rng: &mut RandomGenerator) -> Option<Vec2> {
     match rng.gen_range(0..config::MONSTER_FRAMES_PER_MOVE) {
         0 => Some(Vec2::Y),
         1 => Some(Vec2::NEG_Y),

@@ -2,19 +2,19 @@ use crate::{
     components::{ExitTile, FloorTile, WallTile},
     resources::{
         config::{TILE_HEIGHT, TILE_WIDTH},
-        RandomRoomsBuilder, SessionSeed, TileType,
+        RandomGenerator, RandomRoomsBuilder, TileType,
     },
 };
 use bevy::{
     color::Color,
     math::Vec2,
-    prelude::{Commands, Res, Transform},
+    prelude::{Commands, ResMut, Transform},
     sprite::Sprite,
     utils::default,
 };
 
-pub fn spawn_dungeon(mut commands: Commands, session_seed: Res<SessionSeed>) {
-    let dungeon = RandomRoomsBuilder::build(*session_seed);
+pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
+    let dungeon = RandomRoomsBuilder::build(rng.as_mut());
 
     for tile in dungeon.tiles() {
         let sprite = create_sprite(tile.tile_type);

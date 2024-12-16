@@ -1,7 +1,7 @@
 use crate::{
     resources::{
         config::{self, GameMode},
-        MatchboxSocketResource, SessionSeed,
+        MatchboxSocketResource, RandomGenerator,
     },
     GameState,
 };
@@ -28,7 +28,7 @@ fn connect_to_matchbox(commands: &mut Commands) {
 
 fn start_single_player_mode(commands: &mut Commands, next_state: &mut NextState<GameState>) {
     info!("Starting single player game.");
-    commands.insert_resource(SessionSeed::new());
+    commands.insert_resource(RandomGenerator::new());
     next_state.set(GameState::InGame);
 }
 
@@ -49,6 +49,6 @@ fn start_sync_test_session(commands: &mut Commands, next_state: &mut NextState<G
         .expect("Failed to start session");
 
     commands.insert_resource(bevy_ggrs::Session::SyncTest(ggrs_session));
-    commands.insert_resource(SessionSeed::new());
+    commands.insert_resource(RandomGenerator::new());
     next_state.set(GameState::InGame);
 }

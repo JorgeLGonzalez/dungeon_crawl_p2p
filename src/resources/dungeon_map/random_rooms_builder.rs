@@ -2,11 +2,10 @@ use super::{dungeon_map::DungeonMap, room::Room};
 use crate::resources::{
     config::{self, *},
     dungeon_map::dungeon_position::DungeonPosition,
-    SessionSeed, TileType,
+    RandomGenerator, TileType,
 };
 use bevy::log::info;
 use rand::prelude::*;
-use rand_xoshiro::Xoshiro256PlusPlus;
 
 pub struct RandomRoomsBuilder {
     map: DungeonMap,
@@ -14,23 +13,21 @@ pub struct RandomRoomsBuilder {
 }
 
 impl RandomRoomsBuilder {
-    pub fn build(session_seed: SessionSeed) -> DungeonMap {
+    pub fn build(rng: &mut RandomGenerator) -> DungeonMap {
         let mut builder = Self {
             map: DungeonMap::new(),
             rooms: vec![],
         };
 
-        let mut rng = Xoshiro256PlusPlus::seed_from_u64(session_seed.value());
-
-        builder.create_rooms(&mut rng);
-        builder.build_corridors(&mut rng);
+        builder.create_rooms(rng);
+        builder.build_corridors(rng);
         builder.add_player_starting_positions();
-        builder.add_monster_starting_positions(&mut rng);
+        builder.add_monster_starting_positions(rng);
 
         builder.map
     }
 
-    fn add_monster_starting_positions(&mut self, rng: &mut Xoshiro256PlusPlus) {
+    fn add_monster_starting_positions(&mut self, rng: &mut RandomGenerator) {
         self.map.monster_starting_positions = self
             .map
             .spawnable_positions()
@@ -48,7 +45,7 @@ impl RandomRoomsBuilder {
         }
     }
 
-    fn build_corridors(&mut self, rng: &mut Xoshiro256PlusPlus) {
+    fn build_corridors(&mut self, rng: &mut RandomGenerator) {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
 
@@ -66,7 +63,7 @@ impl RandomRoomsBuilder {
         }
     }
 
-    fn create_rooms(&mut self, rng: &mut Xoshiro256PlusPlus) {
+    fn create_rooms(&mut self, rng: &mut RandomGenerator) {
         while self.rooms.len() < NUM_ROOMS {
             let room = self.create_room(rng);
 
@@ -90,7 +87,7 @@ impl RandomRoomsBuilder {
         }
     }
 
-    fn create_room(&self, rng: &mut Xoshiro256PlusPlus) -> Room {
+    fn create_room(&self, rng: &mut RandomGenerator) -> Room {
         const X_MAX: isize = (MAP_WIDTH / 2 - ROOM_MAX_WIDTH - 1) as isize;
         const X_MIN: isize = -((MAP_WIDTH / 2) as isize) + 1;
         const Y_MAX: isize = ((MAP_HEIGHT / 2) - ROOM_MAX_HEIGHT - 1) as isize;
