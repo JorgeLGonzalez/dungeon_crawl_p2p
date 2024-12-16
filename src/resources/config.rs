@@ -1,7 +1,7 @@
 use bevy_matchbox::prelude::PeerId;
 
 // Game
-pub const GAME_MODE: GameMode = GameMode::MultiPlayer;
+pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
 #[derive(Eq, PartialEq)]
 pub enum GameMode {
     #[allow(dead_code)]

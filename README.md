@@ -22,8 +22,10 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] single player mode
 - [x] spawn monsters
 - [x] monster random moves (w/o stepping on other monster)
+  - [x] adapt to multi player
+- [x] player attack on monster
   - [ ] adapt to multi player
-- [ ] player attack on monster
+  - [ ] simplify intersects on player moves. check against monster moves
 - [ ] monster attack player
 - [ ] monster follows player
 - [ ] monster FOV

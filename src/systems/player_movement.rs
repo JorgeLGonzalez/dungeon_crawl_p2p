@@ -1,5 +1,5 @@
 use crate::{
-    components::{Player, PlayerMovement, WallTile},
+    components::{Monster, Player, PlayerMovement, WallTile},
     resources::{
         config::{self, GgrsSessionConfig},
         InputDirection,
@@ -9,11 +9,15 @@ use bevy::{
     input::ButtonInput,
     log::info,
     math::Vec2,
-    prelude::{KeyCode, Query, Res, Transform, With, Without},
+    prelude::{
+        Commands, DespawnRecursiveExt, Entity, KeyCode, Query, Res, Transform, With, Without,
+    },
     time::Time,
 };
 use bevy_ggrs::PlayerInputs;
 
+type MonsterQuery<'w, 's, 't> =
+    Query<'w, 's, (Entity, &'t Transform), (With<Monster>, Without<Player>)>;
 type PlayersQuery<'w, 's, 't, 'm, 'p> =
     Query<'w, 's, (&'t mut Transform, &'m mut PlayerMovement, &'p Player), With<Player>>;
 type WallsQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Player>)>;
@@ -43,22 +47,78 @@ pub fn move_players(
 }
 
 pub fn move_single_player(
+    mut commands: Commands,
     mut players: PlayersQuery,
     keys: Res<ButtonInput<KeyCode>>,
+    monsters: MonsterQuery,
     time: Res<Time>,
     walls: WallsQuery,
 ) {
     assert_eq!(players.iter().count(), 1, "Unexpected player count!");
 
     let (mut transform, mut movement, player) = players.single_mut();
-    maybe_move_player(
-        InputDirection::from_keys(&keys),
-        player.id,
-        &time,
-        &walls,
-        movement.as_mut(),
-        transform.as_mut(),
-    );
+
+    let input = InputDirection::from_keys(&keys);
+    let player_id = player.id;
+    let action = update_movement(input, &time, &mut movement).and_then(|direction| {
+        determine_action(&direction, &monsters, player_id, &transform, &walls)
+    });
+
+    if let Some(action) = action {
+        match action {
+            PlayerAction::Attack(monster) => {
+                info!("Kill monster");
+                commands.entity(monster).despawn_recursive();
+            }
+            PlayerAction::Move(pos) => {
+                transform.translation = pos.extend(config::PLAYER_Z_LAYER);
+            }
+        };
+    }
+
+    // maybe_move_player(
+    //     InputDirection::from_keys(&keys),
+    //     player.id,
+    //     &time,
+    //     &walls,
+    //     movement.as_mut(),
+    //     transform.as_mut(),
+    // );
+}
+
+enum PlayerAction {
+    Attack(Entity),
+    Move(Vec2),
+}
+
+fn determine_action(
+    direction: &Vec2,
+    monsters: &MonsterQuery,
+    player_id: usize,
+    transform: &Transform,
+    walls: &WallsQuery,
+) -> Option<PlayerAction> {
+    let pos = transform.translation.truncate() + direction;
+    let hit_wall = walls.iter().any(|w| intersects(&pos, w));
+    let attack = monsters
+        .iter()
+        .find(|(_, m)| m.translation.truncate() == pos)
+        .map(|(m, _)| m);
+
+    if hit_wall {
+        info!("Player {player_id} move to {pos:?} blocked by a wall");
+
+        None
+    } else if let Some(monster) = attack {
+        info!("Player {player_id} attacks monster at {pos:?}");
+
+        Some(PlayerAction::Attack(monster))
+    } else {
+        let old_pos = transform.translation.truncate();
+        info!("Player {player_id} moves from {old_pos:?} to {pos:?}");
+
+        Some(PlayerAction::Move(pos))
+    }
 }
 
 fn determine_destination(
@@ -82,6 +142,7 @@ fn determine_destination(
     }
 }
 
+// TODO can simplify this given unit moves, right?
 fn intersects(player: &Vec2, wall: &Transform) -> bool {
     use config::*;
 
