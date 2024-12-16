@@ -1,7 +1,7 @@
 use bevy_matchbox::prelude::PeerId;
 
 // Game
-pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
+pub const GAME_MODE: GameMode = GameMode::MultiPlayer;
 #[derive(Eq, PartialEq)]
 pub enum GameMode {
     #[allow(dead_code)]
@@ -21,8 +21,10 @@ pub const TILE_WIDTH: f32 = 1.;
 pub const TILE_HEIGHT: f32 = TILE_WIDTH;
 pub const VIEWPORT_HEIGHT: f32 = 20.;
 
-// Monster
+// Monsters
 pub const MONSTER_Z_LAYER: f32 = 90.;
+/// Number of frames between each random move attempt. See monster_movement.
+pub const MONSTER_FRAMES_PER_MOVE: usize = 50;
 
 // Player
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;

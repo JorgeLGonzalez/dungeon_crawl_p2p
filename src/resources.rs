@@ -9,10 +9,24 @@ use bevy_matchbox::{
 };
 pub use dungeon_map::{DungeonMap, DungeonPosition, RandomRoomsBuilder, TileType};
 pub use player_inputs::InputDirection;
-use rand::{thread_rng, RngCore};
+use rand::prelude::*;
+use rand_xoshiro::Xoshiro256PlusPlus;
 
 #[derive(Resource)]
 pub struct MatchboxSocketResource(pub MatchboxSocket<SingleChannel>);
+
+#[derive(Resource)]
+pub struct RandomGenerator {
+    pub rng: Xoshiro256PlusPlus,
+}
+
+impl RandomGenerator {
+    pub fn new(seed: u64) -> Self {
+        Self {
+            rng: Xoshiro256PlusPlus::seed_from_u64(seed),
+        }
+    }
+}
 
 /// We create the session seed from the socket and peer identifiers so that it
 /// is random, but the same for both players. This way the random generator

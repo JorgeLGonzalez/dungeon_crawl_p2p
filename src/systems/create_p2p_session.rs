@@ -1,7 +1,7 @@
 use crate::{
     resources::{
         config::{self, GgrsSessionConfig},
-        MatchboxSocketResource, SessionSeed,
+        MatchboxSocketResource, RandomGenerator, SessionSeed,
     },
     GameState,
 };
@@ -35,7 +35,9 @@ pub fn create_p2p_session(
     }
 
     info!("All peers have joined. Starting game!");
-    commands.insert_resource(SessionSeed::from_socket(socket));
+    let session_seed = SessionSeed::from_socket(socket);
+    commands.insert_resource(session_seed);
+    commands.insert_resource(RandomGenerator::new(session_seed.value()));
     commands.insert_resource(build_session(players, socket));
 
     next_state.set(GameState::InGame);

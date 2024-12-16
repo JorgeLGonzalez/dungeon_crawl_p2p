@@ -55,7 +55,7 @@ fn main() {
         .add_systems(ReadInputs, read_local_inputs)
         .add_systems(
             GgrsSchedule,
-            (move_players, move_camera)
+            (move_players, move_camera, move_monsters)
                 .chain()
                 .run_if(in_state(GameState::InGame)),
         )
