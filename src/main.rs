@@ -4,8 +4,11 @@ mod systems;
 
 use bevy::prelude::*;
 use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
-use components::Player;
-use resources::config::{self, GameMode, GAME_MODE};
+use components::{Monster, Player, PlayerMovement};
+use resources::{
+    config::{self, GameMode, GAME_MODE},
+    RandomGenerator,
+};
 use std::hash::{Hash, Hasher};
 use systems::*;
 
@@ -26,11 +29,13 @@ fn main() {
         .init_state::<GameState>()
         // .rollback_component_with_clone::<GlobalTransform>()
         // .rollback_component_with_clone::<InheritedVisibility>()
+        .rollback_component_with_clone::<PlayerMovement>()
         .rollback_component_with_clone::<Transform>()
         // .rollback_component_with_clone::<ViewVisibility>()
         // .rollback_component_with_clone::<Visibility>()
-        // .rollback_component_with_copy::<MoveDir>()
-        .rollback_component_with_copy::<Player>()
+        .rollback_component_with_copy::<Monster>()
+        // .rollback_component_with_copy::<Player>()
+        .rollback_resource_with_clone::<RandomGenerator>()
         .checksum_component::<Transform>(checksum_transform)
         .add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
         .add_systems(

@@ -10,7 +10,7 @@ use std::ops::Range;
 /// We seed the random number generator so that in a multi-player game the random
 /// numbers generated are exactly the same for both players. This means we do
 /// not have to keep random stuff in sync as it is deterministic.
-#[derive(Resource)]
+#[derive(Clone, Resource)]
 pub struct RandomGenerator {
     rng: Xoshiro256PlusPlus,
 }

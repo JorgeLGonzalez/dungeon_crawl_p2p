@@ -24,7 +24,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] monster random moves (w/o stepping on other monster)
   - [x] adapt to multi player
 - [x] player attack on monster
-  - [ ] adapt to multi player
+  - [x] adapt to multi player
   - [ ] simplify intersects on player moves. check against monster moves
 - [ ] monster attack player
 - [ ] monster follows player
@@ -33,6 +33,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] other dungeons
 - [ ] deploy such that it can be used across devices (ideally over internet)
 
+- [ ] getting desyncs. Note there is a bug in desync detection, but I am pretty sure I have my own bugs because I see visually things going out of sync.
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
 - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] how to enable trace logging only for my app (or per module)
