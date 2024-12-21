@@ -2,7 +2,7 @@ mod components;
 mod resources;
 mod systems;
 
-use bevy::prelude::*;
+use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
 use components::{Monster, Player, PlayerMovement};
 use resources::{
@@ -13,9 +13,10 @@ use std::hash::{Hash, Hasher};
 use systems::*;
 
 fn main() {
-    App::new()
-        .add_plugins((
-            DefaultPlugins.set(WindowPlugin {
+    let mut app = App::new();
+    app.add_plugins((
+        DefaultPlugins
+            .set(WindowPlugin {
                 primary_window: Some(Window {
                     fit_canvas_to_parent: true,
                     prevent_default_event_handling: false,
@@ -23,10 +24,17 @@ fn main() {
                     ..default()
                 }),
                 ..default()
+            })
+            .set(LogPlugin {
+                // level: bevy::log::Level::TRACE,
+                ..default()
             }),
-            GgrsPlugin::<config::GgrsSessionConfig>::default(),
-        ))
-        .init_state::<GameState>()
+        GgrsPlugin::<config::GgrsSessionConfig>::default(),
+    ))
+    .init_state::<GameState>();
+
+    // Register components and resources for GGRS snapshots and rollback
+    app
         // .rollback_component_with_clone::<GlobalTransform>()
         // .rollback_component_with_clone::<InheritedVisibility>()
         .rollback_component_with_clone::<PlayerMovement>()
@@ -34,10 +42,11 @@ fn main() {
         // .rollback_component_with_clone::<ViewVisibility>()
         // .rollback_component_with_clone::<Visibility>()
         .rollback_component_with_copy::<Monster>()
-        // .rollback_component_with_copy::<Player>()
+        .rollback_component_with_copy::<Player>()
         .rollback_resource_with_clone::<RandomGenerator>()
-        .checksum_component::<Transform>(checksum_transform)
-        .add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
+        .checksum_component::<Transform>(checksum_transform);
+
+    app.add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
         .add_systems(
             OnEnter(GameState::InGame),
             (spawn_dungeon, spawn_players, spawn_monsters).chain(),
@@ -63,8 +72,9 @@ fn main() {
             (move_players, move_camera, move_monsters)
                 .chain()
                 .run_if(in_state(GameState::InGame)),
-        )
-        .run();
+        );
+
+    app.run();
 }
 
 // See https://johanhelsing.studio/posts/extreme-bevy-desync-detection

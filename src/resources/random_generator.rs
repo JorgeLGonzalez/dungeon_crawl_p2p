@@ -1,8 +1,5 @@
 use bevy::prelude::Resource;
-use bevy_matchbox::{
-    prelude::{PeerId, SingleChannel},
-    MatchboxSocket,
-};
+use bevy_matchbox::{prelude::PeerId, MatchboxSocket};
 use rand::{distributions::uniform::SampleUniform, prelude::*, Error};
 use rand_xoshiro::Xoshiro256PlusPlus;
 use std::ops::Range;
@@ -10,7 +7,7 @@ use std::ops::Range;
 /// We seed the random number generator so that in a multi-player game the random
 /// numbers generated are exactly the same for both players. This means we do
 /// not have to keep random stuff in sync as it is deterministic.
-#[derive(Clone, Resource)]
+#[derive(Clone, Debug, Resource)]
 pub struct RandomGenerator {
     rng: Xoshiro256PlusPlus,
 }
@@ -22,7 +19,7 @@ impl RandomGenerator {
         }
     }
 
-    pub fn new_for_p2p(socket: &mut MatchboxSocket<SingleChannel>) -> Self {
+    pub fn new_for_p2p(socket: &mut MatchboxSocket) -> Self {
         fn xor(id: PeerId) -> u64 {
             let pair = id.0.as_u64_pair();
             pair.0 ^ pair.1

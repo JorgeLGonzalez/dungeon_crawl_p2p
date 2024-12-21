@@ -25,6 +25,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] adapt to multi player
 - [x] player attack on monster
   - [x] adapt to multi player
+  - [ ] getting desyncs. Note there is a bug in desync detection, but I am pretty sure I have my own bugs because I see visually things going out of sync. It happens even if i do not despawn monsters. Even registering Time does not solve it. Hmm...
   - [ ] simplify intersects on player moves. check against monster moves
 - [ ] monster attack player
 - [ ] monster follows player
@@ -32,8 +33,6 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] player FOV
 - [ ] other dungeons
 - [ ] deploy such that it can be used across devices (ideally over internet)
-
-- [ ] getting desyncs. Note there is a bug in desync detection, but I am pretty sure I have my own bugs because I see visually things going out of sync.
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
 - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] how to enable trace logging only for my app (or per module)
@@ -61,11 +60,29 @@ Entities Spawned and Rollback Info
 - `spawn_camera`. No rollback because it only follows the local player.
 - `spawn_dungeon`. Tiles have no rollback as they are only generated at the start of each dungeon level and we rely on the shared random seed to have both players get the same dungeon.
 
-Resources do not need rollback???
+### Time
+
+Note that `bevy_ggrs` replaces the `Time` resource with one that is kept in sync.
 
 ### Checksums
 
 The rollback depends on checksums. Transform is a special case where we need to create a custom checksum, which is why we have the `checksum_component` method in `main`.
+
+## Understanding GGRS
+
+Some key notes:
+
+1. The game must be deterministic. For example, the random number generator must start with the same seed for each player. This way all we need to worry about is sending the player inputs to each client.
+2. When the inputs fail to match the GGRS predictions, it will rollback components and resources. These mus be registered in two ways a) the `add_rollback` method when spawning the entity will add a `Rollback` component, which is what `bevy_ggrs` uses to know what needs rolling back. b) the `rollback_component_*` and `rollback_resource_*` methods on the App will create `GgrsSnapshots` resources for each registered Type. This keeps track of snapshots per frame (a short set of frames). The methods indicate the strategy for saving/loading snapshots (clone, copy).
+3. `bevy_ggrs` sits on top of `ggrs` and `ggrs` is an implementation of GGPO in Rust.
+
+### Troubleshooting Desyncs
+
+There are two ways to auto-detect desync events:
+
+1. Handle the `GgrsEvent::DesyncDetected`, which is generated when `DesyncDetection` is enabled in the P2P session. Enabling happens in `create_p2p_session` while handling happens in `handle_ggrs_events`. The handling tries to log the snapshots, but see [this issue](https://github.com/gschup/bevy_ggrs/issues/117) I logged.
+2. Run the app in `synctest` mode. The problem here is that no event is generated so all you get is the fact that a desync happened when logged out. Not details.
+3. Enable Trace and/or Debug level logging (via the bevy App LogPlugin config) as bevy_ggrs logs useful stuff out. (Can do RUST_DEBUG env var, but that gets SUPER noisy).
 
 ## References
 

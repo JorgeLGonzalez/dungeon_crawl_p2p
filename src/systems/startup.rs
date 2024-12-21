@@ -1,7 +1,7 @@
 use crate::{
     resources::{
         config::{self, GameMode},
-        MatchboxSocketResource, RandomGenerator,
+        RandomGenerator,
     },
     GameState,
 };
@@ -10,7 +10,10 @@ use bevy::{
     prelude::{Commands, NextState, ResMut},
 };
 use bevy_ggrs::ggrs::{self, DesyncDetection};
-use bevy_matchbox::MatchboxSocket;
+use bevy_matchbox::{
+    prelude::{ChannelConfig, WebRtcSocketBuilder},
+    MatchboxSocket,
+};
 
 pub fn startup(mut commands: Commands, mut next_state: ResMut<NextState<GameState>>) {
     match config::GAME_MODE {
@@ -23,7 +26,10 @@ pub fn startup(mut commands: Commands, mut next_state: ResMut<NextState<GameStat
 fn connect_to_matchbox(commands: &mut Commands) {
     let room_url = config::MATCHBOX_ROOM_URL;
     info!("Connecting to matchbox server {room_url}");
-    commands.insert_resource(MatchboxSocketResource(MatchboxSocket::new_ggrs(room_url)));
+    let socket: MatchboxSocket = WebRtcSocketBuilder::new(room_url)
+        .add_channel(ChannelConfig::unreliable())
+        .into();
+    commands.insert_resource(socket);
 }
 
 fn start_single_player_mode(commands: &mut Commands, next_state: &mut NextState<GameState>) {
