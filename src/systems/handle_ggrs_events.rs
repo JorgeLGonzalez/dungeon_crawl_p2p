@@ -55,33 +55,33 @@ pub fn handle_ggrs_events(
                 }
             }
         }
-        Session::SyncTest(s) => {
-            info!("handle_ggrs_events: frame {}", s.current_frame());
-            for event in s.events() {
-                match event {
-                    GgrsEvent::MismatchedChecksum {
-                        current_frame,
-                        mismatched_frame: frame,
-                        ..
-                    } => {
-                        let player_id = local_players.0[0];
-                        error!(
-                            "GGRSEvent::MismatchedChecksum: Detected checksum mismatch during rollback \
-                             on frame {current_frame}, oldest mismatched frame: {frame}. Player={player_id}"
-                        );
-                        log_component_snapshot(&monster_snapshots, frame);
-                        log_component_snapshot(&player_movement_snapshots, frame);
-                        log_component_snapshot(&player_snapshots, frame);
-                        log_res_snapshot(&rng_snapshots, frame);
-                        log_component_snapshot(&transform_snapshots, frame);
+        // TODO: this depends on my PR being merged https://github.com/gschup/ggrs/pull/98
+        // Session::SyncTest(s) => {
+        //     info!("handle_ggrs_events: frame {}", s.current_frame());
+        //     for event in s.events() {
+        //         match event {
+        //             GgrsEvent::MismatchedChecksum {
+        //                 current_frame,
+        //                 mismatched_frame: frame,
+        //                 ..
+        //             } => {
+        //                 let player_id = local_players.0[0];
+        //                 error!(
+        //                     "GGRSEvent::MismatchedChecksum: Detected checksum mismatch during rollback \
+        //                      on frame {current_frame}, oldest mismatched frame: {frame}. Player={player_id}"
+        //                 );
+        //                 log_component_snapshot(&monster_snapshots, frame);
+        //                 log_component_snapshot(&player_movement_snapshots, frame);
+        //                 log_component_snapshot(&player_snapshots, frame);
+        //                 log_res_snapshot(&rng_snapshots, frame);
+        //                 log_component_snapshot(&transform_snapshots, frame);
 
-                        assert_eq!(player_id, 0);
-                    }
-                    _ => info!("GGRS event: {event:?}"),
-                }
-            }
-        }
-
+        //                 assert_eq!(player_id, 0);
+        //             }
+        //             _ => info!("GGRS event: {event:?}"),
+        //         }
+        //     }
+        // }
         _ => (),
     }
 }
@@ -162,23 +162,24 @@ fn get_name<T>() -> String {
 
 fn handle_unavailable_snapshot<T: Debug, S, U>(
     name: &str,
-    container: &GgrsSnapshots<T, S>,
+    _container: &GgrsSnapshots<T, S>,
     frame: i32,
-    get_count: U,
+    _get_count: U,
 ) where
     T: Debug,
     U: Fn(&S) -> usize,
 {
     warn!("Desync frame {frame} unavailable in {name} snapshot history");
-    info!(
-        "{name} history contains only {} frames as follows:",
-        container.frames.len()
-    );
-    container.frames.iter().for_each(|s_frame| {
-        let snapshot_count = container
-            .peek(*s_frame)
-            .map(|snapshot| get_count(snapshot))
-            .unwrap_or_default();
-        info!("\tFrame {s_frame} with {snapshot_count} snapshots");
-    });
+    // TODO below require bevy_ggrs P2PSession::frames to be public
+    // info!(
+    //     "{name} history contains only {} frames as follows:",
+    //     container.frames.len()
+    // );
+    // container.frames.iter().for_each(|s_frame| {
+    //     let snapshot_count = container
+    //         .peek(*s_frame)
+    //         .map(|snapshot| get_count(snapshot))
+    //         .unwrap_or_default();
+    //     info!("\tFrame {s_frame} with {snapshot_count} snapshots");
+    // });
 }

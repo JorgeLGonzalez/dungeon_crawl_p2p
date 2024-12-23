@@ -1,7 +1,7 @@
 use bevy_matchbox::prelude::PeerId;
 
 // Game
-pub const GAME_MODE: GameMode = GameMode::MultiPlayer;
+pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
 #[derive(Eq, PartialEq)]
 pub enum GameMode {
     #[allow(dead_code)]
@@ -25,7 +25,7 @@ pub const VIEWPORT_HEIGHT: f32 = 20.;
 pub const MONSTER_Z_LAYER: f32 = 90.;
 /// Probability that a monster will attempt to move in a given frame.
 /// See monster_movement.
-pub const MONSTER_MOVE_CHANCE: f64 = 0.5;
+pub const MONSTER_MOVE_CHANCE: f64 = 0.01;
 
 // Player
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;

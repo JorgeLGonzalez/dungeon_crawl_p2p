@@ -830,6 +830,8 @@ dependencies = [
 [[package]]
 name = "bevy_ggrs"
 version = "0.17.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "03bffc1632fc3b2256f057804e97e027cc7ce7c28ecd90505c00cb36ae2caedd"
 dependencies = [
  "bevy",
  "disqualified",
@@ -1050,6 +1052,8 @@ dependencies = [
 [[package]]
 name = "bevy_matchbox"
 version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5249643ec4d454678835d626b75a063a3a69f853fc5cbcc2f48b9d6d80e133a7"
 dependencies = [
  "bevy",
  "cfg-if",
@@ -2722,6 +2726,8 @@ dependencies = [
 [[package]]
 name = "ggrs"
 version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6961c572ec0692fd73a31f335db5e8b92b165c4d43e180ae0aaa64411d9baeb9"
 dependencies = [
  "bincode",
  "bitfield-rle",
@@ -3516,7 +3522,9 @@ dependencies = [
 
 [[package]]
 name = "matchbox_protocol"
-version = "0.10.0"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f041eb5118e0b41b24d2d77c7054f78bd71cd5989c1acde26a147a1528719714"
 dependencies = [
  "cfg-if",
  "derive_more",
@@ -3526,7 +3534,9 @@ dependencies = [
 
 [[package]]
 name = "matchbox_socket"
-version = "0.10.0"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dbe6e951ae32d3c7f6d137babb3f7ff00a1756943b1fc566575aac55a63c7cbd"
 dependencies = [
  "async-compat",
  "async-trait",
