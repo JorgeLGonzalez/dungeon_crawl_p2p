@@ -1,5 +1,5 @@
 use crate::{
-    components::{Monster, WallTile},
+    components::{Monster, Player, WallTile},
     resources::{config, DungeonPosition, RandomGenerator},
 };
 use bevy::{
@@ -50,11 +50,15 @@ fn create_current_monster_positions_set(monsters: &MonsterQuery) -> HashSet<Dung
 }
 
 fn determine_movement(rng: &mut RandomGenerator) -> Option<Vec2> {
-    match rng.gen_range(0..config::MONSTER_FRAMES_PER_MOVE) {
+    if !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
+        return None;
+    }
+
+    match rng.gen_range(0..4) {
         0 => Some(Vec2::Y),
         1 => Some(Vec2::NEG_Y),
         2 => Some(Vec2::NEG_X),
         3 => Some(Vec2::X),
-        _ => None,
+        _ => unreachable!(),
     }
 }

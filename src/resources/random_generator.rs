@@ -36,6 +36,10 @@ impl RandomGenerator {
         }
     }
 
+    pub fn gen_bool(&mut self, p: f64) -> bool {
+        self.rng.gen_bool(p)
+    }
+
     pub fn gen_range<T>(&mut self, range: Range<T>) -> T
     where
         T: PartialOrd + SampleUniform,
