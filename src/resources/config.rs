@@ -23,8 +23,9 @@ pub const VIEWPORT_HEIGHT: f32 = 20.;
 
 // Monsters
 pub const MONSTER_Z_LAYER: f32 = 90.;
-/// Number of frames between each random move attempt. See monster_movement.
-pub const MONSTER_FRAMES_PER_MOVE: usize = 50;
+/// Probability that a monster will attempt to move in a given frame.
+/// See monster_movement.
+pub const MONSTER_MOVE_CHANCE: f64 = 0.5;
 
 // Player
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
@@ -39,7 +40,7 @@ pub const ROOM_MAX_WIDTH: usize = 10;
 pub const ROOM_MAX_HEIGHT: usize = 10;
 
 // Matchbox and GGRS
-pub const GGRS_INPUT_DELAY: usize = 0;
+pub const GGRS_INPUT_DELAY: usize = 2;
 pub const MATCHBOX_ROOM_URL: &str = "ws://127.0.0.1:3536/dungeon_crawl?next=2";
 pub const NUM_PLAYERS: usize = 2;
 

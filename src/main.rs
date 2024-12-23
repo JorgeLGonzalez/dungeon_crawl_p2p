@@ -26,7 +26,7 @@ fn main() {
                 ..default()
             })
             .set(LogPlugin {
-                // level: bevy::log::Level::TRACE,
+                // filter: "bevy_ggrs=info,ggrs=trace,ggrs::network=info".to_string(),
                 ..default()
             }),
         GgrsPlugin::<config::GgrsSessionConfig>::default(),

@@ -15,7 +15,7 @@ pub struct Player {
     pub id: usize,
 }
 
-#[derive(Clone, Component)]
+#[derive(Clone, Component, Debug)]
 pub struct PlayerMovement {
     pub direction: Option<Vec2>,
     pub throttle: Timer,

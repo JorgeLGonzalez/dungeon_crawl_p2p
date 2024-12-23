@@ -1,5 +1,5 @@
 use crate::{
-    components::{Monster, Player},
+    components::{Monster, Player, PlayerMovement},
     resources::{config::GgrsSessionConfig, RandomGenerator},
 };
 use bevy::{
@@ -7,13 +7,17 @@ use bevy::{
     prelude::{Res, ResMut, Transform},
 };
 use bevy_ggrs::{
-    ggrs::GgrsEvent, GgrsComponentSnapshots, GgrsResourceSnapshots, GgrsSnapshots, Session,
+    ggrs::GgrsEvent, GgrsComponentSnapshots, GgrsResourceSnapshots, GgrsSnapshots, LocalPlayers,
+    Session,
 };
 use std::fmt::Debug;
+use std::{fs::OpenOptions, io::Write};
 
 pub fn handle_ggrs_events(
     mut session: ResMut<Session<GgrsSessionConfig>>,
+    local_players: Res<LocalPlayers>,
     monster_snapshots: Res<GgrsComponentSnapshots<Monster>>,
+    player_movement_snapshots: Res<GgrsComponentSnapshots<PlayerMovement>>,
     player_snapshots: Res<GgrsComponentSnapshots<Player>>,
     rng_snapshots: Res<GgrsResourceSnapshots<RandomGenerator>>,
     transform_snapshots: Res<GgrsComponentSnapshots<Transform>>,
@@ -31,18 +35,48 @@ pub fn handle_ggrs_events(
                         remote_checksum,
                         ..
                     } => {
+                        let player_id = local_players.0[0];
                         error!(
-                            "GGRS event: Desync on frame {frame}. \
+                            "GGRS event: Desync on frame {frame} player {player_id}. \
                          Local checksum: {local_checksum:X}, remote checksum: {remote_checksum:X}"
                         );
                         log_component_snapshot(&monster_snapshots, frame);
+                        log_component_snapshot(&player_movement_snapshots, frame);
+                        let player_entity_info = log_component_snapshot(&player_snapshots, frame);
+                        log_res_snapshot(&rng_snapshots, frame);
+                        log_component_snapshot(&transform_snapshots, frame);
+
+                        log_to_file(&transform_snapshots, frame, player_id, &player_entity_info);
+
+                        // panic!("Desync!");
+                    }
+
+                    _ => info!("GGRS event: {event:?}"),
+                }
+            }
+        }
+        Session::SyncTest(s) => {
+            info!("handle_ggrs_events: frame {}", s.current_frame());
+            for event in s.events() {
+                match event {
+                    GgrsEvent::MismatchedChecksum {
+                        current_frame,
+                        mismatched_frame: frame,
+                        ..
+                    } => {
+                        let player_id = local_players.0[0];
+                        error!(
+                            "GGRSEvent::MismatchedChecksum: Detected checksum mismatch during rollback \
+                             on frame {current_frame}, oldest mismatched frame: {frame}. Player={player_id}"
+                        );
+                        log_component_snapshot(&monster_snapshots, frame);
+                        log_component_snapshot(&player_movement_snapshots, frame);
                         log_component_snapshot(&player_snapshots, frame);
                         log_res_snapshot(&rng_snapshots, frame);
                         log_component_snapshot(&transform_snapshots, frame);
 
-                        panic!("Desync!");
+                        assert_eq!(player_id, 0);
                     }
-
                     _ => info!("GGRS event: {event:?}"),
                 }
             }
@@ -52,19 +86,61 @@ pub fn handle_ggrs_events(
     }
 }
 
-fn log_component_snapshot<T: Debug>(container: &GgrsComponentSnapshots<T>, frame: i32) {
+fn log_to_file(
+    container: &GgrsComponentSnapshots<Transform>,
+    frame: i32,
+    player_id: usize,
+    player_entity_info: &str,
+) {
+    let Some(snapshots) = container.peek(frame) else {
+        return;
+    };
+
+    let mut rows = snapshots
+        .iter()
+        .map(|(r, t)| format!("{r:?},{},{}", t.translation.x, t.translation.y))
+        .collect::<Vec<_>>();
+    rows.sort();
+
+    let mut file = OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(format!("{player_id}_transforms.csv"))
+        .expect("Unable to create file");
+
+    writeln!(
+        file,
+        "Frame,{frame},player,{player_id},player_entity,{player_entity_info}"
+    )
+    .expect("error writing row");
+
+    rows.iter().for_each(|r| {
+        // info!("{r}");
+        writeln!(file, "{r}").expect("error writing row");
+    });
+}
+
+fn log_component_snapshot<T: Debug>(container: &GgrsComponentSnapshots<T>, frame: i32) -> String {
     let name = get_name::<T>();
     let Some(snapshots) = container.peek(frame) else {
-        return handle_unavailable_snapshot(&name, container, frame, |s| s.iter().count());
+        handle_unavailable_snapshot(&name, container, frame, |s| s.iter().count());
+        return String::new();
     };
 
     info!(
         "Frame {frame} {name} snapshots {}",
         snapshots.iter().count()
     );
-    snapshots.iter().for_each(|(_rollback, component)| {
-        info!("{name} snapshot: {component:?}");
-    });
+    snapshots
+        .iter()
+        .fold(String::new(), |acc, (rollback, component)| {
+            info!("{name} snapshot: {component:?} [{rollback:?}]");
+            match acc {
+                acc if !acc.is_empty() => acc,
+                // return the entity id within the string of format "Rollback(5238v1#4294972534)"
+                _ => format!("{rollback:?}")[9..26].to_string(),
+            }
+        })
 }
 
 fn log_res_snapshot<T: std::fmt::Debug>(container: &GgrsResourceSnapshots<T>, frame: i32) {
