@@ -33,11 +33,11 @@ impl PlayerInputCode {
             (ArrowDown, PlayerInputCode::Down),
             (ArrowLeft, PlayerInputCode::Left),
             (ArrowRight, PlayerInputCode::Right),
-            (KeyP, PlayerInputCode::Snapshot),
         ]
         .iter()
         .find(|(key, _)| keys.pressed(*key))
         .map(|(_, dir)| *dir)
+        .or_else(|| keys.just_released(KeyP).then(|| PlayerInputCode::Snapshot))
     }
 
     pub fn to_bits(&self) -> u8 {
