@@ -1,4 +1,7 @@
-use super::DungeonPosition;
+use super::{
+    config::{MONSTER_TRACKER_AUTO_SAVE_ENABLED, MONSTER_TRACKER_AUTO_SAVE_THRESHOLD},
+    DungeonPosition,
+};
 use crate::resources::config::NUM_MONSTERS;
 use bevy::{
     log::trace,
@@ -6,6 +9,8 @@ use bevy::{
 };
 use bevy_ggrs::ggrs::Frame;
 use std::collections::VecDeque;
+
+const MAX_SIZE: usize = NUM_MONSTERS * 100;
 
 /// Used for diagnostics to track monster moves
 #[derive(Resource)]
@@ -16,12 +21,12 @@ pub struct MonsterMoveTracker {
 impl MonsterMoveTracker {
     pub fn new() -> Self {
         Self {
-            moves: VecDeque::with_capacity(NUM_MONSTERS * 100),
+            moves: VecDeque::with_capacity(MAX_SIZE),
         }
     }
 
     pub fn push(&mut self, the_move: MonsterMove) {
-        if self.moves.len() >= NUM_MONSTERS * 100 {
+        if self.moves.len() >= MAX_SIZE {
             self.moves.pop_front();
         }
 
@@ -34,6 +39,10 @@ impl MonsterMoveTracker {
             the_move.rng_counter
         );
         self.moves.push_back(the_move);
+    }
+
+    pub fn threshold(&self) -> bool {
+        MONSTER_TRACKER_AUTO_SAVE_ENABLED && self.moves.len() >= MONSTER_TRACKER_AUTO_SAVE_THRESHOLD
     }
 }
 

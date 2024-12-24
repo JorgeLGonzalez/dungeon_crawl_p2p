@@ -79,7 +79,7 @@ fn main() {
                 (move_players, move_camera, move_monsters)
                     .chain()
                     .run_if(in_state(GameState::InGame)),
-                persist_snapshot,
+                persist_monster_moves,
             )
                 .chain(),
         );

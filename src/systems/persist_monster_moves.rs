@@ -11,7 +11,12 @@ use bevy::{
 use bevy_ggrs::{LocalPlayers, PlayerInputs, RollbackFrameCount};
 use std::{fs::OpenOptions, io::Write, path::Path};
 
-pub fn persist_snapshot(
+/// Save monster moves to a file. (Won't work on WASM).
+/// Three reasons why a save can take place:
+/// 1. Requested by a player pressing and releasing P
+/// 2. A desync event was written by [`super::handle_ggrs_events`]
+/// 3. Autosave is enabled and reached its threshold
+pub fn persist_monster_moves(
     mut event_reader: EventReader<DesyncEvent>,
     mut monster_tracker: ResMut<MonsterMoveTracker>,
     frame: Res<RollbackFrameCount>,
@@ -70,7 +75,7 @@ fn snapshot_reason(
     monster_tracker: &mut MonsterMoveTracker,
     players: &Query<&Player>,
 ) -> Option<SnapshotReason> {
-    if monster_tracker.moves.len() >= 100 {
+    if monster_tracker.threshold() {
         Some(SnapshotReason::CountThreshold)
     } else if let Some(event) = event_reader.read().next() {
         info!(

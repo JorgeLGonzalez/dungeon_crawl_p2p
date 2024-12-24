@@ -8,8 +8,8 @@ use bevy::{
     prelude::{EventWriter, NextState, Res, ResMut, Transform},
 };
 use bevy_ggrs::{
-    ggrs::{GgrsEvent, P2PSession},
-    GgrsComponentSnapshots, GgrsResourceSnapshots, GgrsSnapshots, LocalPlayers, Session,
+    ggrs::GgrsEvent, GgrsComponentSnapshots, GgrsResourceSnapshots, GgrsSnapshots, LocalPlayers,
+    Session,
 };
 use std::fmt::Debug;
 use std::{fs::OpenOptions, io::Write};
@@ -43,6 +43,8 @@ pub fn handle_ggrs_events(
                             "GGRS event: Desync on frame {frame} player {player_id}. \
                          Local checksum: {local_checksum:X}, remote checksum: {remote_checksum:X}"
                         );
+                        // Note the below is not useful unless bevy_ggrs keeps enough snapshots around
+                        // See [issue](https://github.com/gschup/bevy_ggrs/issues/117)
                         log_component_snapshot(&monster_snapshots, frame);
                         log_component_snapshot(&player_movement_snapshots, frame);
                         let player_entity_info = log_component_snapshot(&player_snapshots, frame);
@@ -120,7 +122,6 @@ fn log_to_file(
     .expect("error writing row");
 
     rows.iter().for_each(|r| {
-        // info!("{r}");
         writeln!(file, "{r}").expect("error writing row");
     });
 }
