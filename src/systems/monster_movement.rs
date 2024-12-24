@@ -1,25 +1,29 @@
 use crate::{
-    components::{Monster, Player, WallTile},
-    resources::{config, DungeonPosition, RandomGenerator},
+    components::{Monster, WallTile},
+    resources::{config, DungeonPosition, MonsterMove, MonsterMoveTracker, RandomGenerator},
 };
 use bevy::{
     math::Vec2,
-    prelude::{Query, ResMut, Transform, With, Without},
+    prelude::{Entity, Query, Res, ResMut, Transform, With, Without},
     utils::hashbrown::HashSet,
 };
+use bevy_ggrs::RollbackFrameCount;
 
-type MonsterQuery<'w, 's, 't> = Query<'w, 's, &'t mut Transform, With<Monster>>;
+type MonsterQuery<'w, 's, 't> = Query<'w, 's, (&'t mut Transform, Entity), With<Monster>>;
 type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Monster>)>;
 
 pub fn move_monsters(
     mut monsters: MonsterQuery,
+    mut monster_tracker: ResMut<MonsterMoveTracker>,
     mut rng: ResMut<RandomGenerator>,
+    frame_count: Res<RollbackFrameCount>,
     wall_tiles: WallQuery,
 ) {
     let walls = create_wall_set(&wall_tiles);
     let mut planned = create_current_monster_positions_set(&monsters);
+    let frame = frame_count.0;
 
-    for (mut monster, movement) in monsters
+    for ((mut monster, monster_entity), movement) in monsters
         .iter_mut()
         .filter_map(|m| determine_movement(&mut rng).map(|movement| (m, movement)))
     {
@@ -29,6 +33,13 @@ pub fn move_monsters(
             planned.remove(&DungeonPosition::from_vec3(monster.translation));
             planned.insert(pos);
             monster.translation = pos.to_vec3(config::MONSTER_Z_LAYER);
+            monster_tracker.push(MonsterMove {
+                frame,
+                monster: monster_entity,
+                movement: DungeonPosition::from_vec2(movement),
+                pos,
+                rng_counter: 0, // TODO
+            });
         }
     }
 }
@@ -45,7 +56,7 @@ fn create_current_monster_positions_set(monsters: &MonsterQuery) -> HashSet<Dung
     HashSet::<DungeonPosition>::from_iter(
         monsters
             .iter()
-            .map(|m| DungeonPosition::from_vec3(m.translation)),
+            .map(|(m, _)| DungeonPosition::from_vec3(m.translation)),
     )
 }
 

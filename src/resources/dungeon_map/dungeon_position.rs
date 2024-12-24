@@ -50,3 +50,9 @@ impl From<DungeonPosition> for Vec3 {
         pos.to_vec3(config::MAP_Z_LAYER)
     }
 }
+
+impl std::fmt::Display for DungeonPosition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "[{},{}]", self.x, self.y)
+    }
+}

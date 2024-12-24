@@ -43,6 +43,7 @@ fn build_session(
 ) -> Session<GgrsSessionConfig> {
     let mut session_builder = ggrs::SessionBuilder::<config::GgrsSessionConfig>::new()
         .with_num_players(config::NUM_PLAYERS)
+        // .with_max_prediction_window(0) // lockstep mode
         .with_desync_detection_mode(DesyncDetection::On { interval: 1 })
         .with_input_delay(config::GGRS_INPUT_DELAY);
     for (i, player) in players.into_iter().enumerate() {

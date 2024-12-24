@@ -7,7 +7,7 @@ use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
 use components::{Monster, Player, PlayerMovement};
 use resources::{
     config::{self, GameMode, GAME_MODE},
-    RandomGenerator,
+    MonsterMoveTracker, RandomGenerator,
 };
 use std::hash::{Hash, Hasher};
 use systems::*;
@@ -32,6 +32,8 @@ fn main() {
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
     ))
     .init_state::<GameState>();
+
+    app.init_resource::<MonsterMoveTracker>();
 
     // Register components and resources for GGRS snapshots and rollback
     app
@@ -69,7 +71,7 @@ fn main() {
         .add_systems(ReadInputs, read_local_inputs)
         .add_systems(
             GgrsSchedule,
-            (move_players, move_camera, move_monsters)
+            (move_players, move_camera, move_monsters, persist_snapshot)
                 .chain()
                 .run_if(in_state(GameState::InGame)),
         );
