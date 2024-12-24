@@ -23,9 +23,11 @@ pub fn move_monsters(
     let mut planned = create_current_monster_positions_set(&monsters);
     let frame = frame_count.0;
 
-    for ((mut monster, monster_entity), movement) in monsters
-        .iter_mut()
-        .filter_map(|m| determine_movement(&mut rng).map(|movement| (m, movement)))
+    for (mut monster, monster_entity, movement, rng_counter) in
+        monsters.iter_mut().filter_map(|(monster, monster_entity)| {
+            determine_movement(&mut rng)
+                .map(|(movement, rng_counter)| (monster, monster_entity, movement, rng_counter))
+        })
     {
         let pos = DungeonPosition::from_vec2(monster.translation.truncate() + movement);
 
@@ -38,7 +40,7 @@ pub fn move_monsters(
                 monster: monster_entity,
                 movement: DungeonPosition::from_vec2(movement),
                 pos,
-                rng_counter: 0, // TODO
+                rng_counter,
             });
         }
     }
@@ -60,16 +62,18 @@ fn create_current_monster_positions_set(monsters: &MonsterQuery) -> HashSet<Dung
     )
 }
 
-fn determine_movement(rng: &mut RandomGenerator) -> Option<Vec2> {
+fn determine_movement(rng: &mut RandomGenerator) -> Option<(Vec2, u128)> {
     if !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
         return None;
     }
 
-    match rng.gen_range(0..4) {
-        0 => Some(Vec2::Y),
-        1 => Some(Vec2::NEG_Y),
-        2 => Some(Vec2::NEG_X),
-        3 => Some(Vec2::X),
+    let movement = match rng.gen_range(0..4) {
+        0 => Vec2::Y,
+        1 => Vec2::NEG_Y,
+        2 => Vec2::NEG_X,
+        3 => Vec2::X,
         _ => unreachable!(),
-    }
+    };
+
+    Some((movement, rng.counter))
 }
