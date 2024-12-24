@@ -137,9 +137,8 @@ fn maybe_move_player(
     movement: &mut PlayerMovement,
     transform: &mut Transform,
 ) {
-    let action = update_movement(input, &time, movement).and_then(|direction| {
-        determine_action(&direction, monsters, player_id, &transform, &walls)
-    });
+    let action = update_movement(input, time, movement)
+        .and_then(|direction| determine_action(&direction, monsters, player_id, transform, walls));
 
     if let Some(action) = action {
         match action {

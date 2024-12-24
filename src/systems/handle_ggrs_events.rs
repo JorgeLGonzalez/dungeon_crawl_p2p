@@ -166,7 +166,7 @@ fn get_name<T>() -> String {
         .to_string()
 }
 
-fn handle_unavailable_snapshot<T: Debug, S, U>(
+fn handle_unavailable_snapshot<T, S, U>(
     name: &str,
     _container: &GgrsSnapshots<T, S>,
     frame: i32,

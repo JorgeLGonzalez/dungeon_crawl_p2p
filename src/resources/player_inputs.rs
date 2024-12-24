@@ -1,8 +1,4 @@
-use bevy::{
-    input::ButtonInput,
-    math::{Vec2, VectorSpace},
-    prelude::KeyCode,
-};
+use bevy::{input::ButtonInput, math::Vec2, prelude::KeyCode};
 
 #[derive(Clone, Copy)]
 pub enum PlayerInputCode {
@@ -37,7 +33,10 @@ impl PlayerInputCode {
         .iter()
         .find(|(key, _)| keys.pressed(*key))
         .map(|(_, dir)| *dir)
-        .or_else(|| keys.just_released(KeyP).then(|| PlayerInputCode::Snapshot))
+        .or_else(|| {
+            keys.just_released(KeyP)
+                .then_some(PlayerInputCode::Snapshot)
+        })
     }
 
     pub fn to_bits(&self) -> u8 {
