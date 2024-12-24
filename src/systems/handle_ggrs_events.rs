@@ -1,19 +1,22 @@
 use crate::{
     components::{Monster, Player, PlayerMovement},
-    resources::{config::GgrsSessionConfig, RandomGenerator},
+    resources::{config::GgrsSessionConfig, DesyncEvent, RandomGenerator},
+    GameState,
 };
 use bevy::{
     log::{error, info, warn},
-    prelude::{Res, ResMut, Transform},
+    prelude::{EventWriter, NextState, Res, ResMut, Transform},
 };
 use bevy_ggrs::{
-    ggrs::GgrsEvent, GgrsComponentSnapshots, GgrsResourceSnapshots, GgrsSnapshots, LocalPlayers,
-    Session,
+    ggrs::{GgrsEvent, P2PSession},
+    GgrsComponentSnapshots, GgrsResourceSnapshots, GgrsSnapshots, LocalPlayers, Session,
 };
 use std::fmt::Debug;
 use std::{fs::OpenOptions, io::Write};
 
 pub fn handle_ggrs_events(
+    mut event_writer: EventWriter<DesyncEvent>,
+    mut next_state: ResMut<NextState<GameState>>,
     mut session: ResMut<Session<GgrsSessionConfig>>,
     local_players: Res<LocalPlayers>,
     monster_snapshots: Res<GgrsComponentSnapshots<Monster>>,
@@ -48,7 +51,9 @@ pub fn handle_ggrs_events(
 
                         log_to_file(&transform_snapshots, frame, player_id, &player_entity_info);
 
-                        // panic!("Desync!");
+                        info!("Pausing game. Press P to take a snapshot of monster moves.");
+                        event_writer.send(DesyncEvent { frame });
+                        next_state.set(GameState::Paused);
                     }
 
                     _ => info!("GGRS event: {event:?}"),

@@ -144,7 +144,7 @@ fn maybe_move_player(
     if let Some(action) = action {
         match action {
             PlayerAction::Attack(monster) => {
-                info!("Kill monster");
+                info!("Player {player_id} killed monster {monster:?}");
                 commands.entity(monster).despawn_recursive();
             }
             PlayerAction::Move(pos) => {

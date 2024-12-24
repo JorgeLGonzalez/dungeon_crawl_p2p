@@ -1,33 +1,34 @@
 use crate::{
     components::Player,
-    resources::{config::GgrsSessionConfig, MonsterMove, MonsterMoveTracker, PlayerInputCode},
+    resources::{
+        config::GgrsSessionConfig, DesyncEvent, MonsterMove, MonsterMoveTracker, PlayerInputCode,
+    },
 };
 use bevy::{
-    core::FrameCount,
     log::{error, info},
-    prelude::{Query, Res},
+    prelude::{EventReader, Query, Res, ResMut},
 };
-use bevy_ggrs::{ConfirmedFrameCount, LocalPlayers, PlayerInputs, RollbackFrameCount, Session};
-use std::{cmp::Ordering, fs::OpenOptions, io::Write, path::Path};
+use bevy_ggrs::{LocalPlayers, PlayerInputs, RollbackFrameCount};
+use std::{fs::OpenOptions, io::Write, path::Path};
 
 pub fn persist_snapshot(
+    mut event_reader: EventReader<DesyncEvent>,
+    mut monster_tracker: ResMut<MonsterMoveTracker>,
+    frame: Res<RollbackFrameCount>,
     inputs: Res<PlayerInputs<GgrsSessionConfig>>,
     local_player: Res<LocalPlayers>,
-    monster_tracker: Res<MonsterMoveTracker>,
     players: Query<&Player>,
-    // session: Res<Session<GgrsSessionConfig>>,
 ) {
-    let snapshot_requested = players
-        .iter()
-        .filter_map(|player| PlayerInputCode::from_bits(inputs[player.id].0))
-        .any(|input_code| matches!(input_code, PlayerInputCode::Snapshot));
-
-    if !snapshot_requested {
+    let Some(reason) = snapshot_reason(&mut event_reader, &inputs, &mut monster_tracker, &players)
+    else {
         return;
-    }
+    };
 
     let player_id = local_player.0[0];
-    info!("Taking snapshot for player {player_id}.");
+    info!(
+        "Taking snapshot for player {player_id} on frame {} because {reason:?}.",
+        frame.0
+    );
 
     let mut moves: Vec<&MonsterMove> = monster_tracker.moves.iter().collect::<Vec<_>>();
     moves.sort_by(|a, b| {
@@ -55,6 +56,42 @@ pub fn persist_snapshot(
     }
 
     info!("Saved {} monster moves to {}", moves.len(), file_name);
+    monster_tracker.moves.clear();
 
-    // TODO throttle snapshots and only take for local player. Act on release, actually
+    if matches!(reason, SnapshotReason::DesyncEvent) {
+        file.flush().unwrap_or_else(|e| error!("{e}"));
+        panic!("Aborting");
+    }
+}
+
+fn snapshot_reason(
+    event_reader: &mut EventReader<DesyncEvent>,
+    inputs: &PlayerInputs<GgrsSessionConfig>,
+    monster_tracker: &mut MonsterMoveTracker,
+    players: &Query<&Player>,
+) -> Option<SnapshotReason> {
+    if monster_tracker.moves.len() >= 100 {
+        Some(SnapshotReason::CountThreshold)
+    } else if let Some(event) = event_reader.read().next() {
+        info!(
+            "Snapshot requested due to Desync event from frame {}",
+            event.frame
+        );
+        Some(SnapshotReason::DesyncEvent)
+    } else if players
+        .iter()
+        .filter_map(|player| PlayerInputCode::from_bits(inputs[player.id].0))
+        .any(|input_code| matches!(input_code, PlayerInputCode::Snapshot))
+    {
+        Some(SnapshotReason::Requested)
+    } else {
+        None
+    }
+}
+
+#[derive(Debug)]
+enum SnapshotReason {
+    CountThreshold,
+    DesyncEvent,
+    Requested,
 }

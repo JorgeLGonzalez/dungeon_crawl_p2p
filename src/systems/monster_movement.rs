@@ -23,11 +23,17 @@ pub fn move_monsters(
     let mut planned = create_current_monster_positions_set(&monsters);
     let frame = frame_count.0;
 
+    // Sort monsters to ensure all p2p clients process moves in the same way
+    let mut monsters: Vec<_> = monsters.iter_mut().collect();
+    monsters.sort_by_key(|(_, monster_entity)| monster_entity.index());
+
     for (mut monster, monster_entity, movement, rng_counter) in
-        monsters.iter_mut().filter_map(|(monster, monster_entity)| {
-            determine_movement(&mut rng)
-                .map(|(movement, rng_counter)| (monster, monster_entity, movement, rng_counter))
-        })
+        monsters
+            .into_iter()
+            .filter_map(|(monster, monster_entity)| {
+                determine_movement(&mut rng)
+                    .map(|(movement, rng_counter)| (monster, monster_entity, movement, rng_counter))
+            })
     {
         let pos = DungeonPosition::from_vec2(monster.translation.truncate() + movement);
 

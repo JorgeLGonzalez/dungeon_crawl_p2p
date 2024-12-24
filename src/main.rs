@@ -7,7 +7,7 @@ use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
 use components::{Monster, Player, PlayerMovement};
 use resources::{
     config::{self, GameMode, GAME_MODE},
-    MonsterMoveTracker, RandomGenerator,
+    DesyncEvent, MonsterMoveTracker, RandomGenerator,
 };
 use std::hash::{Hash, Hasher};
 use systems::*;
@@ -26,14 +26,15 @@ fn main() {
                 ..default()
             })
             .set(LogPlugin {
-                // filter: "bevy_ggrs=info,ggrs=trace,ggrs::network=info".to_string(),
+                // filter: "bevy_ggrs=trace,ggrs=trace,ggrs::network=info".to_string(),
                 ..default()
             }),
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
     ))
     .init_state::<GameState>();
 
-    app.init_resource::<MonsterMoveTracker>();
+    app.init_resource::<MonsterMoveTracker>()
+        .add_event::<DesyncEvent>();
 
     // Register components and resources for GGRS snapshots and rollback
     app
@@ -46,6 +47,7 @@ fn main() {
         .rollback_component_with_copy::<Monster>()
         .rollback_component_with_copy::<Player>()
         .rollback_resource_with_clone::<RandomGenerator>()
+        .checksum_resource::<RandomGenerator>(checksum_rng)
         .checksum_component::<Transform>(checksum_transform);
 
     app.add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
@@ -60,7 +62,9 @@ fn main() {
                     in_state(GameState::Startup).and(|| GAME_MODE == GameMode::MultiPlayer),
                 ),
                 (
-                    handle_ggrs_events.run_if(|| GAME_MODE != GameMode::SinglePlayer),
+                    handle_ggrs_events.run_if(
+                        in_state(GameState::InGame).and(|| GAME_MODE != GameMode::SinglePlayer),
+                    ),
                     (move_single_player, move_camera, move_monsters)
                         .chain()
                         .run_if(|| GAME_MODE == GameMode::SinglePlayer),
@@ -71,9 +75,13 @@ fn main() {
         .add_systems(ReadInputs, read_local_inputs)
         .add_systems(
             GgrsSchedule,
-            (move_players, move_camera, move_monsters, persist_snapshot)
-                .chain()
-                .run_if(in_state(GameState::InGame)),
+            (
+                (move_players, move_camera, move_monsters)
+                    .chain()
+                    .run_if(in_state(GameState::InGame)),
+                persist_snapshot,
+            )
+                .chain(),
         );
 
     app.run();
@@ -99,9 +107,17 @@ fn checksum_transform(transform: &Transform) -> u64 {
     hasher.finish()
 }
 
+fn checksum_rng(rng: &RandomGenerator) -> u64 {
+    let mut hasher = checksum_hasher();
+    rng.hash(&mut hasher);
+
+    hasher.finish()
+}
+
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]
 enum GameState {
     InGame,
+    Paused,
     #[default]
     Startup,
 }

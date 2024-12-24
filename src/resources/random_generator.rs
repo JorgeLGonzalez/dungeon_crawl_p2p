@@ -2,6 +2,7 @@ use bevy::{log::error, prelude::Resource};
 use bevy_matchbox::{prelude::PeerId, MatchboxSocket};
 use rand::{distributions::uniform::SampleUniform, prelude::*, Error};
 use rand_xoshiro::Xoshiro256PlusPlus;
+use std::hash::{Hash, Hasher};
 use std::ops::Range;
 
 /// We seed the random number generator so that in a multi-player game the random
@@ -79,5 +80,12 @@ impl RngCore for RandomGenerator {
 
     fn try_fill_bytes(&mut self, dest: &mut [u8]) -> Result<(), Error> {
         self.rng.try_fill_bytes(dest)
+    }
+}
+
+impl Hash for RandomGenerator {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        format!("{:?}", self.rng).hash(state);
+        self.counter.hash(state);
     }
 }
