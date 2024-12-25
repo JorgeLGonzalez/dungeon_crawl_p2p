@@ -1,10 +1,11 @@
 use crate::{
     components::{Monster, Player, PlayerMovement},
-    resources::{config::GgrsSessionConfig, RandomGenerator},
+    resources::{config::GgrsSessionConfig, DesyncEvent, RandomGenerator},
+    GameState,
 };
 use bevy::{
     log::{error, info, warn},
-    prelude::{Res, ResMut, Transform},
+    prelude::{EventWriter, NextState, Res, ResMut, Transform},
 };
 use bevy_ggrs::{
     ggrs::GgrsEvent, GgrsComponentSnapshots, GgrsResourceSnapshots, GgrsSnapshots, LocalPlayers,
@@ -14,6 +15,8 @@ use std::fmt::Debug;
 use std::{fs::OpenOptions, io::Write};
 
 pub fn handle_ggrs_events(
+    mut event_writer: EventWriter<DesyncEvent>,
+    mut next_state: ResMut<NextState<GameState>>,
     mut session: ResMut<Session<GgrsSessionConfig>>,
     local_players: Res<LocalPlayers>,
     monster_snapshots: Res<GgrsComponentSnapshots<Monster>>,
@@ -40,6 +43,8 @@ pub fn handle_ggrs_events(
                             "GGRS event: Desync on frame {frame} player {player_id}. \
                          Local checksum: {local_checksum:X}, remote checksum: {remote_checksum:X}"
                         );
+                        // Note the below is not useful unless bevy_ggrs keeps enough snapshots around
+                        // See [issue](https://github.com/gschup/bevy_ggrs/issues/117)
                         log_component_snapshot(&monster_snapshots, frame);
                         log_component_snapshot(&player_movement_snapshots, frame);
                         let player_entity_info = log_component_snapshot(&player_snapshots, frame);
@@ -48,7 +53,9 @@ pub fn handle_ggrs_events(
 
                         log_to_file(&transform_snapshots, frame, player_id, &player_entity_info);
 
-                        // panic!("Desync!");
+                        info!("Pausing game. Press P to take a snapshot of monster moves.");
+                        event_writer.send(DesyncEvent { frame });
+                        next_state.set(GameState::Paused);
                     }
 
                     _ => info!("GGRS event: {event:?}"),
@@ -115,7 +122,6 @@ fn log_to_file(
     .expect("error writing row");
 
     rows.iter().for_each(|r| {
-        // info!("{r}");
         writeln!(file, "{r}").expect("error writing row");
     });
 }
@@ -160,7 +166,7 @@ fn get_name<T>() -> String {
         .to_string()
 }
 
-fn handle_unavailable_snapshot<T: Debug, S, U>(
+fn handle_unavailable_snapshot<T, S, U>(
     name: &str,
     _container: &GgrsSnapshots<T, S>,
     frame: i32,

@@ -2,7 +2,7 @@ use crate::{
     components::{Monster, Player, PlayerMovement, WallTile},
     resources::{
         config::{self, GgrsSessionConfig},
-        InputDirection,
+        PlayerInputCode,
     },
 };
 use bevy::{
@@ -39,7 +39,7 @@ pub fn move_players(
     for (mut transform, mut movement, player) in &mut players {
         maybe_move_player(
             &mut commands,
-            InputDirection::from_bits(inputs[player.id].0),
+            PlayerInputCode::from_bits(inputs[player.id].0),
             &monsters,
             player.id,
             &time,
@@ -64,7 +64,7 @@ pub fn move_single_player(
 
     maybe_move_player(
         &mut commands,
-        InputDirection::from_keys(&keys),
+        PlayerInputCode::from_keys(&keys),
         &monsters,
         player.id,
         &time,
@@ -129,7 +129,7 @@ fn intersects(player: &Vec2, wall: &Transform) -> bool {
 
 fn maybe_move_player(
     commands: &mut Commands,
-    input: Option<InputDirection>,
+    input: Option<PlayerInputCode>,
     monsters: &MonsterQuery,
     player_id: usize,
     time: &Time,
@@ -137,14 +137,13 @@ fn maybe_move_player(
     movement: &mut PlayerMovement,
     transform: &mut Transform,
 ) {
-    let action = update_movement(input, &time, movement).and_then(|direction| {
-        determine_action(&direction, monsters, player_id, &transform, &walls)
-    });
+    let action = update_movement(input, time, movement)
+        .and_then(|direction| determine_action(&direction, monsters, player_id, transform, walls));
 
     if let Some(action) = action {
         match action {
             PlayerAction::Attack(monster) => {
-                info!("Kill monster");
+                info!("Player {player_id} killed monster {monster:?}");
                 commands.entity(monster).despawn_recursive();
             }
             PlayerAction::Move(pos) => {
@@ -164,13 +163,13 @@ fn maybe_move_player(
 ///
 /// Return the movement direction only if a move is indicated.
 fn update_movement(
-    input: Option<InputDirection>,
+    input: Option<PlayerInputCode>,
     time: &Time,
     movement: &mut PlayerMovement,
 ) -> Option<Vec2> {
     movement.throttle.tick(time.delta());
 
-    if let Some(direction) = input.map(|i| i.to_vec2()) {
+    if let Some(direction) = input.map(|i| i.to_vec2()).filter(|&d| d != Vec2::ZERO) {
         let changed_dir = movement.direction != Some(direction);
         let throttled = !changed_dir && !movement.throttle.finished();
         if changed_dir || !throttled {
