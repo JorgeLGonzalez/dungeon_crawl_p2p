@@ -1,77 +1,40 @@
+use super::PlayerInputCode;
 use crate::{
     components::{Monster, Player, PlayerMovement, WallTile},
-    resources::{
-        config::{self, GgrsSessionConfig},
-        PlayerInputCode,
-    },
+    resources::config,
 };
-use bevy::{
-    input::ButtonInput,
-    log::info,
-    math::Vec2,
-    prelude::{
-        Commands, DespawnRecursiveExt, Entity, KeyCode, Query, Res, Transform, With, Without,
-    },
-    time::Time,
-};
-use bevy_ggrs::PlayerInputs;
+use bevy::{log::info, prelude::*};
 
-type MonsterQuery<'w, 's, 't> =
+pub type MonsterQuery<'w, 's, 't> =
     Query<'w, 's, (Entity, &'t Transform), (With<Monster>, Without<Player>)>;
-type PlayersQuery<'w, 's, 't, 'm, 'p> =
+pub type PlayersQuery<'w, 's, 't, 'm, 'p> =
     Query<'w, 's, (&'t mut Transform, &'m mut PlayerMovement, &'p Player), With<Player>>;
-type WallsQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Player>)>;
+pub type WallsQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Player>)>;
 
-pub fn move_players(
-    mut commands: Commands,
-    mut players: PlayersQuery,
-    monsters: MonsterQuery,
-    inputs: Res<PlayerInputs<GgrsSessionConfig>>,
-    time: Res<Time>,
-    walls: WallsQuery,
+pub fn maybe_move_player(
+    commands: &mut Commands,
+    input: Option<PlayerInputCode>,
+    monsters: &MonsterQuery,
+    player_id: usize,
+    time: &Time,
+    walls: &WallsQuery,
+    movement: &mut PlayerMovement,
+    transform: &mut Transform,
 ) {
-    assert_eq!(
-        players.iter().count(),
-        config::NUM_PLAYERS,
-        "Unexpected player count!"
-    );
+    let action = update_movement(input, time, movement)
+        .and_then(|direction| determine_action(&direction, monsters, player_id, transform, walls));
 
-    for (mut transform, mut movement, player) in &mut players {
-        maybe_move_player(
-            &mut commands,
-            PlayerInputCode::from_bits(inputs[player.id].0),
-            &monsters,
-            player.id,
-            &time,
-            &walls,
-            movement.as_mut(),
-            transform.as_mut(),
-        );
+    if let Some(action) = action {
+        match action {
+            PlayerAction::Attack(monster) => {
+                info!("Player {player_id} killed monster {monster:?}");
+                commands.entity(monster).despawn_recursive();
+            }
+            PlayerAction::Move(pos) => {
+                transform.translation = pos.extend(config::PLAYER_Z_LAYER);
+            }
+        };
     }
-}
-
-pub fn move_single_player(
-    mut commands: Commands,
-    mut players: PlayersQuery,
-    keys: Res<ButtonInput<KeyCode>>,
-    monsters: MonsterQuery,
-    time: Res<Time>,
-    walls: WallsQuery,
-) {
-    assert_eq!(players.iter().count(), 1, "Unexpected player count!");
-
-    let (mut transform, mut movement, player) = players.single_mut();
-
-    maybe_move_player(
-        &mut commands,
-        PlayerInputCode::from_keys(&keys),
-        &monsters,
-        player.id,
-        &time,
-        &walls,
-        movement.as_mut(),
-        transform.as_mut(),
-    );
 }
 
 enum PlayerAction {
@@ -125,32 +88,6 @@ fn intersects(player: &Vec2, wall: &Transform) -> bool {
         && player_max.x > wall_min.x
         && player_min.y < wall_max.y
         && player_max.y > wall_min.y
-}
-
-fn maybe_move_player(
-    commands: &mut Commands,
-    input: Option<PlayerInputCode>,
-    monsters: &MonsterQuery,
-    player_id: usize,
-    time: &Time,
-    walls: &WallsQuery,
-    movement: &mut PlayerMovement,
-    transform: &mut Transform,
-) {
-    let action = update_movement(input, time, movement)
-        .and_then(|direction| determine_action(&direction, monsters, player_id, transform, walls));
-
-    if let Some(action) = action {
-        match action {
-            PlayerAction::Attack(monster) => {
-                info!("Player {player_id} killed monster {monster:?}");
-                commands.entity(monster).despawn_recursive();
-            }
-            PlayerAction::Move(pos) => {
-                transform.translation = pos.extend(config::PLAYER_Z_LAYER);
-            }
-        };
-    }
 }
 
 /// A player has a PlayerMovement component that tracks the prior movement direction

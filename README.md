@@ -6,6 +6,17 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
+- [ ] simplify player inputs
+- [ ] simplify intersects on player moves. check against monster moves
+- [ ] monster attack player
+- [ ] monster follows player
+- [ ] monster FOV
+- [ ] player FOV
+- [ ] other dungeons
+- [ ] deploy such that it can be used across devices (ideally over internet)
+- [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
+- [ ] spawn_dungeon: should use insert_batch as that is more efficient
+- [ ] how to enable trace logging only for my app (or per module)
 - [x] tunnel between rooms
 - [x] zoom in/out in dungeon or scroll (or both)
 - [x] camera should have its own system
@@ -26,22 +37,16 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] player attack on monster
   - [x] adapt to multi player
   - [x] getting desyncs. Note there is a bug in desync detection, but I am pretty sure I have my own bugs because I see visually things going out of sync. It happens even if i do not despawn monsters. Even registering Time does not solve it. Hmm...
-  - [ ] simplify intersects on player moves. check against monster moves
-- [ ] monster attack player
-- [ ] monster follows player
-- [ ] monster FOV
-- [ ] player FOV
-- [ ] other dungeons
-- [ ] deploy such that it can be used across devices (ideally over internet)
-- [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
-- [ ] spawn_dungeon: should use insert_batch as that is more efficient
-- [ ] how to enable trace logging only for my app (or per module)
 
 ## Issues
 
 - [x] synctest mode does not work. It spawns the 2 players, but they are not seen in the GgrsSchedule systems (move_players and camera_follow). Solved by starting sync test when entering the MatchMaking state rather than in the Update. See commit 6dfacc59a686f72e3ac49ac957130c72407bb7f0.
 - [x] matchbox does not work with bevy 0.15, unless using fork from haihala. Hope to get revised bevy_ggrs and matchbox once [PRs](https://github.com/johanhelsing/matchbox/pull/466) merged
 - [ ] Browser tab title
+
+## Player actions
+
+See [Player Actions](./src/systems/player_actions/README.md).
 
 ## Rollbacks
 

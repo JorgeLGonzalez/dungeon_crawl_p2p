@@ -1,8 +1,7 @@
+use super::PlayerInputCode;
 use crate::{
     components::Player,
-    resources::{
-        config::GgrsSessionConfig, DesyncEvent, MonsterMove, MonsterMoveTracker, PlayerInputCode,
-    },
+    resources::{config::GgrsSessionConfig, DesyncEvent, MonsterMove, MonsterMoveTracker},
 };
 use bevy::{
     log::{error, info},
