@@ -1,4 +1,4 @@
-use super::PlayerInputCode;
+use super::PlayerAction;
 use crate::{
     components::Player,
     resources::{config::GgrsSessionConfig, DesyncEvent, MonsterMove, MonsterMoveTracker},
@@ -82,14 +82,12 @@ fn snapshot_reason(
             event.frame
         );
         Some(SnapshotReason::DesyncEvent)
-    } else if players
-        .iter()
-        .filter_map(|player| PlayerInputCode::from_bits(inputs[player.id].0))
-        .any(|input_code| matches!(input_code, PlayerInputCode::Snapshot))
-    {
-        Some(SnapshotReason::Requested)
     } else {
-        None
+        players
+            .iter()
+            .map(|player| PlayerAction::from(inputs[player.id].0))
+            .find(|&action| action == PlayerAction::Snapshot)
+            .map(|_| SnapshotReason::Requested)
     }
 }
 

@@ -1,4 +1,4 @@
-use super::PlayerInputCode;
+use super::PlayerAction;
 use crate::{
     components::{Monster, Player, PlayerMovement, WallTile},
     resources::config,
@@ -13,7 +13,7 @@ pub type WallsQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, 
 
 pub fn maybe_move_player(
     commands: &mut Commands,
-    input: Option<PlayerInputCode>,
+    action: PlayerAction,
     monsters: &MonsterQuery,
     player_id: usize,
     time: &Time,
@@ -21,23 +21,23 @@ pub fn maybe_move_player(
     movement: &mut PlayerMovement,
     transform: &mut Transform,
 ) {
-    let action = update_movement(input, time, movement)
+    let action = update_movement(action, time, movement)
         .and_then(|direction| determine_action(&direction, monsters, player_id, transform, walls));
 
     if let Some(action) = action {
         match action {
-            PlayerAction::Attack(monster) => {
+            PlayerActionDetail::Attack(monster) => {
                 info!("Player {player_id} killed monster {monster:?}");
                 commands.entity(monster).despawn_recursive();
             }
-            PlayerAction::Move(pos) => {
+            PlayerActionDetail::Move(pos) => {
                 transform.translation = pos.extend(config::PLAYER_Z_LAYER);
             }
         };
     }
 }
 
-enum PlayerAction {
+enum PlayerActionDetail {
     Attack(Entity),
     Move(Vec2),
 }
@@ -48,7 +48,7 @@ fn determine_action(
     player_id: usize,
     transform: &Transform,
     walls: &WallsQuery,
-) -> Option<PlayerAction> {
+) -> Option<PlayerActionDetail> {
     let pos = transform.translation.truncate() + direction;
     let hit_wall = walls.iter().any(|w| intersects(&pos, w));
     let attack = monsters
@@ -63,12 +63,12 @@ fn determine_action(
     } else if let Some(monster) = attack {
         info!("Player {player_id} attacks monster at {pos:?}");
 
-        Some(PlayerAction::Attack(monster))
+        Some(PlayerActionDetail::Attack(monster))
     } else {
         let old_pos = transform.translation.truncate();
         info!("Player {player_id} moves from {old_pos:?} to {pos:?}");
 
-        Some(PlayerAction::Move(pos))
+        Some(PlayerActionDetail::Move(pos))
     }
 }
 
@@ -100,13 +100,21 @@ fn intersects(player: &Vec2, wall: &Transform) -> bool {
 ///
 /// Return the movement direction only if a move is indicated.
 fn update_movement(
-    input: Option<PlayerInputCode>,
+    action: PlayerAction,
     time: &Time,
     movement: &mut PlayerMovement,
 ) -> Option<Vec2> {
     movement.throttle.tick(time.delta());
 
-    if let Some(direction) = input.map(|i| i.to_vec2()).filter(|&d| d != Vec2::ZERO) {
+    let direction_maybe = match action {
+        PlayerAction::Up => Some(Vec2::Y),
+        PlayerAction::Down => Some(Vec2::NEG_Y),
+        PlayerAction::Left => Some(Vec2::NEG_X),
+        PlayerAction::Right => Some(Vec2::X),
+        _ => None,
+    };
+
+    if let Some(direction) = direction_maybe {
         let changed_dir = movement.direction != Some(direction);
         let throttled = !changed_dir && !movement.throttle.finished();
         if changed_dir || !throttled {

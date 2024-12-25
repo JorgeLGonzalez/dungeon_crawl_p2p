@@ -1,4 +1,4 @@
-use super::player_inputs::PlayerInputCode;
+use super::player_action::PlayerAction;
 use crate::resources::config;
 use bevy::{
     input::ButtonInput,
@@ -20,14 +20,10 @@ pub fn read_player_inputs(
         .0
         .iter()
         .fold(HashMap::new(), |mut acc, &player_handle| {
-            let encoded_input = PlayerInputCode::from_keys(&keys)
-                .map(|d| d.to_bits())
-                .unwrap_or_default();
-            acc.insert(player_handle, encoded_input);
+            let action = PlayerAction::from(keys.as_ref());
+            acc.insert(player_handle, action.into());
 
-            if PlayerInputCode::from_bits(encoded_input)
-                .is_some_and(|i| matches!(i, PlayerInputCode::Snapshot))
-            {
+            if action == PlayerAction::Snapshot {
                 info!("Player {} requested snapshot", player_handle);
             }
 
