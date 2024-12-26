@@ -7,11 +7,16 @@ use bevy::{
 pub struct PlayerAttackEvent {
     pub monster: Entity,
     pub player_id: usize,
+    pub pos: Vec2,
 }
 
 impl PlayerAttackEvent {
-    pub fn new(player_id: usize, monster: Entity) -> Self {
-        Self { monster, player_id }
+    pub fn new(player_id: usize, pos: Vec2, monster: Entity) -> Self {
+        Self {
+            monster,
+            player_id,
+            pos,
+        }
     }
 }
 

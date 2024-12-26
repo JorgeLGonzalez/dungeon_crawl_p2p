@@ -1,13 +1,21 @@
 use crate::{
-    components::{Monster, Player, PlayerMovement, WallTile},
+    components::{FloorTile, Monster, Player, PlayerMovement, WallTile},
     events::{PlayerAttackEvent, PlayerMoveEvent, PlayerMoveIntentEvent},
-    resources::config,
+    resources::config::{self, PLAYER_Z_LAYER},
 };
 use bevy::{log::info, prelude::*};
 
-pub type MonsterQuery<'w, 's, 't> =
-    Query<'w, 's, (Entity, &'t Transform), (With<Monster>, Without<Player>)>;
-pub type WallsQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Player>)>;
+type ObstacleQuery<'w, 's, 't, 'm, 'wt> = Query<
+    'w,
+    's,
+    (
+        Entity,
+        &'t Transform,
+        Option<&'m Monster>,
+        Option<&'wt WallTile>,
+    ),
+    (Without<Player>, Without<FloorTile>),
+>;
 
 // A player has a PlayerMovement component that tracks the prior movement direction
 // and a throttle timer to allow a short vs long press works well. A short press
@@ -29,9 +37,8 @@ pub fn handle_move_intent(
     mut event_reader: EventReader<PlayerMoveIntentEvent>,
     mut move_event: EventWriter<PlayerMoveEvent>,
     mut player_info: Query<(&mut PlayerMovement, &Transform), With<Player>>,
-    monsters: MonsterQuery,
+    obstacles: ObstacleQuery,
     time: Res<Time>,
-    walls: WallsQuery,
 ) {
     event_reader.read().for_each(|event| {
         let (mut prior_movement, transform) = player_info
@@ -44,7 +51,10 @@ pub fn handle_move_intent(
             prior_movement.throttle.reset();
             prior_movement.direction = Some(event.direction);
 
-            if let Some(action) = determine_action(event, &monsters, &transform, &walls) {
+            let target_pos = transform.translation.truncate() + event.direction;
+            let obstacle = find_obstacle(target_pos, &obstacles);
+
+            if let Some(action) = determine_action(event, target_pos, obstacle) {
                 match action {
                     PlayerMove::Attack(e) => {
                         attack_event.send(e);
@@ -65,54 +75,40 @@ enum PlayerMove {
 
 fn determine_action(
     event: &PlayerMoveIntentEvent,
-    monsters: &MonsterQuery,
-    transform: &Transform,
-    walls: &WallsQuery,
+    target_pos: Vec2,
+    obstacle: Option<Obstacle>,
 ) -> Option<PlayerMove> {
-    let pos = transform.translation.truncate() + event.direction;
-    let hit_wall = walls.iter().any(|w| intersects(&pos, w));
-    let attack = monsters
-        .iter()
-        .find(|(_, m)| m.translation.truncate() == pos)
-        .map(|(m, _)| m);
+    let PlayerMoveIntentEvent {
+        player, player_id, ..
+    } = event;
+    match obstacle {
+        Some(Obstacle::Monster(monster)) => Some(PlayerMove::Attack(PlayerAttackEvent::new(
+            *player_id, target_pos, monster,
+        ))),
+        Some(Obstacle::Wall) => {
+            info!("Player {player_id} move to {target_pos} blocked by a wall");
 
-    let player_id = event.player_id;
-    if hit_wall {
-        info!("Player {player_id} move to {pos} blocked by a wall");
-
-        None
-    } else if let Some(monster) = attack {
-        info!("Player {player_id} attacks monster at {pos}");
-
-        Some(PlayerMove::Attack(PlayerAttackEvent::new(
-            player_id, monster,
-        )))
-    } else {
-        let old_pos = transform.translation.truncate();
-        info!("Player {player_id} moves from {old_pos} to {pos}");
-
-        Some(PlayerMove::Move(PlayerMoveEvent::new(
-            event.player,
-            player_id,
-            pos,
-        )))
+            None
+        }
+        None => Some(PlayerMove::Move(PlayerMoveEvent::new(
+            *player, *player_id, target_pos,
+        ))),
     }
 }
 
-// TODO can simplify this given unit moves, right?
-fn intersects(player: &Vec2, wall: &Transform) -> bool {
-    use config::*;
+fn find_obstacle(target_pos: Vec2, obstacles: &ObstacleQuery) -> Option<Obstacle> {
+    obstacles
+        .iter()
+        .filter(|(_, t, ..)| t.translation.truncate() == target_pos)
+        .find_map(|(entity, _t, monster, wall)| {
+            monster
+                .map(|_| Obstacle::Monster(entity))
+                .or_else(|| wall.map(|_| Obstacle::Wall))
+        })
+}
 
-    static PLAYER_SIZE: Vec2 = Vec2::new(PLAYER_WIDTH, PLAYER_HEIGHT);
-    static WALL_SIZE: Vec2 = Vec2::new(TILE_WIDTH, TILE_HEIGHT);
-
-    let player_min = player - PLAYER_SIZE / 2.0;
-    let player_max = player + PLAYER_SIZE / 2.0;
-    let wall_min = wall.translation.truncate() - WALL_SIZE / 2.0;
-    let wall_max = wall.translation.truncate() + WALL_SIZE / 2.0;
-
-    player_min.x < wall_max.x
-        && player_max.x > wall_min.x
-        && player_min.y < wall_max.y
-        && player_max.y > wall_min.y
+#[derive(PartialEq, Eq, Hash)]
+enum Obstacle {
+    Monster(Entity),
+    Wall,
 }
