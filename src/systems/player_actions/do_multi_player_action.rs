@@ -1,18 +1,16 @@
-use super::maybe_move_player::{maybe_move_player, MonsterQuery, PlayersQuery, WallsQuery};
 use crate::{
+    components::Player,
+    events::PlayerMoveIntentEvent,
     resources::config::{self, GgrsSessionConfig},
     PlayerAction,
 };
-use bevy::{prelude::*, time::Time};
+use bevy::prelude::*;
 use bevy_ggrs::PlayerInputs;
 
 pub fn do_multi_player_action(
-    mut commands: Commands,
-    mut players: PlayersQuery,
-    monsters: MonsterQuery,
+    mut event_writer: EventWriter<PlayerMoveIntentEvent>,
+    players: Query<(Entity, &Player)>,
     inputs: Res<PlayerInputs<GgrsSessionConfig>>,
-    time: Res<Time>,
-    walls: WallsQuery,
 ) {
     assert_eq!(
         players.iter().count(),
@@ -20,19 +18,24 @@ pub fn do_multi_player_action(
         "Unexpected player count!"
     );
 
-    for (mut transform, mut movement, player) in &mut players {
+    for (player_entity, player) in &players {
         let action = PlayerAction::from(inputs[player.id].0);
-        if action != PlayerAction::None {
-            maybe_move_player(
-                &mut commands,
-                action,
-                &monsters,
+        if let Some(direction) = determine_direction(action) {
+            event_writer.send(PlayerMoveIntentEvent::new(
+                player_entity,
                 player.id,
-                &time,
-                &walls,
-                movement.as_mut(),
-                transform.as_mut(),
-            );
+                direction,
+            ));
         }
+    }
+}
+
+fn determine_direction(action: PlayerAction) -> Option<Vec2> {
+    match action {
+        PlayerAction::Up => Some(Vec2::Y),
+        PlayerAction::Down => Some(Vec2::NEG_Y),
+        PlayerAction::Left => Some(Vec2::NEG_X),
+        PlayerAction::Right => Some(Vec2::X),
+        _ => None,
     }
 }

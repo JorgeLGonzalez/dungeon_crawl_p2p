@@ -12,6 +12,7 @@ pub enum PlayerAction {
     Snapshot = 100,
 }
 
+/// Convert from u8 which is how the action is encoded for sharing via GGRS
 impl From<u8> for PlayerAction {
     fn from(value: u8) -> Self {
         match value {
@@ -44,6 +45,7 @@ impl From<&ButtonInput<KeyCode>> for PlayerAction {
     }
 }
 
+/// Convert into u8 for use as LocalInputs to be shared via GGRS
 impl Into<u8> for PlayerAction {
     fn into(self) -> u8 {
         self as u8
