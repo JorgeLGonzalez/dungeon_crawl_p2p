@@ -1,4 +1,4 @@
-use bevy::{input::ButtonInput, prelude::KeyCode};
+use bevy::{input::ButtonInput, math::Vec2, prelude::KeyCode};
 
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -15,7 +15,7 @@ pub enum PlayerAction {
 impl PlayerAction {
     /// Return the direction for a move action.
     pub fn move_direction(&self) -> Option<Vec2> {
-        match self.action {
+        match self {
             PlayerAction::Up => Some(Vec2::Y),
             PlayerAction::Down => Some(Vec2::NEG_Y),
             PlayerAction::Left => Some(Vec2::NEG_X),
