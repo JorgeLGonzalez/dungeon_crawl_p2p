@@ -7,6 +7,7 @@ But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] simplify player inputs
+- [ ] re-enable snapshots
 - [ ] simplify intersects on player moves. check against monster moves
 - [ ] monster attack player
 - [ ] monster follows player
