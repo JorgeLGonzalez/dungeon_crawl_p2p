@@ -1,8 +1,8 @@
 use crate::{
     components::Player,
-    events::PlayerMoveIntentEvent,
     resources::config::{self, GgrsSessionConfig},
-    PlayerAction,
+    systems::player_actions::dispatch_player_event::dispatch_player_event,
+    PlayerAction, PlayerMoveIntentEvent, StopMovingEvent,
 };
 use bevy::prelude::*;
 use bevy_ggrs::PlayerInputs;
@@ -12,7 +12,8 @@ use bevy_ggrs::PlayerInputs;
 /// See [`super::do_single_player_action`] for the equivalent system for
 /// `GameMode::SinglePlayer`.
 pub fn do_multi_player_action(
-    mut event_writer: EventWriter<PlayerMoveIntentEvent>,
+    mut move_event: EventWriter<PlayerMoveIntentEvent>,
+    mut stop_moving_event: EventWriter<StopMovingEvent>,
     players: Query<(Entity, &Player)>,
     inputs: Res<PlayerInputs<GgrsSessionConfig>>,
 ) {
@@ -23,12 +24,13 @@ pub fn do_multi_player_action(
     );
 
     for (player_entity, player) in &players {
-        if let Some(direction) = PlayerAction::from(inputs[player.id].0).move_direction() {
-            event_writer.send(PlayerMoveIntentEvent::new(
-                player_entity,
-                player.id,
-                direction,
-            ));
-        }
+        let action = PlayerAction::from(inputs[player.id].0);
+        dispatch_player_event(
+            player_entity,
+            player.id,
+            action,
+            &mut move_event,
+            &mut stop_moving_event,
+        );
     }
 }

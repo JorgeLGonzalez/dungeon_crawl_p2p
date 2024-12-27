@@ -1,5 +1,6 @@
 use super::PlayerAction;
 use crate::components::Player;
+use crate::systems::player_actions::dispatch_player_event::dispatch_player_event;
 use crate::{PlayerMoveIntentEvent, StopMovingEvent};
 use bevy::prelude::*;
 
@@ -16,21 +17,11 @@ pub fn do_single_player_action(
 
     let (player_entity, player) = players.single();
     let action = PlayerAction::from(keys.as_ref());
-
-    if let Some(direction) = action.move_direction() {
-        move_event.send(PlayerMoveIntentEvent::new(
-            player_entity,
-            player.id,
-            direction,
-        ));
-    } else {
-        match action {
-            PlayerAction::StopMoving => {
-                stop_moving_event.send(StopMovingEvent::new(player_entity));
-            }
-            PlayerAction::Snapshot => todo!(),
-            PlayerAction::None => (),
-            _ => unreachable!(),
-        }
-    }
+    dispatch_player_event(
+        player_entity,
+        player.id,
+        action,
+        &mut move_event,
+        &mut stop_moving_event,
+    );
 }

@@ -1,8 +1,5 @@
 use crate::{components::PlayerMovement, StopMovingEvent};
-use bevy::{
-    log::info,
-    prelude::{EventReader, Query},
-};
+use bevy::prelude::{EventReader, Query};
 
 pub fn stop_moving(
     mut event_reader: EventReader<StopMovingEvent>,

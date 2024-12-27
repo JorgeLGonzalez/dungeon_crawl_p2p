@@ -1,4 +1,5 @@
 mod attack_monster;
+mod dispatch_player_event;
 mod do_multi_player_action;
 mod do_single_player_action;
 mod handle_move_intent;
