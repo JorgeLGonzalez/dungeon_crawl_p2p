@@ -5,7 +5,7 @@ mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
-use components::{Monster, MoveThrottle, Player};
+use components::{checksum_move_throttle, Monster, MoveThrottle, Player};
 use events::*;
 use resources::{
     checksum_rng,
@@ -114,13 +114,6 @@ fn main() {
         );
 
     app.run();
-}
-
-fn checksum_move_throttle(throttle: &MoveThrottle) -> u64 {
-    let mut hasher = checksum_hasher();
-    throttle.hash(&mut hasher);
-
-    hasher.finish()
 }
 
 // See https://johanhelsing.studio/posts/extreme-bevy-desync-detection

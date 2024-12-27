@@ -4,6 +4,7 @@ use rand::{distributions::uniform::SampleUniform, prelude::*, Error};
 use rand_xoshiro::Xoshiro256PlusPlus;
 use std::hash::{Hash, Hasher};
 use std::ops::Range;
+use bevy_ggrs::checksum_hasher;
 
 /// We seed the random number generator so that in a multi-player game the random
 /// numbers generated are exactly the same for both players. This means we do
