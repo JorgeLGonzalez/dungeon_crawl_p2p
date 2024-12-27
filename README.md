@@ -6,8 +6,10 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] simplify player inputs
-- [ ] simplify intersects on player moves. check against monster moves
+- [x] simplify player inputs
+- [x] re-enable snapshots
+- [ ] should we add/remove PlayerMovement component instead? More generally, the throttle is weird as it is only reset when there is a move. it should reset also when key is released?
+- [x] simplify intersects on player moves. check against monster moves
 - [ ] monster attack player
 - [ ] monster follows player
 - [ ] monster FOV

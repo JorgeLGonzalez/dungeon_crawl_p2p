@@ -1,10 +1,12 @@
 mod components;
+mod events;
 mod resources;
 mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
 use components::{Monster, Player, PlayerMovement};
+use events::*;
 use resources::{
     config::{self, GameMode, GAME_MODE},
     DesyncEvent, MonsterMoveTracker, RandomGenerator,
@@ -34,7 +36,12 @@ fn main() {
     .init_state::<GameState>();
 
     app.init_resource::<MonsterMoveTracker>()
-        .add_event::<DesyncEvent>();
+        .add_event::<DesyncEvent>()
+        .add_event::<PlayerAttackEvent>()
+        .add_event::<PlayerMoveEvent>()
+        .add_event::<PlayerMoveIntentEvent>()
+        .add_event::<SnapshotStateEvent>()
+        .add_event::<StopMovingEvent>();
 
     // Register components and resources for GGRS snapshots and rollback
     app
@@ -65,9 +72,17 @@ fn main() {
                     handle_ggrs_events.run_if(
                         in_state(GameState::InGame).and(|| GAME_MODE != GameMode::SinglePlayer),
                     ),
-                    (do_single_player_action, move_camera, move_monsters)
+                    (
+                        do_single_player_action,
+                        handle_move_intent,
+                        attack_monster,
+                        move_player,
+                        move_camera,
+                        move_monsters,
+                    )
                         .chain()
                         .run_if(|| GAME_MODE == GameMode::SinglePlayer),
+                    stop_moving,
                 )
                     .run_if(in_state(GameState::InGame)),
             ),
@@ -76,7 +91,14 @@ fn main() {
         .add_systems(
             GgrsSchedule,
             (
-                (do_multi_player_action, move_camera, move_monsters)
+                (
+                    do_multi_player_action,
+                    handle_move_intent,
+                    attack_monster,
+                    move_player,
+                    move_camera,
+                    move_monsters,
+                )
                     .chain()
                     .run_if(in_state(GameState::InGame)),
                 persist_monster_moves,
