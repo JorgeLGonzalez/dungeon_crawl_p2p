@@ -10,6 +10,7 @@ pub enum PlayerAction {
     #[default]
     None = 0,
     Snapshot = 100,
+    StopMoving = 5,
 }
 
 impl PlayerAction {
@@ -33,6 +34,7 @@ impl From<u8> for PlayerAction {
             2 => PlayerAction::Down,
             3 => PlayerAction::Left,
             4 => PlayerAction::Right,
+            5 => PlayerAction::StopMoving,
             100 => PlayerAction::Snapshot,
 
             _ => PlayerAction::None,
@@ -42,19 +44,21 @@ impl From<u8> for PlayerAction {
 
 impl From<&ButtonInput<KeyCode>> for PlayerAction {
     fn from(keys: &ButtonInput<KeyCode>) -> Self {
-        use KeyCode::*;
-
-        [
-            (ArrowUp, PlayerAction::Up),
-            (ArrowDown, PlayerAction::Down),
-            (ArrowLeft, PlayerAction::Left),
-            (ArrowRight, PlayerAction::Right),
-        ]
-        .iter()
-        .find(|(key, _)| keys.pressed(*key))
-        .map(|(_, dir)| *dir)
-        .or_else(|| keys.just_released(KeyP).then_some(PlayerAction::Snapshot))
-        .unwrap_or(PlayerAction::None)
+        MOVEMENT_KEYS
+            .iter()
+            .find(|(key, _)| keys.pressed(*key))
+            .map(|(_, dir)| *dir)
+            .or_else(|| {
+                MOVEMENT_KEYS
+                    .iter()
+                    .find(|(key, _)| keys.just_released(*key))
+                    .map(|_| PlayerAction::StopMoving)
+            })
+            .or_else(|| {
+                keys.just_released(KeyCode::KeyP)
+                    .then_some(PlayerAction::Snapshot)
+            })
+            .unwrap_or(PlayerAction::None)
     }
 }
 
@@ -64,3 +68,10 @@ impl Into<u8> for PlayerAction {
         self as u8
     }
 }
+
+const MOVEMENT_KEYS: [(KeyCode, PlayerAction); 4] = [
+    (KeyCode::ArrowUp, PlayerAction::Up),
+    (KeyCode::ArrowDown, PlayerAction::Down),
+    (KeyCode::ArrowLeft, PlayerAction::Left),
+    (KeyCode::ArrowRight, PlayerAction::Right),
+];

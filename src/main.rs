@@ -39,7 +39,8 @@ fn main() {
         .add_event::<DesyncEvent>()
         .add_event::<PlayerAttackEvent>()
         .add_event::<PlayerMoveEvent>()
-        .add_event::<PlayerMoveIntentEvent>();
+        .add_event::<PlayerMoveIntentEvent>()
+        .add_event::<StopMovingEvent>();
 
     // Register components and resources for GGRS snapshots and rollback
     app
@@ -80,6 +81,7 @@ fn main() {
                     )
                         .chain()
                         .run_if(|| GAME_MODE == GameMode::SinglePlayer),
+                    stop_moving,
                 )
                     .run_if(in_state(GameState::InGame)),
             ),

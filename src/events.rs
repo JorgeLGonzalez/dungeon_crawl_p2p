@@ -53,3 +53,14 @@ impl PlayerMoveIntentEvent {
         }
     }
 }
+
+#[derive(Event)]
+pub struct StopMovingEvent {
+    pub player: Entity,
+}
+
+impl StopMovingEvent {
+    pub fn new(player: Entity) -> Self {
+        Self { player }
+    }
+}
