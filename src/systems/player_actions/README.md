@@ -65,7 +65,7 @@ autonumber
 Bevy-->>move_player: PlayerMoveEvent
 move_player->>MoveThrottle: add to player
 activate MoveThrottle
-Bevy->>tick_move_throttle: PreUpdate
+Bevy->>tick_move_throttle: run
 tick_move_throttle->>MoveThrottle: tick
 Bevy-->>handle_move_intent: PlayerMoveIntentEvent
 Note right of handle_move_intent: throttled

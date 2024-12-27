@@ -1,5 +1,5 @@
 use crate::{
-    components::{Player, PlayerMovement},
+    components::{MoveThrottle, Player},
     events::PlayerMoveEvent,
     resources::config::PLAYER_Z_LAYER,
 };
@@ -23,6 +23,6 @@ pub fn move_player(
         transform.translation = event.pos.extend(PLAYER_Z_LAYER);
         commands
             .entity(event.player)
-            .insert(PlayerMovement::default());
+            .insert(MoveThrottle::default());
     }
 }

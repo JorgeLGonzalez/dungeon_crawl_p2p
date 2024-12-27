@@ -14,7 +14,7 @@ pub type ObstacleQuery<'w, 's, 't, 'm, 'wt> = Query<
 >;
 
 pub type PlayerQuery<'w, 's, 't, 'm> =
-    Query<'w, 's, (&'t Transform, Option<&'m PlayerMovement>), With<Player>>;
+    Query<'w, 's, (&'t Transform, Option<&'m MoveThrottle>), With<Player>>;
 
 pub enum PlayerMove {
     Attack(PlayerAttackEvent),

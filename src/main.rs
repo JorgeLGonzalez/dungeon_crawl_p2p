@@ -5,7 +5,7 @@ mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
-use components::{Monster, Player, PlayerMovement};
+use components::{Monster, MoveThrottle, Player};
 use events::*;
 use resources::{
     config::{self, GameMode, GAME_MODE},
@@ -48,24 +48,21 @@ fn main() {
     app
         // .rollback_component_with_clone::<GlobalTransform>()
         // .rollback_component_with_clone::<InheritedVisibility>()
-        .rollback_component_with_clone::<PlayerMovement>()
+        .rollback_component_with_clone::<MoveThrottle>()
         .rollback_component_with_clone::<Transform>()
         // .rollback_component_with_clone::<ViewVisibility>()
         // .rollback_component_with_clone::<Visibility>()
         .rollback_component_with_copy::<Monster>()
         .rollback_component_with_copy::<Player>()
         .rollback_resource_with_clone::<RandomGenerator>()
-        .checksum_resource::<RandomGenerator>(checksum_rng)
-        .checksum_component::<Transform>(checksum_transform);
+        .checksum_component::<MoveThrottle>(checksum_move_throttle)
+        .checksum_component::<Transform>(checksum_transform)
+        .checksum_resource::<RandomGenerator>(checksum_rng);
 
     app.add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
         .add_systems(
             OnEnter(GameState::InGame),
             (spawn_dungeon, spawn_players, spawn_monsters).chain(),
-        )
-        .add_systems(
-            PreUpdate,
-            tick_move_throttle.run_if(in_state(GameState::InGame)),
         )
         .add_systems(
             Update,
@@ -79,6 +76,8 @@ fn main() {
                     ),
                     (
                         do_single_player_action,
+                        tick_move_throttle,
+                        stop_moving,
                         handle_move_intent,
                         attack_monster,
                         move_player,
@@ -87,7 +86,6 @@ fn main() {
                     )
                         .chain()
                         .run_if(|| GAME_MODE == GameMode::SinglePlayer),
-                    stop_moving,
                 )
                     .run_if(in_state(GameState::InGame)),
             ),
@@ -97,7 +95,10 @@ fn main() {
             GgrsSchedule,
             (
                 (
+                    // below should follow same order as single player mode Update
                     do_multi_player_action,
+                    tick_move_throttle,
+                    stop_moving,
                     handle_move_intent,
                     attack_monster,
                     move_player,
@@ -112,6 +113,13 @@ fn main() {
         );
 
     app.run();
+}
+
+fn checksum_move_throttle(throttle: &MoveThrottle) -> u64 {
+    let mut hasher = checksum_hasher();
+    throttle.hash(&mut hasher);
+
+    hasher.finish()
 }
 
 // See https://johanhelsing.studio/posts/extreme-bevy-desync-detection
