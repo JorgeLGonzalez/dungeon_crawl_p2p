@@ -1,10 +1,15 @@
-use crate::{components::Player, events::PlayerMoveEvent, resources::config::PLAYER_Z_LAYER};
+use crate::{
+    components::{MoveThrottle, Player},
+    events::PlayerMoveEvent,
+    resources::config::PLAYER_Z_LAYER,
+};
 use bevy::{
     log::info,
-    prelude::{EventReader, Query, Transform, With},
+    prelude::{Commands, EventReader, Query, Transform, With},
 };
 
 pub fn move_player(
+    mut commands: Commands,
     mut event_reader: EventReader<PlayerMoveEvent>,
     mut player: Query<&mut Transform, With<Player>>,
 ) {
@@ -16,5 +21,8 @@ pub fn move_player(
             event.player_id, event.pos
         );
         transform.translation = event.pos.extend(PLAYER_Z_LAYER);
+        commands
+            .entity(event.player)
+            .insert(MoveThrottle::default());
     }
 }

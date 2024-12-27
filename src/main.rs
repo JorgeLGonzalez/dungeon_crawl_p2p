@@ -4,14 +4,15 @@ mod resources;
 mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
-use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
-use components::{Monster, Player, PlayerMovement};
+use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
+use components::{checksum_move_throttle, checksum_transform, Monster, MoveThrottle, Player};
 use events::*;
 use resources::{
+    checksum_rng,
     config::{self, GameMode, GAME_MODE},
     DesyncEvent, MonsterMoveTracker, RandomGenerator,
 };
-use std::hash::{Hash, Hasher};
+use std::hash::Hash;
 use systems::*;
 
 fn main() {
@@ -28,6 +29,7 @@ fn main() {
                 ..default()
             })
             .set(LogPlugin {
+                filter: "dungeon_crawl_p2p=debug".to_string(),
                 // filter: "bevy_ggrs=trace,ggrs=trace,ggrs::network=info".to_string(),
                 ..default()
             }),
@@ -47,15 +49,16 @@ fn main() {
     app
         // .rollback_component_with_clone::<GlobalTransform>()
         // .rollback_component_with_clone::<InheritedVisibility>()
-        .rollback_component_with_clone::<PlayerMovement>()
+        .rollback_component_with_clone::<MoveThrottle>()
         .rollback_component_with_clone::<Transform>()
         // .rollback_component_with_clone::<ViewVisibility>()
         // .rollback_component_with_clone::<Visibility>()
         .rollback_component_with_copy::<Monster>()
         .rollback_component_with_copy::<Player>()
         .rollback_resource_with_clone::<RandomGenerator>()
-        .checksum_resource::<RandomGenerator>(checksum_rng)
-        .checksum_component::<Transform>(checksum_transform);
+        .checksum_component::<MoveThrottle>(checksum_move_throttle)
+        .checksum_component::<Transform>(checksum_transform)
+        .checksum_resource::<RandomGenerator>(checksum_rng);
 
     app.add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
         .add_systems(
@@ -74,6 +77,8 @@ fn main() {
                     ),
                     (
                         do_single_player_action,
+                        tick_move_throttle,
+                        stop_moving,
                         handle_move_intent,
                         attack_monster,
                         move_player,
@@ -82,7 +87,6 @@ fn main() {
                     )
                         .chain()
                         .run_if(|| GAME_MODE == GameMode::SinglePlayer),
-                    stop_moving,
                 )
                     .run_if(in_state(GameState::InGame)),
             ),
@@ -92,7 +96,10 @@ fn main() {
             GgrsSchedule,
             (
                 (
+                    // below should follow same order as single player mode Update
                     do_multi_player_action,
+                    tick_move_throttle,
+                    stop_moving,
                     handle_move_intent,
                     attack_monster,
                     move_player,
@@ -107,33 +114,6 @@ fn main() {
         );
 
     app.run();
-}
-
-// See https://johanhelsing.studio/posts/extreme-bevy-desync-detection
-fn checksum_transform(transform: &Transform) -> u64 {
-    let mut hasher = checksum_hasher();
-    assert!(
-        transform.is_finite(),
-        "Hashing is not stable for NaN f32 value."
-    );
-
-    transform.translation.x.to_bits().hash(&mut hasher);
-    transform.translation.y.to_bits().hash(&mut hasher);
-    transform.translation.z.to_bits().hash(&mut hasher);
-
-    transform.rotation.x.to_bits().hash(&mut hasher);
-    transform.rotation.y.to_bits().hash(&mut hasher);
-    transform.rotation.z.to_bits().hash(&mut hasher);
-    transform.rotation.w.to_bits().hash(&mut hasher);
-
-    hasher.finish()
-}
-
-fn checksum_rng(rng: &RandomGenerator) -> u64 {
-    let mut hasher = checksum_hasher();
-    rng.hash(&mut hasher);
-
-    hasher.finish()
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]

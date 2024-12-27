@@ -1,13 +1,8 @@
-use crate::{components::PlayerMovement, StopMovingEvent};
-use bevy::prelude::{EventReader, Query};
+use crate::{components::MoveThrottle, StopMovingEvent};
+use bevy::prelude::{Commands, EventReader};
 
-pub fn stop_moving(
-    mut event_reader: EventReader<StopMovingEvent>,
-    mut players: Query<&mut PlayerMovement>,
-) {
+pub fn stop_moving(mut commands: Commands, mut event_reader: EventReader<StopMovingEvent>) {
     event_reader.read().for_each(|event| {
-        if let Ok(mut movement) = players.get_mut(event.player) {
-            movement.direction = None;
-        }
+        commands.entity(event.player).remove::<MoveThrottle>();
     });
 }

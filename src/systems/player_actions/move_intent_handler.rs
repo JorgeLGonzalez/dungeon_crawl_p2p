@@ -1,6 +1,5 @@
 use crate::{components::*, PlayerAttackEvent, PlayerMoveEvent, PlayerMoveIntentEvent};
 use bevy::{math::Vec2, prelude::*};
-use std::time::Duration;
 
 pub type ObstacleQuery<'w, 's, 't, 'm, 'wt> = Query<
     'w,
@@ -14,6 +13,9 @@ pub type ObstacleQuery<'w, 's, 't, 'm, 'wt> = Query<
     (Without<Player>, Without<FloorTile>),
 >;
 
+pub type PlayerQuery<'w, 's, 't, 'm> =
+    Query<'w, 's, (&'t Transform, Option<&'m MoveThrottle>), With<Player>>;
+
 pub enum PlayerMove {
     Attack(PlayerAttackEvent),
     Move(PlayerMoveEvent),
@@ -22,50 +24,26 @@ pub enum PlayerMove {
 /// Helper for `handle_move_intent`.
 pub struct MoveIntentHandler {
     event: PlayerMoveIntentEvent,
-    ignore: bool,
     target_pos: Vec2,
+    pub throttled: bool,
 }
 
 impl MoveIntentHandler {
-    pub fn new(event: PlayerMoveIntentEvent, transform: &Transform) -> Self {
+    pub fn new(event: PlayerMoveIntentEvent, players: &PlayerQuery) -> Self {
+        let (transform, throttle) = players.get(event.player).expect("Player not found!");
         let target_pos = transform.translation.truncate() + event.direction;
 
         Self {
             event,
-            ignore: false,
             target_pos,
+            throttled: throttle.is_some(),
         }
-    }
-
-    /// Update the player movement and check if the intended move should be throttled.
-    /// A player has a PlayerMovement component that tracks the prior movement direction
-    /// and a throttle timer to allow a short vs long press to work well. A short press
-    /// is throttled so we get a unit move that allows for precision and moving by
-    /// a single tile so as to align w/ corridors etc. But if the key is pressed
-    /// long enough, we want more moves, so the throttle is reset once the timer
-    /// finishes (or if the player changed direction).
-    pub fn update_movement(self, prior_movement: &mut PlayerMovement, delta: Duration) -> Self {
-        prior_movement.throttle.tick(delta);
-        let changed_direction = prior_movement.direction != Some(self.event.direction);
-        let throttled = !changed_direction && !prior_movement.throttle.finished();
-
-        let ignore = !changed_direction && throttled;
-        if !ignore {
-            prior_movement.throttle.reset();
-            prior_movement.direction = Some(self.event.direction);
-        }
-
-        Self { ignore, ..self }
     }
 
     /// Determine whether the intended move is an attack on a monster, a simple
     /// move, or is blocked by a wall or is throttled. Invalid/ignored moves return
     /// None.
     pub fn determine_action(&self, obstacles: &ObstacleQuery) -> Option<PlayerMove> {
-        if self.ignore {
-            return None;
-        }
-
         let PlayerMoveIntentEvent {
             player, player_id, ..
         } = self.event;

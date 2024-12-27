@@ -9,11 +9,6 @@ Flow is: read keyboard input -> encode into action enum ->
 in ggrs can try to send across as enum (try with repr(u8) and derive FromPrimitive)
 in sp mode, just use enum directly
 
-Then 2 options:
-
-1. Given the enum, delegate to handlers that handle the action
-2. Given the enum, write events for the various actions
-
 ## MultiPlayer (and SyncTest)
 
 ```mermaid
@@ -59,3 +54,39 @@ end
 1. [handle_move_intent](./handle_move_intent.rs) determines whether the requested move is valid and wether it results in a simple move or a monster attack.
 2. `handle_move_intent` dispatches a `PlayerAttackEvent` for a monster attack, which is handled by [attack_monster](./attack_monster.rs).
 3. `handle_move_intent` dispatches a `PlayerMoveEvent` for a simple move, which is handled by [move_player](./move_player.rs)
+
+### Key Input Throttling
+
+When moving, we want the player to move in discrete units corresponding to dungeon positions (tiles) so it is easy to align with corridors, items etc. We want to allow fast movement, but also fine movement. So we start moving on key press (rather than release), BUT we need to throttle the key press since a short press tends to result in multiple move events.
+
+```mermaid
+sequenceDiagram
+autonumber
+Bevy-->>move_player: PlayerMoveEvent
+move_player->>MoveThrottle: add to player
+activate MoveThrottle
+Bevy->>tick_move_throttle: run
+tick_move_throttle->>MoveThrottle: tick
+Bevy-->>handle_move_intent: PlayerMoveIntentEvent
+Note right of handle_move_intent: throttled
+par timer finished
+tick_move_throttle->>MoveThrottle: remove
+and move key released
+Bevy-->>stop_moving: StopMovingEvent
+stop_moving->>MoveThrottle: remove
+end
+deactivate MoveThrottle
+Bevy-->>handle_move_intent: PlayerMoveIntentEvent
+handle_move_intent-->>move_player: PlayerMoveEvent
+```
+
+1. A `PlayerMoveEvent` is read by `move_player`
+2. `move_player` moves the player and also adds a `MoveThrottle` component to the `Player` entity. `MoveThrottle` encapsulates a timer.
+3. On the `PreUpdate` schedule, Bevy runs `tick_move_throttle`
+4. `tick_move_throttle` ticks (i.e. advances) the `MoveThrottle` timer. In this example, it has not yet finished, so nothing else happens.
+5. A `PlayerMoveIntentEvent` is dispatched (because, say, the player is still pressing the same move key). `handle_move_intent` ignores this move because the player has a `MoveThrottle` component.
+6. One way the `MoveThrottle` component is removed is on a call to `tick_move_throttle` that notices the timer has finished and removes it from the player.
+7. Another way is when the player releases the move key, which results in Bevy mediating a `StopMovingEvent` (thanks to the `do_*_player_action` system).
+8. In this second case, the `stop_moving` system will remove `MoveThrottle`.
+9. Whether the throttle finished and the player is still pressing the key, or the player released the key and pressed it (or another move key), the next `PlayerMoveIntentEvent` will be sent.
+10. And in this case `handle_move_intent` will turn it into a `PlayerMoveEvent` (or an attack etc)

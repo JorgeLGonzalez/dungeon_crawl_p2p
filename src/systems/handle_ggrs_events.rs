@@ -1,5 +1,5 @@
 use crate::{
-    components::{Monster, Player, PlayerMovement},
+    components::{Monster, Player, MoveThrottle},
     resources::{config::GgrsSessionConfig, DesyncEvent, RandomGenerator},
     GameState,
 };
@@ -20,7 +20,7 @@ pub fn handle_ggrs_events(
     mut session: ResMut<Session<GgrsSessionConfig>>,
     local_players: Res<LocalPlayers>,
     monster_snapshots: Res<GgrsComponentSnapshots<Monster>>,
-    player_movement_snapshots: Res<GgrsComponentSnapshots<PlayerMovement>>,
+    player_movement_snapshots: Res<GgrsComponentSnapshots<MoveThrottle>>,
     player_snapshots: Res<GgrsComponentSnapshots<Player>>,
     rng_snapshots: Res<GgrsResourceSnapshots<RandomGenerator>>,
     transform_snapshots: Res<GgrsComponentSnapshots<Transform>>,
