@@ -8,6 +8,7 @@ use bevy_ggrs::{checksum_hasher, GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
 use components::{Monster, MoveThrottle, Player};
 use events::*;
 use resources::{
+    checksum_rng,
     config::{self, GameMode, GAME_MODE},
     DesyncEvent, MonsterMoveTracker, RandomGenerator,
 };
@@ -138,13 +139,6 @@ fn checksum_transform(transform: &Transform) -> u64 {
     transform.rotation.y.to_bits().hash(&mut hasher);
     transform.rotation.z.to_bits().hash(&mut hasher);
     transform.rotation.w.to_bits().hash(&mut hasher);
-
-    hasher.finish()
-}
-
-fn checksum_rng(rng: &RandomGenerator) -> u64 {
-    let mut hasher = checksum_hasher();
-    rng.hash(&mut hasher);
 
     hasher.finish()
 }

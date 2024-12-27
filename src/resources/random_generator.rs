@@ -89,3 +89,10 @@ impl Hash for RandomGenerator {
         self.counter.hash(state);
     }
 }
+
+pub fn checksum_rng(rng: &RandomGenerator) -> u64 {
+    let mut hasher = checksum_hasher();
+    rng.hash(&mut hasher);
+
+    hasher.finish()
+}
