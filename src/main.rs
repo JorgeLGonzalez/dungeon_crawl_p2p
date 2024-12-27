@@ -28,6 +28,7 @@ fn main() {
                 ..default()
             })
             .set(LogPlugin {
+                filter: "dungeon_crawl_p2p=debug".to_string(),
                 // filter: "bevy_ggrs=trace,ggrs=trace,ggrs::network=info".to_string(),
                 ..default()
             }),
@@ -61,6 +62,10 @@ fn main() {
         .add_systems(
             OnEnter(GameState::InGame),
             (spawn_dungeon, spawn_players, spawn_monsters).chain(),
+        )
+        .add_systems(
+            PreUpdate,
+            tick_move_throttle.run_if(in_state(GameState::InGame)),
         )
         .add_systems(
             Update,
