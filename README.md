@@ -7,8 +7,8 @@ But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
 - [x] simplify player inputs
+- [x] re-enable snapshots
 - [ ] should we add/remove PlayerMovement component instead? More generally, the throttle is weird as it is only reset when there is a move. it should reset also when key is released?
-- [ ] re-enable snapshots
 - [x] simplify intersects on player moves. check against monster moves
 - [ ] monster attack player
 - [ ] monster follows player

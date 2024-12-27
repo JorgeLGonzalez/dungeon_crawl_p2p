@@ -1,7 +1,7 @@
+use super::dispatch_player_event::dispatch_player_event;
 use super::PlayerAction;
 use crate::components::Player;
-use crate::systems::player_actions::dispatch_player_event::dispatch_player_event;
-use crate::{PlayerMoveIntentEvent, StopMovingEvent};
+use crate::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent};
 use bevy::prelude::*;
 
 /// Determines the `PlayerAction` based on keyboard inputs and dispatches the
@@ -9,6 +9,7 @@ use bevy::prelude::*;
 /// for the equivalent system for `GameMode::MultiPlayer`.
 pub fn do_single_player_action(
     mut move_event: EventWriter<PlayerMoveIntentEvent>,
+    mut snapshot_event: EventWriter<SnapshotStateEvent>,
     mut stop_moving_event: EventWriter<StopMovingEvent>,
     players: Query<(Entity, &Player)>,
     keys: Res<ButtonInput<KeyCode>>,
@@ -22,6 +23,7 @@ pub fn do_single_player_action(
         player.id,
         action,
         &mut move_event,
+        &mut snapshot_event,
         &mut stop_moving_event,
     );
 }

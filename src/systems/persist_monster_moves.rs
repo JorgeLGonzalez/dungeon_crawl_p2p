@@ -1,29 +1,28 @@
-use super::PlayerAction;
 use crate::{
-    components::Player,
-    resources::{config::GgrsSessionConfig, DesyncEvent, MonsterMove, MonsterMoveTracker},
+    resources::{DesyncEvent, MonsterMove, MonsterMoveTracker},
+    SnapshotStateEvent,
 };
 use bevy::{
     log::{error, info},
-    prelude::{EventReader, Query, Res, ResMut},
+    prelude::{EventReader, Res, ResMut},
 };
-use bevy_ggrs::{LocalPlayers, PlayerInputs, RollbackFrameCount};
+use bevy_ggrs::{LocalPlayers, RollbackFrameCount};
 use std::{fs::OpenOptions, io::Write, path::Path};
 
 /// Save monster moves to a file. (Won't work on WASM).
 /// Three reasons why a save can take place:
-/// 1. Requested by a player pressing and releasing P
+/// 1. Requested by a player pressing and releasing P (SnapshotStateEvent)
 /// 2. A desync event was written by [`super::handle_ggrs_events`]
 /// 3. Autosave is enabled and reached its threshold
 pub fn persist_monster_moves(
-    mut event_reader: EventReader<DesyncEvent>,
+    mut desync_event: EventReader<DesyncEvent>,
     mut monster_tracker: ResMut<MonsterMoveTracker>,
+    mut snapshot_event: EventReader<SnapshotStateEvent>,
     frame: Res<RollbackFrameCount>,
-    inputs: Res<PlayerInputs<GgrsSessionConfig>>,
     local_player: Res<LocalPlayers>,
-    players: Query<&Player>,
 ) {
-    let Some(reason) = snapshot_reason(&mut event_reader, &inputs, &mut monster_tracker, &players)
+    let Some(reason) =
+        snapshot_reason(&mut desync_event, &mut snapshot_event, &mut monster_tracker)
     else {
         return;
     };
@@ -69,25 +68,23 @@ pub fn persist_monster_moves(
 }
 
 fn snapshot_reason(
-    event_reader: &mut EventReader<DesyncEvent>,
-    inputs: &PlayerInputs<GgrsSessionConfig>,
+    desync_event: &mut EventReader<DesyncEvent>,
+    snapshot_event: &mut EventReader<SnapshotStateEvent>,
     monster_tracker: &mut MonsterMoveTracker,
-    players: &Query<&Player>,
 ) -> Option<SnapshotReason> {
     if monster_tracker.threshold() {
         Some(SnapshotReason::CountThreshold)
-    } else if let Some(event) = event_reader.read().next() {
+    } else if let Some(event) = desync_event.read().next() {
         info!(
             "Snapshot requested due to Desync event from frame {}",
             event.frame
         );
         Some(SnapshotReason::DesyncEvent)
+    } else if let Some(event) = snapshot_event.read().next() {
+        info!("Snapshot requested by player {}", event.player_id);
+        Some(SnapshotReason::Requested)
     } else {
-        players
-            .iter()
-            .map(|player| PlayerAction::from(inputs[player.id].0))
-            .find(|&action| action == PlayerAction::Snapshot)
-            .map(|_| SnapshotReason::Requested)
+        None
     }
 }
 

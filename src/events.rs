@@ -55,6 +55,17 @@ impl PlayerMoveIntentEvent {
 }
 
 #[derive(Event)]
+pub struct SnapshotStateEvent {
+    pub player_id: usize,
+}
+
+impl SnapshotStateEvent {
+    pub fn new(player_id: usize) -> Self {
+        Self { player_id }
+    }
+}
+
+#[derive(Event)]
 pub struct StopMovingEvent {
     pub player: Entity,
 }

@@ -40,6 +40,7 @@ fn main() {
         .add_event::<PlayerAttackEvent>()
         .add_event::<PlayerMoveEvent>()
         .add_event::<PlayerMoveIntentEvent>()
+        .add_event::<SnapshotStateEvent>()
         .add_event::<StopMovingEvent>();
 
     // Register components and resources for GGRS snapshots and rollback
