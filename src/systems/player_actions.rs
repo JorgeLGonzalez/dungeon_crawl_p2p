@@ -2,6 +2,7 @@ mod attack_monster;
 mod do_multi_player_action;
 mod do_single_player_action;
 mod handle_move_intent;
+mod move_intent_handler;
 mod move_player;
 mod player_action;
 mod read_player_inputs;

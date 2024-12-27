@@ -37,7 +37,7 @@ impl PlayerMoveEvent {
     }
 }
 
-#[derive(Event)]
+#[derive(Event, Clone, Copy)]
 pub struct PlayerMoveIntentEvent {
     pub player: Entity,
     pub player_id: usize,
