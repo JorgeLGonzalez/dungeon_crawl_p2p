@@ -1,4 +1,7 @@
-use crate::{components::*, PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent};
+use crate::{
+    components::*,
+    events::{PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent},
+};
 use bevy::{math::Vec2, prelude::*};
 
 pub type ObstacleQuery<'w, 's, 't, 'm, 'wt> = Query<

@@ -6,7 +6,6 @@ mod systems;
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
 use components::{checksum_move_throttle, checksum_transform, Monster, MoveThrottle, Player};
-use events::*;
 use resources::{
     checksum_rng,
     config::{self, GameMode, GAME_MODE},
@@ -39,13 +38,13 @@ fn main() {
 
     app.init_resource::<MonsterMoveTracker>()
         .add_event::<DesyncEvent>()
-        .add_event::<MonsterAttacksEvent>()
-        .add_event::<MonsterMovesEvent>()
-        .add_event::<PlayerAttacksEvent>()
-        .add_event::<PlayerMovesEvent>()
-        .add_event::<PlayerMoveIntentEvent>()
-        .add_event::<SnapshotStateEvent>()
-        .add_event::<StopMovingEvent>();
+        .add_event::<events::MonsterAttacksEvent>()
+        .add_event::<events::MonsterMovesEvent>()
+        .add_event::<events::PlayerAttacksEvent>()
+        .add_event::<events::PlayerMovesEvent>()
+        .add_event::<events::PlayerMoveIntentEvent>()
+        .add_event::<events::SnapshotStateEvent>()
+        .add_event::<events::StopMovingEvent>();
 
     // Register components and resources for GGRS snapshots and rollback
     app
@@ -87,6 +86,7 @@ fn main() {
                         move_camera,
                         do_monsters_action,
                         attack_player,
+                        move_monster,
                     )
                         .chain()
                         .run_if(|| GAME_MODE == GameMode::SinglePlayer),
@@ -109,6 +109,7 @@ fn main() {
                     move_camera,
                     do_monsters_action,
                     attack_player,
+                    move_monster,
                 )
                     .chain()
                     .run_if(in_state(GameState::InGame)),

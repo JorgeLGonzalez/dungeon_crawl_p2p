@@ -1,39 +1,35 @@
 use crate::{
     components::{Monster, Player, WallTile},
-    resources::{config, DungeonPosition, MonsterMove, MonsterMoveTracker, RandomGenerator},
-    MonsterAttacksEvent, MonsterMovesEvent,
+    events::{MonsterAttacksEvent, MonsterMovesEvent},
+    resources::{config, DungeonPosition, RandomGenerator},
 };
 use bevy::{
     prelude::*,
     utils::hashbrown::{HashMap, HashSet},
 };
-use bevy_ggrs::RollbackFrameCount;
 
-type MonsterQuery<'w, 's, 't> = Query<'w, 's, (&'t mut Transform, Entity), With<Monster>>;
+type MonsterQuery<'w, 's, 't> = Query<'w, 's, (&'t Transform, Entity), With<Monster>>;
 type PlayersQuery<'w, 's, 't, 'p> =
     Query<'w, 's, (&'t Transform, Entity, &'p Player), (With<Player>, Without<Monster>)>;
 type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Monster>)>;
 
 pub fn do_monsters_action(
     mut attack_event: EventWriter<MonsterAttacksEvent>,
-    mut monsters: MonsterQuery,
-    mut monster_tracker: ResMut<MonsterMoveTracker>,
     mut move_event: EventWriter<MonsterMovesEvent>,
     mut rng: ResMut<RandomGenerator>,
-    frame_count: Res<RollbackFrameCount>,
+    monsters: MonsterQuery,
     players: PlayersQuery,
     wall_tiles: WallQuery,
 ) {
     let walls = create_wall_set(&wall_tiles);
     let players = create_player_set(&players);
     let mut planned = create_current_monster_positions_set(&monsters);
-    let frame = frame_count.0;
 
     // Sort monsters to ensure all p2p clients process moves in the same way
-    let mut monsters: Vec<_> = monsters.iter_mut().collect();
+    let mut monsters: Vec<_> = monsters.iter().collect();
     monsters.sort_by_key(|(_, monster_entity)| monster_entity.index());
 
-    for (mut monster, monster_entity, movement, rng_counter) in
+    for (monster, monster_entity, movement, rng_counter) in
         monsters
             .into_iter()
             .filter_map(|(monster, monster_entity)| {
@@ -53,15 +49,12 @@ pub fn do_monsters_action(
         } else if !planned.contains(&pos) && !walls.contains(&pos) {
             planned.remove(&DungeonPosition::from_vec3(monster.translation));
             planned.insert(pos);
-            move_event.send(MonsterMovesEvent::new(monster_entity, pos.to_vec2()));
-            monster.translation = pos.to_vec3(config::MONSTER_Z_LAYER);
-            monster_tracker.push(MonsterMove {
-                frame,
-                monster: monster_entity,
-                movement: DungeonPosition::from_vec2(movement),
-                pos,
+            move_event.send(MonsterMovesEvent::new(
+                monster_entity,
+                movement,
+                pos.to_vec2(),
                 rng_counter,
-            });
+            ));
         }
     }
 }

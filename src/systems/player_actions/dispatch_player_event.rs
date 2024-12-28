@@ -1,5 +1,5 @@
 use super::PlayerAction;
-use crate::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent};
+use crate::events::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent};
 use bevy::prelude::{Entity, EventWriter};
 
 pub fn dispatch_player_event(

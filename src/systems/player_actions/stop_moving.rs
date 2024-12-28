@@ -1,4 +1,4 @@
-use crate::{components::MoveThrottle, StopMovingEvent};
+use crate::{components::MoveThrottle, events::StopMovingEvent};
 use bevy::prelude::{Commands, EventReader};
 
 pub fn stop_moving(mut commands: Commands, mut event_reader: EventReader<StopMovingEvent>) {

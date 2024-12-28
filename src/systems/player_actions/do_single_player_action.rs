@@ -1,7 +1,7 @@
 use super::dispatch_player_event::dispatch_player_event;
 use super::PlayerAction;
 use crate::components::Player;
-use crate::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent};
+use crate::events::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent};
 use bevy::prelude::*;
 
 /// Determines the `PlayerAction` based on keyboard inputs and dispatches the

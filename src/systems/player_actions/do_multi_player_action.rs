@@ -1,8 +1,9 @@
 use super::dispatch_player_event::dispatch_player_event;
 use crate::{
     components::Player,
+    events::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent},
     resources::config::{self, GgrsSessionConfig},
-    PlayerAction, PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent,
+    PlayerAction,
 };
 use bevy::prelude::*;
 use bevy_ggrs::PlayerInputs;

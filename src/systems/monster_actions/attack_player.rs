@@ -1,4 +1,4 @@
-use crate::{GameState, MonsterAttacksEvent};
+use crate::{events::MonsterAttacksEvent, GameState};
 use bevy::prelude::*;
 
 pub fn attack_player(

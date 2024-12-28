@@ -26,12 +26,19 @@ impl MonsterAttacksEvent {
 #[derive(Event)]
 pub struct MonsterMovesEvent {
     pub monster: Entity,
+    pub movement: Vec2,
     pub pos: Vec2,
+    pub rng_counter: u128,
 }
 
 impl MonsterMovesEvent {
-    pub fn new(monster: Entity, pos: Vec2) -> Self {
-        Self { monster, pos }
+    pub fn new(monster: Entity, movement: Vec2, pos: Vec2, rng_counter: u128) -> Self {
+        Self {
+            monster,
+            movement,
+            pos,
+            rng_counter,
+        }
     }
 }
 

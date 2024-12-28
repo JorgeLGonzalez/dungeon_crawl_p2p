@@ -1,4 +1,4 @@
-use crate::PlayerAttacksEvent;
+use crate::events::PlayerAttacksEvent;
 use bevy::{log::info, prelude::*};
 
 pub fn attack_monster(mut commands: Commands, mut event_reader: EventReader<PlayerAttacksEvent>) {
