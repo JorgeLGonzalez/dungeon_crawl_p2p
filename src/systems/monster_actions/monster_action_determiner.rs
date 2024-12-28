@@ -26,9 +26,9 @@ pub struct MonsterActionDeterminer {
 }
 
 impl MonsterActionDeterminer {
-    pub fn new(monster: Entity, current_pos: Vec2) -> Self {
+    pub fn from_query_tuple((transform, monster): (&Transform, Entity)) -> Self {
         Self {
-            current_pos: DungeonPosition::from_vec2(current_pos),
+            current_pos: DungeonPosition::from_vec2(transform.translation.truncate()),
             monster,
             movement: Vec2::ZERO,
             rng_counter: 0,
@@ -78,6 +78,10 @@ impl MonsterActionDeterminer {
             target_pos,
             ..self
         })
+    }
+
+    pub fn sort_key(&self) -> u32 {
+        self.monster.index()
     }
 
     fn update_monster_positions(&self, monster_positions: &mut MonsterPositionSet) {

@@ -6,10 +6,7 @@ use crate::{
     events::{MonsterAttacksEvent, MonsterMovesEvent},
     resources::{DungeonPosition, RandomGenerator},
 };
-use bevy::{
-    prelude::*,
-    utils::hashbrown::{HashMap, HashSet},
-};
+use bevy::prelude::*;
 
 type MonsterQuery<'w, 's, 't> = Query<'w, 's, (&'t Transform, Entity), With<Monster>>;
 type PlayersQuery<'w, 's, 't, 'p> =
@@ -24,19 +21,12 @@ pub fn do_monsters_action(
     players: PlayersQuery,
     wall_tiles: WallQuery,
 ) {
-    let walls = create_wall_set(&wall_tiles);
-    let players = create_player_set(&players);
     let mut planned = create_current_monster_positions_set(&monsters);
+    let players = create_player_set(&players);
+    let walls = create_wall_set(&wall_tiles);
 
-    // Sort monsters to ensure all p2p clients process moves in the same way
-    let mut monsters: Vec<_> = monsters.iter().collect();
-    monsters.sort_by_key(|(_, monster_entity)| monster_entity.index());
-
-    monsters
+    sorted_determiners(&monsters)
         .into_iter()
-        .map(|(transform, monster)| {
-            MonsterActionDeterminer::new(monster, transform.translation.truncate())
-        })
         .filter_map(|d| d.plan_move(&mut rng))
         .filter_map(|d| {
             d.attack(&players)
@@ -53,7 +43,7 @@ pub fn do_monsters_action(
 }
 
 fn create_current_monster_positions_set(monsters: &MonsterQuery) -> MonsterPositionSet {
-    HashSet::<DungeonPosition>::from_iter(
+    MonsterPositionSet::from_iter(
         monsters
             .iter()
             .map(|(m, _)| DungeonPosition::from_vec3(m.translation)),
@@ -61,7 +51,7 @@ fn create_current_monster_positions_set(monsters: &MonsterQuery) -> MonsterPosit
 }
 
 fn create_player_set(players: &PlayersQuery) -> PlayerPositionMap {
-    HashMap::from_iter(players.iter().map(|(p, player_entity, player)| {
+    PlayerPositionMap::from_iter(players.iter().map(|(p, player_entity, player)| {
         (
             DungeonPosition::from_vec3(p.translation),
             (player_entity, player.id),
@@ -70,9 +60,21 @@ fn create_player_set(players: &PlayersQuery) -> PlayerPositionMap {
 }
 
 fn create_wall_set(walls: &WallQuery) -> WallPositionSet {
-    HashSet::<DungeonPosition>::from_iter(
+    WallPositionSet::from_iter(
         walls
             .iter()
             .map(|w| DungeonPosition::from_vec3(w.translation)),
     )
+}
+
+/// Create a Vec of [`MonsterActionDeterminer`]s to help process the actions.
+/// Sort them monsters to ensure all p2p clients process moves in the same order.
+fn sorted_determiners(monsters: &MonsterQuery) -> Vec<MonsterActionDeterminer> {
+    let mut monsters: Vec<_> = monsters
+        .iter()
+        .map(MonsterActionDeterminer::from_query_tuple)
+        .collect();
+    monsters.sort_by_key(|d| d.sort_key());
+
+    monsters
 }
