@@ -85,6 +85,7 @@ fn main() {
                         move_player,
                         move_camera,
                         move_monsters,
+                        attack_player,
                     )
                         .chain()
                         .run_if(|| GAME_MODE == GameMode::SinglePlayer),
@@ -106,19 +107,22 @@ fn main() {
                     move_player,
                     move_camera,
                     move_monsters,
+                    attack_player,
                 )
                     .chain()
                     .run_if(in_state(GameState::InGame)),
                 persist_monster_moves,
             )
                 .chain(),
-        );
+        )
+        .add_systems(OnEnter(GameState::GameOver), game_over);
 
     app.run();
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]
 enum GameState {
+    GameOver,
     InGame,
     Paused,
     #[default]

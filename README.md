@@ -11,11 +11,15 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] should we add/remove PlayerMovement component instead? More generally, the throttle is weird as it is only reset when there is a move. it should reset also when key is released?
 - [x] simplify intersects on player moves. check against monster moves
 - [x] set game mode to p2p for wasm by default and sp otherwise
-- [ ] monster attack player
+- [x] monster attack player. For now, it just transitions to GameOver which simply logs out game over. What should happen in p2p mode? Respawn dead player?
+- [ ] Health component and give player 10
+- [ ] health bar
 - [ ] prevent players from moving onto each other (no attacks yet)
 - [ ] monster follows player
 - [ ] monster FOV
 - [ ] player FOV
+- [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
+- [ ] restart game on game over key press
 - [ ] other dungeons
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)

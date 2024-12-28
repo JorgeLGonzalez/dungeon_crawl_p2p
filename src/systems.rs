@@ -1,6 +1,8 @@
 mod camera;
 mod create_p2p_session;
+mod game_over;
 mod handle_ggrs_events;
+mod monster_actions;
 mod monster_movement;
 mod persist_monster_moves;
 mod player_actions;
@@ -11,7 +13,9 @@ mod startup;
 
 pub use camera::{move_camera, spawn_camera};
 pub use create_p2p_session::create_p2p_session;
+pub use game_over::game_over;
 pub use handle_ggrs_events::handle_ggrs_events;
+pub use monster_actions::*;
 pub use monster_movement::move_monsters;
 pub use persist_monster_moves::persist_monster_moves;
 pub use player_actions::*;
