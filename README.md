@@ -10,7 +10,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] re-enable snapshots
 - [x] should we add/remove PlayerMovement component instead? More generally, the throttle is weird as it is only reset when there is a move. it should reset also when key is released?
 - [x] simplify intersects on player moves. check against monster moves
-- [ ] cmd line param for run mode. (clap)
+- [x] set game mode to p2p for wasm by default and sp otherwise
 - [ ] monster attack player
 - [ ] monster follows player
 - [ ] monster FOV
