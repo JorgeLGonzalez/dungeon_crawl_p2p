@@ -12,6 +12,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] simplify intersects on player moves. check against monster moves
 - [x] set game mode to p2p for wasm by default and sp otherwise
 - [ ] monster attack player
+- [ ] prevent players from moving onto each other (no attacks yet)
 - [ ] monster follows player
 - [ ] monster FOV
 - [ ] player FOV
@@ -19,7 +20,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
 - [ ] spawn_dungeon: should use insert_batch as that is more efficient
-- [ ] how to enable trace logging only for my app (or per module)
+- [x] how to enable trace logging only for my app (or per module)
 - [x] tunnel between rooms
 - [x] zoom in/out in dungeon or scroll (or both)
 - [x] camera should have its own system

@@ -1,15 +1,16 @@
 use crate::{
-    components::{Monster, WallTile},
+    components::{Monster, Player, WallTile},
     resources::{config, DungeonPosition, MonsterMove, MonsterMoveTracker, RandomGenerator},
 };
 use bevy::{
-    math::Vec2,
-    prelude::{Entity, Query, Res, ResMut, Transform, With, Without},
-    utils::hashbrown::HashSet,
+    prelude::*,
+    utils::hashbrown::{HashMap, HashSet},
 };
 use bevy_ggrs::RollbackFrameCount;
 
 type MonsterQuery<'w, 's, 't> = Query<'w, 's, (&'t mut Transform, Entity), With<Monster>>;
+type PlayersQuery<'w, 's, 't, 'p> =
+    Query<'w, 's, (&'t Transform, Entity, &'p Player), (With<Player>, Without<Monster>)>;
 type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Monster>)>;
 
 pub fn move_monsters(
@@ -17,9 +18,11 @@ pub fn move_monsters(
     mut monster_tracker: ResMut<MonsterMoveTracker>,
     mut rng: ResMut<RandomGenerator>,
     frame_count: Res<RollbackFrameCount>,
+    players: PlayersQuery,
     wall_tiles: WallQuery,
 ) {
     let walls = create_wall_set(&wall_tiles);
+    let players = create_player_set(&players);
     let mut planned = create_current_monster_positions_set(&monsters);
     let frame = frame_count.0;
 
@@ -37,7 +40,9 @@ pub fn move_monsters(
     {
         let pos = DungeonPosition::from_vec2(monster.translation.truncate() + movement);
 
-        if !planned.contains(&pos) && !walls.contains(&pos) {
+        if let Some((_, player_id)) = players.get(&pos) {
+            info!("Monster {} attacks player {}", monster_entity, player_id);
+        } else if !planned.contains(&pos) && !walls.contains(&pos) {
             planned.remove(&DungeonPosition::from_vec3(monster.translation));
             planned.insert(pos);
             monster.translation = pos.to_vec3(config::MONSTER_Z_LAYER);
@@ -52,19 +57,28 @@ pub fn move_monsters(
     }
 }
 
-fn create_wall_set(walls: &WallQuery) -> HashSet<DungeonPosition> {
-    HashSet::<DungeonPosition>::from_iter(
-        walls
-            .iter()
-            .map(|w| DungeonPosition::from_vec3(w.translation)),
-    )
-}
-
 fn create_current_monster_positions_set(monsters: &MonsterQuery) -> HashSet<DungeonPosition> {
     HashSet::<DungeonPosition>::from_iter(
         monsters
             .iter()
             .map(|(m, _)| DungeonPosition::from_vec3(m.translation)),
+    )
+}
+
+fn create_player_set(players: &PlayersQuery) -> HashMap<DungeonPosition, (Entity, usize)> {
+    HashMap::from_iter(players.iter().map(|(p, player_entity, player)| {
+        (
+            DungeonPosition::from_vec3(p.translation),
+            (player_entity, player.id),
+        )
+    }))
+}
+
+fn create_wall_set(walls: &WallQuery) -> HashSet<DungeonPosition> {
+    HashSet::<DungeonPosition>::from_iter(
+        walls
+            .iter()
+            .map(|w| DungeonPosition::from_vec3(w.translation)),
     )
 }
 
