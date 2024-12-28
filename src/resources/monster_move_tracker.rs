@@ -2,11 +2,8 @@ use super::{
     config::{MONSTER_TRACKER_AUTO_SAVE_ENABLED, MONSTER_TRACKER_AUTO_SAVE_THRESHOLD},
     DungeonPosition,
 };
-use crate::resources::config::NUM_MONSTERS;
-use bevy::{
-    log::trace,
-    prelude::{Entity, Resource},
-};
+use crate::{events::MonsterMovesEvent, resources::config::NUM_MONSTERS};
+use bevy::prelude::*;
 use bevy_ggrs::ggrs::Frame;
 use std::collections::VecDeque;
 
@@ -25,20 +22,25 @@ impl MonsterMoveTracker {
         }
     }
 
-    pub fn push(&mut self, the_move: MonsterMove) {
+    pub fn push(&mut self, frame: Frame, event: &MonsterMovesEvent) {
         if self.moves.len() >= MAX_SIZE {
             self.moves.pop_front();
         }
 
         trace!(
-            "Monster {:?} moved {} to {} at frame {} and rng {}",
-            the_move.monster,
-            the_move.movement,
-            the_move.pos,
-            the_move.frame,
-            the_move.rng_counter
+            "Monster {:?} moved {} to {} at frame {frame} and rng {}",
+            event.monster,
+            event.movement,
+            event.pos,
+            event.rng_counter
         );
-        self.moves.push_back(the_move);
+        self.moves.push_back(MonsterMove::new(
+            frame,
+            event.monster,
+            DungeonPosition::from_vec2(event.movement),
+            DungeonPosition::from_vec2(event.pos),
+            event.rng_counter,
+        ));
     }
 
     pub fn threshold(&self) -> bool {
@@ -61,6 +63,21 @@ pub struct MonsterMove {
 }
 
 impl MonsterMove {
+    pub fn new(
+        frame: Frame,
+        monster: Entity,
+        movement: DungeonPosition,
+        pos: DungeonPosition,
+        rng_counter: u128,
+    ) -> Self {
+        Self {
+            frame,
+            monster,
+            movement,
+            pos,
+            rng_counter,
+        }
+    }
     pub fn csv_headings() -> String {
         "monster,frame,movement,pos,rng".to_string()
     }
