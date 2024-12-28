@@ -1,17 +1,17 @@
 use bevy::{log::error, prelude::Resource};
+use bevy_ggrs::checksum_hasher;
 use bevy_matchbox::{prelude::PeerId, MatchboxSocket};
 use rand::{distributions::uniform::SampleUniform, prelude::*, Error};
 use rand_xoshiro::Xoshiro256PlusPlus;
 use std::hash::{Hash, Hasher};
 use std::ops::Range;
-use bevy_ggrs::checksum_hasher;
 
 /// We seed the random number generator so that in a multi-player game the random
 /// numbers generated are exactly the same for both players. This means we do
 /// not have to keep random stuff in sync as it is deterministic.
 #[derive(Clone, Debug, Resource)]
 pub struct RandomGenerator {
-    pub counter: u128,
+    pub counter: RandomCounter,
     rng: Xoshiro256PlusPlus,
 }
 
@@ -90,6 +90,8 @@ impl Hash for RandomGenerator {
         self.counter.hash(state);
     }
 }
+
+pub type RandomCounter = u128;
 
 pub fn checksum_rng(rng: &RandomGenerator) -> u64 {
     let mut hasher = checksum_hasher();

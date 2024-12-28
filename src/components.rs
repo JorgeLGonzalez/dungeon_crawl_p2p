@@ -17,8 +17,10 @@ pub struct Monster;
 
 #[derive(Clone, Component, Copy, Debug)]
 pub struct Player {
-    pub id: usize,
+    pub id: PlayerId,
 }
+
+pub type PlayerId = usize;
 
 #[derive(Component)]
 pub struct WallTile;

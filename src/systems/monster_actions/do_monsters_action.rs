@@ -1,4 +1,6 @@
-use super::determine_monster_action::{determine_monster_action, MonsterAction};
+use super::monster_action_determiner::{
+    MonsterAction, MonsterActionDeterminer, MonsterPositionSet, PlayerPositionMap, WallPositionSet,
+};
 use crate::{
     components::{Monster, Player, WallTile},
     events::{MonsterAttacksEvent, MonsterMovesEvent},
@@ -32,15 +34,13 @@ pub fn do_monsters_action(
 
     monsters
         .into_iter()
-        .filter_map(|(transform, monster)| {
-            determine_monster_action(
-                monster,
-                transform.translation.truncate(),
-                &players,
-                &walls,
-                &mut planned,
-                &mut rng,
-            )
+        .map(|(transform, monster)| {
+            MonsterActionDeterminer::new(monster, transform.translation.truncate())
+        })
+        .filter_map(|d| d.plan_move(&mut rng))
+        .filter_map(|d| {
+            d.attack(&players)
+                .or_else(|| d.move_monster(&mut planned, &walls))
         })
         .for_each(|action| match action {
             MonsterAction::Attack(e) => {
@@ -52,7 +52,7 @@ pub fn do_monsters_action(
         });
 }
 
-fn create_current_monster_positions_set(monsters: &MonsterQuery) -> HashSet<DungeonPosition> {
+fn create_current_monster_positions_set(monsters: &MonsterQuery) -> MonsterPositionSet {
     HashSet::<DungeonPosition>::from_iter(
         monsters
             .iter()
@@ -60,7 +60,7 @@ fn create_current_monster_positions_set(monsters: &MonsterQuery) -> HashSet<Dung
     )
 }
 
-fn create_player_set(players: &PlayersQuery) -> HashMap<DungeonPosition, (Entity, usize)> {
+fn create_player_set(players: &PlayersQuery) -> PlayerPositionMap {
     HashMap::from_iter(players.iter().map(|(p, player_entity, player)| {
         (
             DungeonPosition::from_vec3(p.translation),
@@ -69,7 +69,7 @@ fn create_player_set(players: &PlayersQuery) -> HashMap<DungeonPosition, (Entity
     }))
 }
 
-fn create_wall_set(walls: &WallQuery) -> HashSet<DungeonPosition> {
+fn create_wall_set(walls: &WallQuery) -> WallPositionSet {
     HashSet::<DungeonPosition>::from_iter(
         walls
             .iter()

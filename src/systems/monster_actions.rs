@@ -1,6 +1,6 @@
 mod attack_player;
-mod determine_monster_action;
 mod do_monsters_action;
+mod monster_action_determiner;
 mod move_monster;
 
 pub use attack_player::attack_player;
