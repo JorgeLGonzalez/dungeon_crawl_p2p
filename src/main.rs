@@ -77,7 +77,7 @@ fn main() {
                         in_state(GameState::InGame).and(|| GAME_MODE != GameMode::SinglePlayer),
                     ),
                     (
-                        do_single_player_action,
+                        do_player_action,
                         tick_move_throttle,
                         stop_moving,
                         handle_move_intent,
@@ -100,7 +100,7 @@ fn main() {
             (
                 (
                     // below should follow same order as single player mode Update
-                    do_multi_player_action,
+                    do_player_action,
                     tick_move_throttle,
                     stop_moving,
                     handle_move_intent,
