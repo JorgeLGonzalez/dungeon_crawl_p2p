@@ -14,7 +14,7 @@ type PlayersQuery<'w, 's, 't, 'p> =
     Query<'w, 's, (&'t Transform, Entity, &'p Player), (With<Player>, Without<Monster>)>;
 type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Monster>)>;
 
-pub fn move_monsters(
+pub fn do_monsters_action(
     mut attack_event: EventWriter<MonsterAttacksEvent>,
     mut monsters: MonsterQuery,
     mut monster_tracker: ResMut<MonsterMoveTracker>,

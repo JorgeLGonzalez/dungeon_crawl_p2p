@@ -84,7 +84,7 @@ fn main() {
                         attack_monster,
                         move_player,
                         move_camera,
-                        move_monsters,
+                        do_monsters_action,
                         attack_player,
                     )
                         .chain()
@@ -106,7 +106,7 @@ fn main() {
                     attack_monster,
                     move_player,
                     move_camera,
-                    move_monsters,
+                    do_monsters_action,
                     attack_player,
                 )
                     .chain()
