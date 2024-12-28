@@ -1,7 +1,8 @@
+use super::determine_monster_action::{determine_monster_action, MonsterAction};
 use crate::{
     components::{Monster, Player, WallTile},
     events::{MonsterAttacksEvent, MonsterMovesEvent},
-    resources::{config, DungeonPosition, RandomGenerator},
+    resources::{DungeonPosition, RandomGenerator},
 };
 use bevy::{
     prelude::*,
@@ -29,34 +30,26 @@ pub fn do_monsters_action(
     let mut monsters: Vec<_> = monsters.iter().collect();
     monsters.sort_by_key(|(_, monster_entity)| monster_entity.index());
 
-    for (monster, monster_entity, movement, rng_counter) in
-        monsters
-            .into_iter()
-            .filter_map(|(monster, monster_entity)| {
-                determine_movement(&mut rng)
-                    .map(|(movement, rng_counter)| (monster, monster_entity, movement, rng_counter))
-            })
-    {
-        let pos = DungeonPosition::from_vec2(monster.translation.truncate() + movement);
-
-        if let Some((player, player_id)) = players.get(&pos) {
-            attack_event.send(MonsterAttacksEvent::new(
-                monster_entity,
-                *player,
-                *player_id,
-                pos.to_vec2(),
-            ));
-        } else if !planned.contains(&pos) && !walls.contains(&pos) {
-            planned.remove(&DungeonPosition::from_vec3(monster.translation));
-            planned.insert(pos);
-            move_event.send(MonsterMovesEvent::new(
-                monster_entity,
-                movement,
-                pos.to_vec2(),
-                rng_counter,
-            ));
-        }
-    }
+    monsters
+        .into_iter()
+        .filter_map(|(transform, monster)| {
+            determine_monster_action(
+                monster,
+                transform.translation.truncate(),
+                &players,
+                &walls,
+                &mut planned,
+                &mut rng,
+            )
+        })
+        .for_each(|action| match action {
+            MonsterAction::Attack(e) => {
+                attack_event.send(e);
+            }
+            MonsterAction::Move(e) => {
+                move_event.send(e);
+            }
+        });
 }
 
 fn create_current_monster_positions_set(monsters: &MonsterQuery) -> HashSet<DungeonPosition> {
@@ -82,20 +75,4 @@ fn create_wall_set(walls: &WallQuery) -> HashSet<DungeonPosition> {
             .iter()
             .map(|w| DungeonPosition::from_vec3(w.translation)),
     )
-}
-
-fn determine_movement(rng: &mut RandomGenerator) -> Option<(Vec2, u128)> {
-    if !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
-        return None;
-    }
-
-    let movement = match rng.gen_range(0..4) {
-        0 => Vec2::Y,
-        1 => Vec2::NEG_Y,
-        2 => Vec2::NEG_X,
-        3 => Vec2::X,
-        _ => unreachable!(),
-    };
-
-    Some((movement, rng.counter))
 }
