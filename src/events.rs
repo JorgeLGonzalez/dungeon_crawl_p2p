@@ -7,7 +7,7 @@ use bevy::{
 #[derive(Event)]
 pub struct MonsterAttacksEvent {
     pub monster: Entity,
-    pub player: Entity,
+    pub _player: Entity,
     pub player_id: usize,
     pub pos: Vec2,
 }
@@ -16,10 +16,22 @@ impl MonsterAttacksEvent {
     pub fn new(monster: Entity, player: Entity, player_id: usize, pos: Vec2) -> Self {
         Self {
             monster,
-            player,
+            _player: player,
             player_id,
             pos,
         }
+    }
+}
+
+#[derive(Event)]
+pub struct MonsterMovesEvent {
+    pub monster: Entity,
+    pub pos: Vec2,
+}
+
+impl MonsterMovesEvent {
+    pub fn new(monster: Entity, pos: Vec2) -> Self {
+        Self { monster, pos }
     }
 }
 

@@ -1,7 +1,7 @@
 use crate::{
     components::{Monster, Player, WallTile},
     resources::{config, DungeonPosition, MonsterMove, MonsterMoveTracker, RandomGenerator},
-    MonsterAttacksEvent,
+    MonsterAttacksEvent, MonsterMovesEvent,
 };
 use bevy::{
     prelude::*,
@@ -18,6 +18,7 @@ pub fn do_monsters_action(
     mut attack_event: EventWriter<MonsterAttacksEvent>,
     mut monsters: MonsterQuery,
     mut monster_tracker: ResMut<MonsterMoveTracker>,
+    mut move_event: EventWriter<MonsterMovesEvent>,
     mut rng: ResMut<RandomGenerator>,
     frame_count: Res<RollbackFrameCount>,
     players: PlayersQuery,
@@ -52,6 +53,7 @@ pub fn do_monsters_action(
         } else if !planned.contains(&pos) && !walls.contains(&pos) {
             planned.remove(&DungeonPosition::from_vec3(monster.translation));
             planned.insert(pos);
+            move_event.send(MonsterMovesEvent::new(monster_entity, pos.to_vec2()));
             monster.translation = pos.to_vec3(config::MONSTER_Z_LAYER);
             monster_tracker.push(MonsterMove {
                 frame,

@@ -40,6 +40,7 @@ fn main() {
     app.init_resource::<MonsterMoveTracker>()
         .add_event::<DesyncEvent>()
         .add_event::<MonsterAttacksEvent>()
+        .add_event::<MonsterMovesEvent>()
         .add_event::<PlayerAttacksEvent>()
         .add_event::<PlayerMovesEvent>()
         .add_event::<PlayerMoveIntentEvent>()
