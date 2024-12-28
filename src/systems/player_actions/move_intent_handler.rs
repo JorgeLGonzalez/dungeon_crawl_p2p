@@ -1,4 +1,4 @@
-use crate::{components::*, PlayerAttackEvent, PlayerMoveEvent, PlayerMoveIntentEvent};
+use crate::{components::*, PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent};
 use bevy::{math::Vec2, prelude::*};
 
 pub type ObstacleQuery<'w, 's, 't, 'm, 'wt> = Query<
@@ -17,8 +17,8 @@ pub type PlayerQuery<'w, 's, 't, 'm> =
     Query<'w, 's, (&'t Transform, Option<&'m MoveThrottle>), With<Player>>;
 
 pub enum PlayerMove {
-    Attack(PlayerAttackEvent),
-    Move(PlayerMoveEvent),
+    Attack(PlayerAttacksEvent),
+    Move(PlayerMovesEvent),
 }
 
 /// Helper for `handle_move_intent`.
@@ -49,7 +49,7 @@ impl MoveIntentHandler {
         } = self.event;
         let target_pos = self.target_pos;
         match self.find_obstacle(obstacles) {
-            Some(Obstacle::Monster(monster)) => Some(PlayerMove::Attack(PlayerAttackEvent::new(
+            Some(Obstacle::Monster(monster)) => Some(PlayerMove::Attack(PlayerAttacksEvent::new(
                 player_id, target_pos, monster,
             ))),
             Some(Obstacle::Wall) => {
@@ -57,7 +57,7 @@ impl MoveIntentHandler {
 
                 None
             }
-            None => Some(PlayerMove::Move(PlayerMoveEvent::new(
+            None => Some(PlayerMove::Move(PlayerMovesEvent::new(
                 player, player_id, target_pos,
             ))),
         }

@@ -1,6 +1,7 @@
 use crate::{
     components::{Monster, Player, WallTile},
     resources::{config, DungeonPosition, MonsterMove, MonsterMoveTracker, RandomGenerator},
+    MonsterAttacksEvent,
 };
 use bevy::{
     prelude::*,
@@ -14,6 +15,7 @@ type PlayersQuery<'w, 's, 't, 'p> =
 type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Monster>)>;
 
 pub fn move_monsters(
+    mut attack_event: EventWriter<MonsterAttacksEvent>,
     mut monsters: MonsterQuery,
     mut monster_tracker: ResMut<MonsterMoveTracker>,
     mut rng: ResMut<RandomGenerator>,
@@ -40,8 +42,13 @@ pub fn move_monsters(
     {
         let pos = DungeonPosition::from_vec2(monster.translation.truncate() + movement);
 
-        if let Some((_, player_id)) = players.get(&pos) {
-            info!("Monster {} attacks player {}", monster_entity, player_id);
+        if let Some((player, player_id)) = players.get(&pos) {
+            attack_event.send(MonsterAttacksEvent::new(
+                monster_entity,
+                *player,
+                *player_id,
+                pos.to_vec2(),
+            ));
         } else if !planned.contains(&pos) && !walls.contains(&pos) {
             planned.remove(&DungeonPosition::from_vec3(monster.translation));
             planned.insert(pos);

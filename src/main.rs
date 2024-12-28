@@ -39,8 +39,9 @@ fn main() {
 
     app.init_resource::<MonsterMoveTracker>()
         .add_event::<DesyncEvent>()
-        .add_event::<PlayerAttackEvent>()
-        .add_event::<PlayerMoveEvent>()
+        .add_event::<MonsterAttacksEvent>()
+        .add_event::<PlayerAttacksEvent>()
+        .add_event::<PlayerMovesEvent>()
         .add_event::<PlayerMoveIntentEvent>()
         .add_event::<SnapshotStateEvent>()
         .add_event::<StopMovingEvent>();

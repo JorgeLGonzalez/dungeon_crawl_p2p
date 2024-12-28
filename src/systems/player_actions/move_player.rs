@@ -1,6 +1,6 @@
 use crate::{
     components::{MoveThrottle, Player},
-    events::PlayerMoveEvent,
+    events::PlayerMovesEvent,
     resources::config::PLAYER_Z_LAYER,
 };
 use bevy::{
@@ -10,7 +10,7 @@ use bevy::{
 
 pub fn move_player(
     mut commands: Commands,
-    mut event_reader: EventReader<PlayerMoveEvent>,
+    mut event_reader: EventReader<PlayerMovesEvent>,
     mut player: Query<&mut Transform, With<Player>>,
 ) {
     for event in event_reader.read() {

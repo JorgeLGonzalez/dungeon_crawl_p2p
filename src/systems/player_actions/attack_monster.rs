@@ -1,9 +1,9 @@
-use crate::PlayerAttackEvent;
+use crate::PlayerAttacksEvent;
 use bevy::{log::info, prelude::*};
 
-pub fn attack_monster(mut commands: Commands, mut event_reader: EventReader<PlayerAttackEvent>) {
+pub fn attack_monster(mut commands: Commands, mut event_reader: EventReader<PlayerAttacksEvent>) {
     for event in event_reader.read() {
-        let PlayerAttackEvent {
+        let PlayerAttacksEvent {
             monster,
             player_id,
             pos,
