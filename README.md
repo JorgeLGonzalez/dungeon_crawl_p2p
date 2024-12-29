@@ -14,7 +14,9 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] monster attack player. For now, it just transitions to GameOver which simply logs out game over. What should happen in p2p mode? Respawn dead player?
 - [x] Maintain single list of systems for player/monster actions. Not sure how best to do this. Something like defining an array/tuple of the set of systems that are the same between GgrsSchedule and Update. Quick dialog w/ copilot suggests a macro. But it is ugly. Perhaps combine a single do_player_action which internally branches based on GAME_MODE? This way the tuple is the same and can be defined as a var that can be used in both places, if the borrow checker allows? Or maybe have an add_systems that selects the GgrsSchedule vs Update based on GAME_MODE?
 - [x] prevent players from moving onto each other (no attacks yet)
-- [ ] Health component and give player 10
+- [x] Health component and give player 10
+  - [ ] Elapsed time healing
+  - [ ] synctest
 - [ ] health bar
 - [ ] monster FOV
 - [ ] player FOV
