@@ -50,6 +50,7 @@ fn main() {
     let core_systems = (
         do_player_action,
         tick_move_throttle,
+        healing,
         stop_moving,
         handle_move_intent,
         attack_monster,

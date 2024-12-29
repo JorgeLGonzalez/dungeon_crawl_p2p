@@ -1,7 +1,9 @@
 mod checksum_transform;
+mod healing;
 mod move_throttle;
 
 pub use checksum_transform::checksum_transform;
+pub use healing::Healing;
 pub use move_throttle::{checksum_move_throttle, MoveThrottle};
 
 use bevy::prelude::*;

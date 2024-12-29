@@ -37,6 +37,8 @@ pub const MONSTER_TRACKER_AUTO_SAVE_THRESHOLD: usize = 100;
 // Player
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
 pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
+/// Amount of seconds between auto-health increments
+pub const PLAYER_HEALING_SECONDS: f32 = 10.0;
 pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 

@@ -1,5 +1,5 @@
 use crate::{
-    components::{Health, Player},
+    components::{Healing, Health, Player},
     events::MonsterAttacksEvent,
     GameState,
 };
@@ -7,6 +7,7 @@ use bevy::prelude::*;
 
 pub fn attack_player(
     mut attack_events: EventReader<MonsterAttacksEvent>,
+    mut commands: Commands,
     mut next_state: ResMut<NextState<GameState>>,
     mut players: Query<&mut Health, With<Player>>,
 ) {
@@ -17,6 +18,8 @@ pub fn attack_player(
 
         if health.current == 0 {
             next_state.set(GameState::GameOver);
+        } else {
+            commands.entity(event.player).insert(Healing::default());
         }
     }
 }
