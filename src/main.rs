@@ -42,7 +42,13 @@ fn main() {
     app.add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
         .add_systems(
             OnEnter(GameState::InGame),
-            (spawn_dungeon, spawn_players, spawn_monsters).chain(),
+            (
+                spawn_dungeon,
+                spawn_players,
+                spawn_health_bar,
+                spawn_monsters,
+            )
+                .chain(),
         )
         .add_systems(OnEnter(GameState::GameOver), game_over);
 
@@ -55,7 +61,7 @@ fn main() {
         handle_move_intent,
         attack_monster,
         move_player,
-        move_camera,
+        move_camera_and_hud,
         do_monsters_action,
         attack_player,
         move_monster,

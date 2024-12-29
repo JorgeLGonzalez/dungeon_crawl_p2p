@@ -1,13 +1,14 @@
-use crate::components::Player;
+use crate::components::{HealthBar, Player};
 use crate::resources::config::{self, GameMode};
 use bevy::prelude::*;
 use bevy::render::camera::ScalingMode;
 use bevy_ggrs::LocalPlayers;
 
-pub fn move_camera(
+pub fn move_camera_and_hud(
     local_players: Res<LocalPlayers>,
-    players: Query<(&Player, &Transform)>,
-    mut cameras: Query<&mut Transform, (With<Camera>, Without<Player>)>,
+    players: Query<(&Player, &Transform), (Without<Camera>, Without<HealthBar>)>,
+    mut cameras: Query<&mut Transform, With<Camera>>,
+    mut health_bars: Query<&mut Transform, (With<HealthBar>, Without<Camera>)>,
 ) {
     let player_pos = players
         .iter()
@@ -20,6 +21,10 @@ pub fn move_camera(
     let mut camera = cameras.single_mut();
     camera.translation.x = player_pos.x;
     camera.translation.y = player_pos.y;
+
+    let mut health_bar = health_bars.single_mut();
+    health_bar.translation.y = player_pos.y + HEALTH_BAR_OFFSET;
+    health_bar.translation.x = player_pos.x;
 }
 
 pub fn spawn_camera(mut commands: Commands) {
@@ -34,3 +39,5 @@ pub fn spawn_camera(mut commands: Commands) {
         }),
     ));
 }
+
+const HEALTH_BAR_OFFSET: f32 = config::VIEWPORT_HEIGHT * config::CAMERA_SCALE / 2. - 0.5;

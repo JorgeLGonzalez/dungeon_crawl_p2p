@@ -15,7 +15,6 @@ pub enum GameMode {
 }
 
 // Dungeon view
-pub const CAMERA_SCALE: f32 = 2.;
 pub const MAP_WIDTH: usize = 100;
 pub const MAP_HEIGHT: usize = 52;
 pub const MAP_Z_LAYER: f32 = 10.;
@@ -24,6 +23,10 @@ pub const SAFETY_RADIUS: f32 = 10.;
 pub const TILE_WIDTH: f32 = 1.;
 pub const TILE_HEIGHT: f32 = TILE_WIDTH;
 pub const VIEWPORT_HEIGHT: f32 = 20.;
+
+// HUD
+pub const CAMERA_SCALE: f32 = 2.;
+pub const HUD_Z_LAYER: f32 = 900.;
 
 // Monsters
 pub const MONSTER_Z_LAYER: f32 = 90.;

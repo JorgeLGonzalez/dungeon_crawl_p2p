@@ -26,6 +26,9 @@ impl Health {
     }
 }
 
+#[derive(Component)]
+pub struct HealthBar;
+
 #[derive(Clone, Component, Copy, Debug)]
 pub struct Monster;
 
