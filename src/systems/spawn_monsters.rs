@@ -15,7 +15,7 @@ pub fn spawn_monsters(dungeon: Res<DungeonMap>, mut commands: Commands) {
         commands
             .spawn((
                 Monster,
-                Obstacle,
+                Obstacle::Monster,
                 Sprite {
                     color,
                     custom_size: Some(Vec2::new(TILE_WIDTH, TILE_HEIGHT)),

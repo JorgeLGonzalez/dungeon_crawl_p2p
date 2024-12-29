@@ -17,7 +17,7 @@ pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
         match tile.tile_type {
             TileType::Exit => commands.spawn((ExitTile, sprite, transform)),
             TileType::Floor => commands.spawn((FloorTile, sprite, transform)),
-            TileType::Wall => commands.spawn((WallTile, Obstacle, sprite, transform)),
+            TileType::Wall => commands.spawn((WallTile, Obstacle::Wall, sprite, transform)),
         };
     }
 

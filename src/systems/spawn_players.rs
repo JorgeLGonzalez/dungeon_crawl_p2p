@@ -18,7 +18,7 @@ pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
         let id = commands
             .spawn((
                 Player { id: player_idx },
-                Obstacle,
+                Obstacle::Player,
                 Sprite {
                     color,
                     custom_size: Some(Vec2::new(PLAYER_WIDTH, PLAYER_HEIGHT)),

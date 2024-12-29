@@ -16,7 +16,11 @@ pub struct FloorTile;
 pub struct Monster;
 
 #[derive(Component)]
-pub struct Obstacle;
+pub enum Obstacle {
+    Monster,
+    Player,
+    Wall,
+}
 
 #[derive(Clone, Component, Copy, Debug)]
 pub struct Player {

@@ -4,18 +4,7 @@ use crate::{
 };
 use bevy::{math::Vec2, prelude::*};
 
-pub type ObstacleQuery<'w, 's, 't, 'm, 'p, 'wt> = Query<
-    'w,
-    's,
-    (
-        &'t Transform,
-        Option<&'m Monster>,
-        Option<&'p Player>,
-        Option<&'wt WallTile>,
-        Entity,
-    ),
-    With<Obstacle>,
->;
+pub type ObstacleQuery<'w, 's, 't, 'o> = Query<'w, 's, (&'t Transform, &'o Obstacle, Entity)>;
 
 pub type PlayerQuery<'w, 's, 't, 'm> =
     Query<'w, 's, (&'t Transform, Option<&'m MoveThrottle>), With<Player>>;
@@ -79,14 +68,11 @@ impl MoveIntentHandler {
         obstacles
             .iter()
             .find(|(t, ..)| t.translation.truncate() == self.target_pos)
-            .map(
-                |(_, monster, player, wall, entity)| match (monster, player, wall) {
-                    (Some(_), ..) => ObstacleType::Monster(entity),
-                    (_, Some(_), _) => ObstacleType::OtherPlayer,
-                    (.., Some(_)) => ObstacleType::Wall,
-                    _ => unreachable!("Unknown obstacle type"),
-                },
-            )
+            .map(|(_, obstacle, entity)| match obstacle {
+                Obstacle::Monster => ObstacleType::Monster(entity),
+                Obstacle::Player => ObstacleType::OtherPlayer,
+                Obstacle::Wall => ObstacleType::Wall,
+            })
     }
 }
 
