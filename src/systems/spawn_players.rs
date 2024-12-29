@@ -1,5 +1,5 @@
 use crate::{
-    components::{Obstacle, Player},
+    components::{Health, Obstacle, Player},
     resources::{
         config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
         DungeonMap,
@@ -18,6 +18,7 @@ pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
         let id = commands
             .spawn((
                 Player { id: player_idx },
+                Health::new(10, 10),
                 Obstacle::Player,
                 Sprite {
                     color,

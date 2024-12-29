@@ -16,15 +16,15 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] prevent players from moving onto each other (no attacks yet)
 - [ ] Health component and give player 10
 - [ ] health bar
-- [ ] monster follows player
 - [ ] monster FOV
 - [ ] player FOV
+- [ ] monster follows player
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
 - [ ] restart game on game over key press
 - [ ] other dungeons
+  - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
-- [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [x] how to enable trace logging only for my app (or per module)
 - [x] tunnel between rooms
 - [x] zoom in/out in dungeon or scroll (or both)

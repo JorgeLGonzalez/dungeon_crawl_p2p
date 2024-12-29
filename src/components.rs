@@ -12,6 +12,18 @@ pub struct ExitTile;
 #[derive(Component)]
 pub struct FloorTile;
 
+#[derive(Component)]
+pub struct Health {
+    pub current: u8,
+    pub max: u8,
+}
+
+impl Health {
+    pub fn new(current: u8, max: u8) -> Self {
+        Self { current, max }
+    }
+}
+
 #[derive(Clone, Component, Copy, Debug)]
 pub struct Monster;
 
