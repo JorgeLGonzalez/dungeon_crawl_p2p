@@ -15,7 +15,7 @@ pub fn spawn_monsters(dungeon: Res<DungeonMap>, mut commands: Commands) {
         commands
             .spawn((
                 Monster,
-                Health::new(1, 1),
+                Health::new(1),
                 Obstacle::Monster,
                 Sprite {
                     color,

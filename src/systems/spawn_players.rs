@@ -18,7 +18,7 @@ pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
         let id = commands
             .spawn((
                 Player { id: player_idx },
-                Health::new(10, 10),
+                Health::new(config::PLAYER_HEALTH_MAX),
                 Obstacle::Player,
                 Sprite {
                     color,

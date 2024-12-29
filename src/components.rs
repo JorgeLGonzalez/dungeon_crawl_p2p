@@ -21,8 +21,8 @@ pub struct Health {
 }
 
 impl Health {
-    pub fn new(current: u8, max: u8) -> Self {
-        Self { current, max }
+    pub fn new( max: u8) -> Self {
+        Self { current: max, max }
     }
 }
 
