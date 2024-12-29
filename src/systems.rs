@@ -6,6 +6,7 @@ mod healing;
 mod hud;
 mod monster_actions;
 mod persist_monster_moves;
+mod player;
 mod player_actions;
 mod spawn_dungeon;
 mod spawn_monsters;

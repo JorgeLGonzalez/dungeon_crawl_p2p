@@ -16,15 +16,17 @@ pub struct FloorTile;
 
 #[derive(Component)]
 pub struct Health {
-    pub current: u8,
-    pub max: u8,
+    pub current: HealthUnit,
+    pub max: HealthUnit,
 }
 
 impl Health {
-    pub fn new( max: u8) -> Self {
+    pub fn new( max: HealthUnit) -> Self {
         Self { current: max, max }
     }
 }
+
+pub type HealthUnit = u8;
 
 #[derive(Component)]
 pub struct HealthBar;
