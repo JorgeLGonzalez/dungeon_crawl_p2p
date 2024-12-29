@@ -4,16 +4,17 @@ use crate::{
 };
 use bevy::{math::Vec2, prelude::*};
 
-pub type ObstacleQuery<'w, 's, 't, 'm, 'wt> = Query<
+pub type ObstacleQuery<'w, 's, 't, 'm, 'p, 'wt> = Query<
     'w,
     's,
     (
-        Entity,
         &'t Transform,
         Option<&'m Monster>,
+        Option<&'p Player>,
         Option<&'wt WallTile>,
+        Entity,
     ),
-    (Without<Player>, Without<FloorTile>),
+    With<Obstacle>,
 >;
 
 pub type PlayerQuery<'w, 's, 't, 'm> =
@@ -52,10 +53,15 @@ impl MoveIntentHandler {
         } = self.event;
         let target_pos = self.target_pos;
         match self.find_obstacle(obstacles) {
-            Some(Obstacle::Monster(monster)) => Some(PlayerMove::Attack(PlayerAttacksEvent::new(
-                player_id, target_pos, monster,
-            ))),
-            Some(Obstacle::Wall) => {
+            Some(ObstacleType::Monster(monster)) => Some(PlayerMove::Attack(
+                PlayerAttacksEvent::new(player_id, target_pos, monster),
+            )),
+            Some(ObstacleType::OtherPlayer) => {
+                info!("Player {player_id} move to {target_pos} blocked by another player");
+
+                None
+            }
+            Some(ObstacleType::Wall) => {
                 info!("Player {player_id} move to {target_pos} blocked by a wall");
 
                 None
@@ -69,20 +75,24 @@ impl MoveIntentHandler {
     /// Check whether the intended move lands the player in a Wall tile or
     /// a tile occupied by a monster, returning the type of obstacle. Return
     /// None if the tile is obstacle-free.
-    fn find_obstacle(&self, obstacles: &ObstacleQuery) -> Option<Obstacle> {
+    fn find_obstacle(&self, obstacles: &ObstacleQuery) -> Option<ObstacleType> {
         obstacles
             .iter()
-            .filter(|(_, t, ..)| t.translation.truncate() == self.target_pos)
-            .find_map(|(entity, _t, monster, wall)| {
-                monster
-                    .map(|_| Obstacle::Monster(entity))
-                    .or_else(|| wall.map(|_| Obstacle::Wall))
-            })
+            .find(|(t, ..)| t.translation.truncate() == self.target_pos)
+            .map(
+                |(_, monster, player, wall, entity)| match (monster, player, wall) {
+                    (Some(_), ..) => ObstacleType::Monster(entity),
+                    (_, Some(_), _) => ObstacleType::OtherPlayer,
+                    (.., Some(_)) => ObstacleType::Wall,
+                    _ => unreachable!("Unknown obstacle type"),
+                },
+            )
     }
 }
 
 #[derive(PartialEq, Eq, Hash)]
-enum Obstacle {
+enum ObstacleType {
     Monster(Entity),
+    OtherPlayer,
     Wall,
 }

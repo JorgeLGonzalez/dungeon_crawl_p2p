@@ -15,6 +15,9 @@ pub struct FloorTile;
 #[derive(Clone, Component, Copy, Debug)]
 pub struct Monster;
 
+#[derive(Component)]
+pub struct Obstacle;
+
 #[derive(Clone, Component, Copy, Debug)]
 pub struct Player {
     pub id: PlayerId,

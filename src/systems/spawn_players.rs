@@ -1,18 +1,11 @@
 use crate::{
-    components::Player,
+    components::{Obstacle, Player},
     resources::{
         config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
         DungeonMap,
     },
 };
-use bevy::{
-    color::Color,
-    log::info,
-    math::Vec2,
-    prelude::{Commands, Res, Transform},
-    sprite::Sprite,
-    utils::default,
-};
+use bevy::prelude::*;
 use bevy_ggrs::AddRollbackCommandExtension;
 
 pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
@@ -22,9 +15,10 @@ pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
             _ => Color::srgb(0., 1., 0.),
         };
 
-        commands
+        let id = commands
             .spawn((
                 Player { id: player_idx },
+                Obstacle,
                 Sprite {
                     color,
                     custom_size: Some(Vec2::new(PLAYER_WIDTH, PLAYER_HEIGHT)),
@@ -32,8 +26,9 @@ pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
                 },
                 Transform::from_translation(player_pos.to_vec3(config::PLAYER_Z_LAYER)),
             ))
-            .add_rollback();
+            .add_rollback()
+            .id();
 
-        info!("Spawned player {player_idx} at {player_pos:?}");
+        info!("Spawned player {player_idx} at {player_pos} [{id}]");
     }
 }

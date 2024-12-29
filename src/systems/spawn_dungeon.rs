@@ -1,17 +1,11 @@
 use crate::{
-    components::{ExitTile, FloorTile, WallTile},
+    components::{ExitTile, FloorTile, Obstacle, WallTile},
     resources::{
         config::{TILE_HEIGHT, TILE_WIDTH},
         RandomGenerator, RandomRoomsBuilder, TileType,
     },
 };
-use bevy::{
-    color::Color,
-    math::Vec2,
-    prelude::{Commands, ResMut, Transform},
-    sprite::Sprite,
-    utils::default,
-};
+use bevy::prelude::*;
 
 pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
     let dungeon = RandomRoomsBuilder::build(rng.as_mut());
@@ -21,16 +15,10 @@ pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
         let transform = Transform::from_translation(tile.pos.into());
 
         match tile.tile_type {
-            TileType::Exit => {
-                commands.spawn((ExitTile, sprite, transform));
-            }
-            TileType::Floor => {
-                commands.spawn((FloorTile, sprite, transform));
-            }
-            TileType::Wall => {
-                commands.spawn((WallTile, sprite, transform));
-            }
-        }
+            TileType::Exit => commands.spawn((ExitTile, sprite, transform)),
+            TileType::Floor => commands.spawn((FloorTile, sprite, transform)),
+            TileType::Wall => commands.spawn((WallTile, Obstacle, sprite, transform)),
+        };
     }
 
     commands.insert_resource(dungeon);
