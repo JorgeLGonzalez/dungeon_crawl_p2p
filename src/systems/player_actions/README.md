@@ -1,9 +1,9 @@
 # Player Actions
 
-- Move up,down,left,right
-- Commands like save state snapshot
-- Grab item
-- Use item (keys 1-0)
+- [x] Move up,down,left,right
+- [x] Commands like save state snapshot
+- [ ] Grab item
+- [ ] Use item (keys 1-0)
 
 ## MultiPlayer (and SyncTest)
 

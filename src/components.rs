@@ -15,7 +15,8 @@ pub struct FloorTile;
 #[derive(Clone, Component, Copy, Debug)]
 pub struct Monster;
 
-#[derive(Component)]
+/// An entity that can interfere with a player's intended movement
+#[derive(Component, Clone, Copy)]
 pub enum Obstacle {
     Monster,
     Player,

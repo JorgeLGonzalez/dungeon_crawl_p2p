@@ -5,7 +5,6 @@ use crate::{
 use bevy::{math::Vec2, prelude::*};
 
 pub type ObstacleQuery<'w, 's, 't, 'o> = Query<'w, 's, (&'t Transform, &'o Obstacle, Entity)>;
-
 pub type PlayerQuery<'w, 's, 't, 'm> =
     Query<'w, 's, (&'t Transform, Option<&'m MoveThrottle>), With<Player>>;
 
@@ -34,51 +33,42 @@ impl MoveIntentHandler {
     }
 
     /// Determine whether the intended move is an attack on a monster, a simple
-    /// move, or is blocked by a wall or is throttled. Invalid/ignored moves return
+    /// move, or is blocked by a wall or another player. Blocked moves return
     /// None.
     pub fn determine_action(&self, obstacles: &ObstacleQuery) -> Option<PlayerMove> {
         let PlayerMoveIntentEvent {
             player, player_id, ..
         } = self.event;
         let target_pos = self.target_pos;
-        match self.find_obstacle(obstacles) {
-            Some(ObstacleType::Monster(monster)) => Some(PlayerMove::Attack(
-                PlayerAttacksEvent::new(player_id, target_pos, monster),
-            )),
-            Some(ObstacleType::OtherPlayer) => {
-                info!("Player {player_id} move to {target_pos} blocked by another player");
 
-                None
-            }
-            Some(ObstacleType::Wall) => {
-                info!("Player {player_id} move to {target_pos} blocked by a wall");
+        if let Some((obstacle, entity)) = self.find_obstacle(obstacles) {
+            match obstacle {
+                Obstacle::Monster => Some(PlayerMove::Attack(PlayerAttacksEvent::new(
+                    player_id, target_pos, entity,
+                ))),
+                Obstacle::Player => {
+                    info!("Player {player_id} move to {target_pos} blocked by another player");
 
-                None
+                    None
+                }
+                Obstacle::Wall => {
+                    info!("Player {player_id} move to {target_pos} blocked by a wall");
+
+                    None
+                }
             }
-            None => Some(PlayerMove::Move(PlayerMovesEvent::new(
+        } else {
+            Some(PlayerMove::Move(PlayerMovesEvent::new(
                 player, player_id, target_pos,
-            ))),
+            )))
         }
     }
 
-    /// Check whether the intended move lands the player in a Wall tile or
-    /// a tile occupied by a monster, returning the type of obstacle. Return
-    /// None if the tile is obstacle-free.
-    fn find_obstacle(&self, obstacles: &ObstacleQuery) -> Option<ObstacleType> {
+    /// Check whether an obstacle interferes the intended move.
+    fn find_obstacle(&self, obstacles: &ObstacleQuery) -> Option<(Obstacle, Entity)> {
         obstacles
             .iter()
             .find(|(t, ..)| t.translation.truncate() == self.target_pos)
-            .map(|(_, obstacle, entity)| match obstacle {
-                Obstacle::Monster => ObstacleType::Monster(entity),
-                Obstacle::Player => ObstacleType::OtherPlayer,
-                Obstacle::Wall => ObstacleType::Wall,
-            })
+            .map(|(_, &obstacle, entity)| (obstacle, entity))
     }
-}
-
-#[derive(PartialEq, Eq, Hash)]
-enum ObstacleType {
-    Monster(Entity),
-    OtherPlayer,
-    Wall,
 }
