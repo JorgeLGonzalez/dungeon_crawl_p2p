@@ -61,10 +61,11 @@ fn main() {
         handle_move_intent,
         attack_monster,
         move_player,
-        move_camera_and_hud,
+        move_camera,
         do_monsters_action,
         attack_player,
         move_monster,
+        health_bar,
     )
         .chain();
 

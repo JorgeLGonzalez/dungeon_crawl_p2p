@@ -13,7 +13,7 @@ mod spawn_monsters;
 mod spawn_players;
 mod startup;
 
-pub use camera::{move_camera_and_hud, spawn_camera};
+pub use camera::{move_camera, spawn_camera};
 pub use create_p2p_session::create_p2p_session;
 pub use game_over::game_over;
 pub use handle_ggrs_events::handle_ggrs_events;
