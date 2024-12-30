@@ -1,6 +1,7 @@
 use crate::{
     components::{Health, HealthUnit, Player},
-    resources::config::{self, GameMode},
+    game_mode,
+    resources::config::GameMode,
 };
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
@@ -17,7 +18,11 @@ impl LocalPlayer {
         let (pos, health) = players
             .iter()
             .find(|(p, ..)| {
-                config::GAME_MODE == GameMode::SinglePlayer || local_players.0.contains(&p.id)
+                if game_mode(GameMode::MultiPlayer) {
+                    local_players.0.contains(&p.id)
+                } else {
+                    p.id == 0
+                }
             })
             .map(|(_, t, h)| (t.translation.truncate(), h.current))
             .expect("No local player to follow!");
