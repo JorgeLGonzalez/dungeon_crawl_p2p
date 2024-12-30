@@ -64,6 +64,7 @@ fn main() {
         do_monsters_action,
         attack_player,
         move_monster,
+        recalculate_fov,
         health_bar,
     )
         .chain();
@@ -103,6 +104,7 @@ fn add_events(app: &mut App) {
         .add_event::<events::PlayerAttacksEvent>()
         .add_event::<events::PlayerMovesEvent>()
         .add_event::<events::PlayerMoveIntentEvent>()
+        .add_event::<events::RecalculateFovEvent>()
         .add_event::<events::SnapshotStateEvent>()
         .add_event::<events::StopMovingEvent>();
 }
