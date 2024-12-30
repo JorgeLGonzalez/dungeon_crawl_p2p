@@ -3,7 +3,6 @@ use bevy::{
     prelude::Component,
     time::{Timer, TimerMode},
 };
-use bevy_ggrs::checksum_hasher;
 use std::{
     hash::{Hash, Hasher},
     time::Duration,
@@ -35,11 +34,4 @@ impl Hash for MoveThrottle {
     fn hash<H: Hasher>(&self, state: &mut H) {
         format!("{:?}", self.0).hash(state);
     }
-}
-
-pub fn checksum_move_throttle(throttle: &MoveThrottle) -> u64 {
-    let mut hasher = checksum_hasher();
-    throttle.hash(&mut hasher);
-
-    hasher.finish()
 }

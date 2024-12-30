@@ -2,7 +2,7 @@ use crate::resources::config;
 use bevy::prelude::*;
 use std::time::Duration;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct Healing(Timer);
 
 impl Healing {

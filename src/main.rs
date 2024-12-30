@@ -5,9 +5,8 @@ mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
-use components::{checksum_move_throttle, checksum_transform, Monster, MoveThrottle, Player};
+use components::{checksum_transform, Healing, Health, Monster, MoveThrottle, Player};
 use resources::{
-    checksum_rng,
     config::{self, GameMode, GAME_MODE},
     DesyncEvent, MonsterMoveTracker, RandomGenerator,
 };
@@ -113,16 +112,19 @@ fn ggrs_setup(app: &mut App) {
     app
         // .rollback_component_with_clone::<GlobalTransform>()
         // .rollback_component_with_clone::<InheritedVisibility>()
+        .rollback_component_with_clone::<Healing>()
         .rollback_component_with_clone::<MoveThrottle>()
         .rollback_component_with_clone::<Transform>()
         // .rollback_component_with_clone::<ViewVisibility>()
         // .rollback_component_with_clone::<Visibility>()
+        .rollback_component_with_copy::<Health>()
         .rollback_component_with_copy::<Monster>()
         .rollback_component_with_copy::<Player>()
         .rollback_resource_with_clone::<RandomGenerator>()
-        .checksum_component::<MoveThrottle>(checksum_move_throttle)
         .checksum_component::<Transform>(checksum_transform)
-        .checksum_resource::<RandomGenerator>(checksum_rng);
+        .checksum_component_with_hash::<Health>()
+        .checksum_component_with_hash::<MoveThrottle>()
+        .checksum_resource_with_hash::<RandomGenerator>();
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]

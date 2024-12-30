@@ -16,7 +16,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] prevent players from moving onto each other (no attacks yet)
 - [x] Health component and give player 10
   - [x] Elapsed time healing
-  - [ ] synctest
+  - [x] synctest.
 - [x] health bar
 - [ ] monster FOV
 - [ ] player FOV
@@ -61,12 +61,13 @@ See [Player Actions](./src/systems/player_actions/README.md).
 
 ## Rollbacks
 
-GGRS depends on rollbacks, which I don't fully understand. We need to do at least two things:
+GGRS depends on rollbacks. We need to do at least two things:
 
-1. Call `add_rollback` on the spawn command for each entity bundle that may need rollbacks. This adds the Bevy GGRS Rollback component.
-2. Register specific components for rollback with a specific strategy (clone or copy) in `main` via the `rollback_component_with_clone` or `rollback_component_with_copy` methods.
+1. Call `add_rollback` on the spawn command for each entity bundle that may need rollbacks. This adds the Bevy GGRS `Rollback` component.
+2. Register specific components for rollback snapshots with a specific strategy (clone or copy) in `main` via the `rollback_component_with_clone` or `rollback_component_with_copy` methods. This tells Bevy GGRS to store a snapshot of these for every frame (discarding them as they lose utility).
+3. If the resource or component is critical to the state, add it to the frame checksum via the `checksum_component` or `checksum_resource` App method. This way it will be included in the frame checksum used to detect if clients fall out of sync.
 
-So for `Player` for example (in [spawn_players](./src/systems/spawn_players.rs)) we use `add_rollback` and in main we register `Player` and `Transform` for rollback. We probably will need to add other Components that are added to Player when we add Sprite etc, especially if a Player will be despawned. `MoveThrottle`, for example, might need registration. But basic testing does not reveal that.
+So for `Player` for example (in [spawn_players](./src/systems/spawn_players.rs)) we use `add_rollback` and in main we register `Player` and `Transform` for rollback. We probably will need to add other Components that are added to Player when we add Sprite etc, especially if a Player will be despawned.
 
 See [Extreme Bevy Detecting Desyncs tutorial](https://johanhelsing.studio/posts/extreme-bevy-desync-detection) for more info
 
@@ -90,7 +91,8 @@ Some key notes:
 
 1. The game must be deterministic. For example, the random number generator must start with the same seed for each player. This way all we need to worry about is sending the player inputs to each client.
 2. When the inputs fail to match the GGRS predictions, it will rollback components and resources. These mus be registered in two ways a) the `add_rollback` method when spawning the entity will add a `Rollback` component, which is what `bevy_ggrs` uses to know what needs rolling back. b) the `rollback_component_*` and `rollback_resource_*` methods on the App will create `GgrsSnapshots` resources for each registered Type. This keeps track of snapshots per frame (a short set of frames). The methods indicate the strategy for saving/loading snapshots (clone, copy).
-3. `bevy_ggrs` sits on top of `ggrs` and `ggrs` is an implementation of GGPO in Rust.
+3. Adding a checksum on a component or resource ensures it is part of the overall frame checksum used to ensure state is un sync. So basically, (I believe) the system gathers all entities that have a `Rollback` component and then adds any components on these entities to the state snapshots it keeps for each component/resource. Finally, it any components/resources with a checksum method are included in the overall checksum used to detect desync.
+4. `bevy_ggrs` sits on top of `ggrs` and `ggrs` is an implementation of GGPO in Rust.
 
 ### Troubleshooting Desyncs
 

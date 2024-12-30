@@ -1,10 +1,12 @@
 mod checksum_transform;
 mod healing;
+mod health;
 mod move_throttle;
 
 pub use checksum_transform::checksum_transform;
 pub use healing::Healing;
-pub use move_throttle::{checksum_move_throttle, MoveThrottle};
+pub use health::{Health, HealthUnit};
+pub use move_throttle::MoveThrottle;
 
 use bevy::prelude::*;
 
@@ -13,20 +15,6 @@ pub struct ExitTile;
 
 #[derive(Component)]
 pub struct FloorTile;
-
-#[derive(Component)]
-pub struct Health {
-    pub current: HealthUnit,
-    pub max: HealthUnit,
-}
-
-impl Health {
-    pub fn new( max: HealthUnit) -> Self {
-        Self { current: max, max }
-    }
-}
-
-pub type HealthUnit = u8;
 
 #[derive(Component)]
 pub struct HealthBar;

@@ -1,5 +1,4 @@
 use bevy::{log::error, prelude::Resource};
-use bevy_ggrs::checksum_hasher;
 use bevy_matchbox::{prelude::PeerId, MatchboxSocket};
 use rand::{distributions::uniform::SampleUniform, prelude::*, Error};
 use rand_xoshiro::Xoshiro256PlusPlus;
@@ -92,10 +91,3 @@ impl Hash for RandomGenerator {
 }
 
 pub type RandomCounter = u128;
-
-pub fn checksum_rng(rng: &RandomGenerator) -> u64 {
-    let mut hasher = checksum_hasher();
-    rng.hash(&mut hasher);
-
-    hasher.finish()
-}
