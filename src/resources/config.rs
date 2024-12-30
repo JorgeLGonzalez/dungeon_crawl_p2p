@@ -1,4 +1,5 @@
 use bevy_matchbox::prelude::PeerId;
+use crate::components::FovRadius;
 
 // Game
 #[cfg(not(target_arch = "wasm32"))]
@@ -40,6 +41,7 @@ pub const MONSTER_TRACKER_AUTO_SAVE_THRESHOLD: usize = 100;
 // Player
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
 pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
+pub const PLAYER_FOV_RADIUS: FovRadius = 8;
 /// Amount of seconds between auto-health increments
 pub const PLAYER_HEALING_SECONDS: f32 = 10.0;
 pub const PLAYER_HEALTH_MAX: u8 = 10;
