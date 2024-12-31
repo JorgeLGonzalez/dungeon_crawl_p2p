@@ -2,10 +2,11 @@ use super::player::LocalPlayer;
 use crate::{
     components::{FieldOfView, FloorTile, Player, WallTile},
     events::RecalculateFovEvent,
-    resources::DungeonPosition,
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 use bevy_ggrs::LocalPlayers;
+
+type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, With<WallTile>>;
 
 pub fn recalculate_fov(
     mut fov_query: Query<&mut FieldOfView, With<FieldOfView>>,
@@ -13,29 +14,19 @@ pub fn recalculate_fov(
     mut tiles: Query<(&Transform, Entity, &mut Sprite), With<FloorTile>>,
     local_players: Res<LocalPlayers>,
     players: Query<&Player>,
-    walls: Query<&Transform, With<WallTile>>,
+    walls: WallQuery,
 ) {
     for event in recalculate_events.read() {
-        let entity_pos = DungeonPosition::from_vec2(event.pos);
+        let entity_pos = event.pos.as_ivec2();
         let mut fov = fov_query.get_mut(event.entity).expect("Inconceivable!");
-        let radius_sq = (fov.radius * fov.radius) as f32;
-
-        let wall_set: HashSet<DungeonPosition> = walls
-            .iter()
-            .map(|t| DungeonPosition::from_vec2(t.translation.truncate()))
-            .collect();
+        let radius_sq = (fov.radius * fov.radius) as i32;
+        let wall_set = create_wall_set(&walls);
 
         let visible_tiles: Vec<Entity> = tiles
             .iter()
-            .map(|(t, tile, _)| (t.translation.truncate(), tile))
-            .filter(|(tile_pos, _)| event.pos.distance_squared(*tile_pos) < radius_sq)
-            .filter(|(floor_pos, _)| {
-                is_visible(
-                    entity_pos,
-                    DungeonPosition::from_vec2(*floor_pos),
-                    &wall_set,
-                )
-            })
+            .map(|(t, tile, _)| (t.translation.truncate().as_ivec2(), tile))
+            .filter(|(tile_pos, _)| entity_pos.distance_squared(*tile_pos) < radius_sq)
+            .filter(|(floor_pos, _)| is_visible(entity_pos, floor_pos, &wall_set))
             .map(|(_, tile)| tile)
             .collect();
 
@@ -64,13 +55,16 @@ pub fn recalculate_fov(
     }
 }
 
-/// Use the [Bresenham's line algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
+fn create_wall_set(walls: &WallQuery) -> HashSet<IVec2> {
+    walls
+        .iter()
+        .map(|t| t.translation.truncate().as_ivec2())
+        .collect()
+}
+
+/// Use [Bresenham's line algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
 /// to determine if a wall blocks the line of sight to the given floor tile.
-fn is_visible(
-    entity_pos: DungeonPosition,
-    floor_pos: DungeonPosition,
-    wall_set: &HashSet<DungeonPosition>,
-) -> bool {
+fn is_visible(entity_pos: IVec2, floor_pos: &IVec2, wall_set: &HashSet<IVec2>) -> bool {
     let mut entity_x = entity_pos.x;
     let mut entity_y = entity_pos.y;
     let floor_x = floor_pos.x;
@@ -83,7 +77,7 @@ fn is_visible(
     let mut error_term = x_distance - y_distance;
 
     while !(entity_x == floor_x && entity_y == floor_y) {
-        if wall_set.contains(&DungeonPosition::new(entity_x, entity_y)) {
+        if wall_set.contains(&IVec2::new(entity_x, entity_y)) {
             return false; // wall obstructs line of sight
         }
 
