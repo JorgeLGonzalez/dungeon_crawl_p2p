@@ -16,7 +16,7 @@ pub struct ExitTile;
 #[derive(Component)]
 pub struct FieldOfView {
     pub radius: FovRadius,
-    pub visible_tiles: Vec<Vec2>,
+    pub visible_tiles: Vec<Entity>,
 }
 
 impl FieldOfView {
