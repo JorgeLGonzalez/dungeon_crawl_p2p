@@ -1,5 +1,6 @@
 use crate::{
     components::{FloorTile, Player},
+    resources::config,
     systems::player::LocalPlayer,
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};
@@ -50,13 +51,13 @@ impl Illuminator {
                 self.prior_set.remove(tile);
             } else {
                 let (.., mut sprite) = floor.get_mut(*tile).expect("Inconceivable!");
-                sprite.color = Color::srgb(0.9, 0.3, 0.5);
+                sprite.color = config::FLOOR_ILLUMINATED_COLOR;
             }
         });
 
         self.prior_set.iter().for_each(|tile| {
             let (.., mut sprite) = floor.get_mut(*tile).expect("Inconceivable!");
-            sprite.color = Color::srgb(0.5, 0.3, 0.5);
+            sprite.color = config::FLOOR_COLOR;
         });
     }
 }

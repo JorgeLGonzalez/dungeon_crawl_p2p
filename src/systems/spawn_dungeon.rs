@@ -1,7 +1,7 @@
 use crate::{
     components::{ExitTile, FloorTile, Obstacle, WallTile},
     resources::{
-        config::{TILE_HEIGHT, TILE_WIDTH},
+        config::{self, TILE_HEIGHT, TILE_WIDTH},
         RandomGenerator, RandomRoomsBuilder, TileType,
     },
 };
@@ -27,7 +27,7 @@ pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
 fn create_sprite(tile_type: TileType) -> Sprite {
     let color = match tile_type {
         TileType::Exit => Color::srgb(1., 1., 1.),
-        TileType::Floor => Color::srgb(0.5, 0.3, 0.5),
+        TileType::Floor => config::FLOOR_COLOR,
         TileType::Wall => Color::srgb(0., 0., 0.),
     };
 
