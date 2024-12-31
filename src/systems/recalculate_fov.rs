@@ -65,43 +65,40 @@ pub fn recalculate_fov(
 }
 
 /// Use the [Bresenham's line algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
-/// to determine if the a wall blocks the line of sight to the given floor tile.
+/// to determine if a wall blocks the line of sight to the given floor tile.
 fn is_visible(
     entity_pos: DungeonPosition,
     floor_pos: DungeonPosition,
     wall_set: &HashSet<DungeonPosition>,
 ) -> bool {
-    let mut x0 = entity_pos.x;
-    let mut y0 = entity_pos.y;
-    let x1 = floor_pos.x;
-    let y1 = floor_pos.y;
+    let mut entity_x = entity_pos.x;
+    let mut entity_y = entity_pos.y;
+    let floor_x = floor_pos.x;
+    let floor_y = floor_pos.y;
 
-    let dx = (x1 - x0).abs();
-    let dy = (y1 - y0).abs();
-    let sx = if x0 < x1 { 1 } else { -1 };
-    let sy = if y0 < y1 { 1 } else { -1 };
-    let mut err = dx - dy;
+    let x_distance = (floor_x - entity_x).abs();
+    let y_distance = (floor_y - entity_y).abs();
+    let step_x = if entity_x < floor_x { 1 } else { -1 };
+    let step_y = if entity_y < floor_y { 1 } else { -1 };
+    let mut error_term = x_distance - y_distance;
 
-    loop {
-        let point = DungeonPosition::new(x0, y0);
-        if wall_set.contains(&point) {
-            return false;
+    while !(entity_x == floor_x && entity_y == floor_y) {
+        if wall_set.contains(&DungeonPosition::new(entity_x, entity_y)) {
+            return false; // wall obstructs line of sight
         }
 
-        if x0 == x1 && y0 == y1 {
-            break;
+        let e2 = 2 * error_term;
+        if e2 > -y_distance {
+            // step horizontally since we veered off the vertical line
+            error_term -= y_distance;
+            entity_x += step_x;
         }
-
-        let e2 = 2 * err;
-        if e2 > -dy {
-            err -= dy;
-            x0 += sx;
-        }
-        if e2 < dx {
-            err += dx;
-            y0 += sy;
+        if e2 < x_distance {
+            // step vertically since we veered off the horizontal line
+            error_term += x_distance;
+            entity_y += step_y;
         }
     }
 
-    true
+    true // clear line of sight
 }
