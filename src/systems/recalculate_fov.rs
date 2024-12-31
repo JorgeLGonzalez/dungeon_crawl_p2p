@@ -15,11 +15,10 @@ pub fn recalculate_fov(
     players: Query<&Player>,
     walls: Query<&Transform, With<WallTile>>,
 ) {
-    let total_tiles = tiles.iter().count();
-
     for event in recalculate_events.read() {
         let entity_pos = DungeonPosition::from_vec2(event.pos);
         let mut fov = fov_query.get_mut(event.entity).expect("Inconceivable!");
+        let radius_sq = (fov.radius * fov.radius) as f32;
 
         let wall_set: HashSet<DungeonPosition> = walls
             .iter()
@@ -29,8 +28,7 @@ pub fn recalculate_fov(
         let visible_tiles: Vec<Entity> = tiles
             .iter()
             .map(|(t, tile, _)| (t.translation.truncate(), tile))
-            // consider using distance squared
-            .filter(|(tile_pos, _)| event.pos.distance(*tile_pos) < fov.radius as f32)
+            .filter(|(tile_pos, _)| event.pos.distance_squared(*tile_pos) < radius_sq)
             .filter(|(floor_pos, _)| {
                 is_visible(
                     entity_pos,
@@ -41,20 +39,10 @@ pub fn recalculate_fov(
             .map(|(_, tile)| tile)
             .collect();
 
-        info!(
-            "Recalculating FOV for {} at {}. See {} tiles of {total_tiles}",
-            event.entity,
-            event.pos,
-            fov.visible_tiles.len()
-        );
-
         let is_local_player = players
             .get(event.entity)
-            .map(|player| LocalPlayer::is_local(player, &local_players))
-            .is_ok();
+            .is_ok_and(|player| LocalPlayer::is_local(player, &local_players));
         if is_local_player {
-            info!("Lighten visible tiles");
-
             let mut prior_set: HashSet<Entity> = fov.visible_tiles.iter().map(|e| *e).collect();
 
             visible_tiles.iter().for_each(|tile| {
