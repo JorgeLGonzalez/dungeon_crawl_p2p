@@ -1,5 +1,7 @@
-use super::LocalPlayer;
-use crate::components::{FloorTile, Player};
+use crate::{
+    components::{FloorTile, Player},
+    systems::player::LocalPlayer,
+};
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 use bevy_ggrs::LocalPlayers;
 
@@ -38,7 +40,7 @@ impl Illuminator {
         }
     }
 
-    pub fn illuminate(&mut self, fov: &Vec<Entity>, floor: &mut FloorQuery) {
+    pub fn illuminate(&mut self, floor: &mut FloorQuery, fov: &Vec<Entity>) {
         if !self.is_local_player {
             return;
         }
