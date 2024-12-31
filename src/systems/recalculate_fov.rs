@@ -6,12 +6,14 @@ use crate::{
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 use bevy_ggrs::LocalPlayers;
 
+type FloorQuery<'w, 's, 't, 'r> =
+    Query<'w, 's, (&'t Transform, Entity, &'r mut Sprite), With<FloorTile>>;
 type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, With<WallTile>>;
 
 pub fn recalculate_fov(
     mut fov_query: Query<&mut FieldOfView, With<FieldOfView>>,
     mut recalculate_events: EventReader<RecalculateFovEvent>,
-    mut tiles: Query<(&Transform, Entity, &mut Sprite), With<FloorTile>>,
+    mut floor_tiles: FloorQuery,
     local_players: Res<LocalPlayers>,
     players: Query<&Player>,
     walls: WallQuery,
@@ -22,34 +24,22 @@ pub fn recalculate_fov(
         let radius_sq = (fov.radius * fov.radius) as i32;
         let wall_set = create_wall_set(&walls);
 
-        let visible_tiles: Vec<Entity> = tiles
+        let visible_tiles: Vec<Entity> = floor_tiles
             .iter()
             .map(|(t, tile, _)| (t.translation.truncate().as_ivec2(), tile))
-            .filter(|(tile_pos, _)| entity_pos.distance_squared(*tile_pos) < radius_sq)
+            .filter(|(floor_pos, _)| entity_pos.distance_squared(*floor_pos) < radius_sq)
             .filter(|(floor_pos, _)| is_visible(entity_pos, floor_pos, &wall_set))
             .map(|(_, tile)| tile)
             .collect();
 
-        let is_local_player = players
-            .get(event.entity)
-            .is_ok_and(|player| LocalPlayer::is_local(player, &local_players));
-        if is_local_player {
-            let mut prior_set: HashSet<Entity> = fov.visible_tiles.iter().map(|e| *e).collect();
-
-            visible_tiles.iter().for_each(|tile| {
-                if prior_set.contains(tile) {
-                    prior_set.remove(tile);
-                } else {
-                    let (.., mut sprite) = tiles.get_mut(*tile).expect("Inconceivable!");
-                    sprite.color = Color::srgb(0.9, 0.3, 0.5);
-                }
-            });
-
-            prior_set.iter().for_each(|tile| {
-                let (.., mut sprite) = tiles.get_mut(*tile).expect("Inconceivable!");
-                sprite.color = Color::srgb(0.5, 0.3, 0.5);
-            });
-        }
+        light_floor_for_local_player(
+            &mut floor_tiles,
+            event.entity,
+            &visible_tiles,
+            &fov.visible_tiles,
+            &local_players,
+            &players,
+        );
 
         fov.visible_tiles = visible_tiles;
     }
@@ -60,6 +50,39 @@ fn create_wall_set(walls: &WallQuery) -> HashSet<IVec2> {
         .iter()
         .map(|t| t.translation.truncate().as_ivec2())
         .collect()
+}
+
+fn light_floor_for_local_player(
+    floor_tiles: &mut FloorQuery,
+    entity: Entity,
+    fov: &Vec<Entity>,
+    fov_prior: &Vec<Entity>,
+    local_players: &LocalPlayers,
+    players: &Query<&Player>,
+) {
+    let is_local_player = players
+        .get(entity)
+        .is_ok_and(|player| LocalPlayer::is_local(player, &local_players));
+
+    if !is_local_player {
+        return;
+    }
+
+    let mut prior_set: HashSet<Entity> = fov_prior.iter().map(|e| *e).collect();
+
+    fov.iter().for_each(|tile| {
+        if prior_set.contains(tile) {
+            prior_set.remove(tile);
+        } else {
+            let (.., mut sprite) = floor_tiles.get_mut(*tile).expect("Inconceivable!");
+            sprite.color = Color::srgb(0.9, 0.3, 0.5);
+        }
+    });
+
+    prior_set.iter().for_each(|tile| {
+        let (.., mut sprite) = floor_tiles.get_mut(*tile).expect("Inconceivable!");
+        sprite.color = Color::srgb(0.5, 0.3, 0.5);
+    });
 }
 
 /// Use [Bresenham's line algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
