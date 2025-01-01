@@ -24,7 +24,6 @@ pub struct MonsterActionDeterminer {
     fov: HashSet<IVec2>,
     is_throttled: bool,
     pub monster: Entity,
-    movement: IVec2,
     rng_counter: RandomCounter,
     target_pos: IVec2,
 }
@@ -43,7 +42,6 @@ impl MonsterActionDeterminer {
             fov: fov.visible_tiles.keys().copied().collect(),
             is_throttled,
             monster,
-            movement: IVec2::ZERO,
             rng_counter: 0,
             target_pos: IVec2::ZERO,
         }
@@ -60,42 +58,45 @@ impl MonsterActionDeterminer {
             unreachable!("Should not have been called. Check is_throttled")
         }
 
-        let goal_pos = players
-            .keys()
-            .filter(|player_pos| self.fov.contains(*player_pos))
-            .min_by(|p0, p1| {
-                p0.distance_squared(self.current_pos)
-                    .cmp(&p1.distance_squared(self.current_pos))
-            });
-
-        if goal_pos.is_none() && !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
+        let valid_moves = self.gather_valid_moves(monster_positions, walls);
+        if valid_moves.is_empty() {
             return None;
         }
 
-        let valid_moves = self.gather_valid_moves(monster_positions, walls);
+        self.try_attack(players)
+            .map_or_else(
+                || {
+                    rng.gen_bool(config::MONSTER_MOVE_CHANCE)
+                        .then(|| valid_moves.get(rng.gen_range(0..valid_moves.len())))
+                        .flatten()
+                },
+                |attack_goal| {
+                    valid_moves.iter().min_by(|m0, m1| {
+                        m0.distance_squared(attack_goal)
+                            .cmp(&m1.distance_squared(attack_goal))
+                    })
+                },
+            )
+            .map(|&target_pos| {
+                self.target_pos = target_pos;
+                self.rng_counter = rng.counter;
 
-        let target_pos = if let Some(goal_pos) = goal_pos {
-            valid_moves.iter().min_by(|m0, m1| {
-                m0.distance_squared(*goal_pos)
-                    .cmp(&m1.distance_squared(*goal_pos))
+                self.attack(players).or_else(|| Some(self.move_monster()))
             })
-        } else {
-            valid_moves.get(rng.gen_range(0..valid_moves.len()))
-        };
-
-        if let Some(target_pos) = target_pos {
-            self.movement = target_pos - self.current_pos;
-            self.rng_counter = rng.counter;
-            self.target_pos = *target_pos;
-            self.attack(players)
-                .or_else(|| self.move_monster(monster_positions, walls))
-        } else {
-            None
-        }
+            .flatten()
     }
 
     pub fn is_throttled(&self) -> bool {
         self.is_throttled
+    }
+
+    pub fn sort_key(&self) -> u32 {
+        self.monster.index()
+    }
+
+    pub fn update_monster_positions(&self, monster_positions: &mut MonsterPositionSet) {
+        monster_positions.remove(&self.current_pos);
+        monster_positions.insert(self.target_pos);
     }
 
     fn attack(&self, players: &PlayerPositionMap) -> Option<MonsterAction> {
@@ -103,6 +104,10 @@ impl MonsterActionDeterminer {
             .get(&self.target_pos)
             .map(|(p, id)| self.create_attack_event(*p, *id))
             .map(MonsterAction::Attack)
+    }
+
+    fn create_attack_event(&self, player: Entity, player_id: usize) -> MonsterAttacksEvent {
+        MonsterAttacksEvent::new(self.monster, player, player_id, self.target_pos)
     }
 
     fn gather_valid_moves(
@@ -118,37 +123,23 @@ impl MonsterActionDeterminer {
             .collect()
     }
 
-    fn move_monster(
-        &self,
-        monster_positions: &MonsterPositionSet,
-        walls: &WallPositionSet,
-    ) -> Option<MonsterAction> {
-        if monster_positions.contains(&self.target_pos) || walls.contains(&self.target_pos) {
-            return None;
-        }
-
-        Some(MonsterAction::Move(self.create_move_event()))
-    }
-
-    pub fn sort_key(&self) -> u32 {
-        self.monster.index()
-    }
-
-    pub fn update_monster_positions(&self, monster_positions: &mut MonsterPositionSet) {
-        monster_positions.remove(&self.current_pos);
-        monster_positions.insert(self.target_pos);
-    }
-
-    fn create_attack_event(&self, player: Entity, player_id: usize) -> MonsterAttacksEvent {
-        MonsterAttacksEvent::new(self.monster, player, player_id, self.target_pos)
-    }
-
-    fn create_move_event(&self) -> MonsterMovesEvent {
-        MonsterMovesEvent::new(
+    fn move_monster(&self) -> MonsterAction {
+        MonsterAction::Move(MonsterMovesEvent::new(
             self.monster,
-            self.movement,
+            self.target_pos - self.current_pos,
             self.target_pos,
             self.rng_counter,
-        )
+        ))
+    }
+
+    fn try_attack(&self, players: &PlayerPositionMap) -> Option<IVec2> {
+        players
+            .keys()
+            .copied()
+            .filter(|player_pos| self.fov.contains(player_pos))
+            .min_by(|p0, p1| {
+                p0.distance_squared(self.current_pos)
+                    .cmp(&p1.distance_squared(self.current_pos))
+            })
     }
 }
