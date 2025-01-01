@@ -21,9 +21,10 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] player FOV
 - [ ] monster follows player
   - [x] FOV contains hash set of positions (or hashmap of position to tile entity)
-  - [ ] monster FOV
-  - [ ] MonsterActionDeterminer.plan_move. move towards any player it can see, otherwise move randomly
-    - [ ] Djikstra algo to determine best move towards player
+  - [x] monster FOV
+  - [x] MonsterActionDeterminer.plan_move. move towards any player it can see, otherwise move randomly
+    - [x] Slow down the monster move to attack
+    - [ ] chase move needs to avoid invalid moves
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
 - [ ] restart game on game over key press
 - [ ] other dungeons
