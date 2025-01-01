@@ -45,7 +45,7 @@ pub fn do_monsters_action(
                 }
             };
 
-            acted_events.send(MonsterActedEvent::new(determiner.monster));
+            acted_events.send(determiner.create_acted_event());
         });
 }
 

@@ -1,6 +1,6 @@
 use crate::{
     components::{FieldOfView, LastAction, Monster, Player, PlayerId},
-    events::{MonsterAttacksEvent, MonsterMovesEvent},
+    events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
     resources::{config, RandomCounter, RandomGenerator},
 };
 use bevy::{
@@ -23,7 +23,7 @@ pub struct MonsterActionDeterminer {
     current_pos: IVec2,
     fov: HashSet<IVec2>,
     is_throttled: bool,
-    pub monster: Entity,
+    monster: Entity,
     rng_counter: RandomCounter,
     target_pos: IVec2,
 }
@@ -47,6 +47,10 @@ impl MonsterActionDeterminer {
             rng_counter: 0,
             target_pos: IVec2::ZERO,
         }
+    }
+
+    pub fn create_acted_event(&self) -> MonsterActedEvent {
+        MonsterActedEvent::new(self.monster)
     }
 
     pub fn determine(
