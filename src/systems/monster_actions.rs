@@ -1,6 +1,7 @@
 mod attack_player;
 mod do_monsters_action;
 mod monster_action_determiner;
+mod monster_action_params;
 mod move_monster;
 mod update_last_action;
 

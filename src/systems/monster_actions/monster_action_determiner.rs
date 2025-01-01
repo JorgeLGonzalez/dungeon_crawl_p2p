@@ -1,23 +1,15 @@
+use super::monster_action_params::{MonsterPositionSet, PlayerPositionMap, WallPositionSet};
 use crate::{
-    components::{FieldOfView, LastAction, Monster, Player, PlayerId},
+    components::{FieldOfView, LastAction},
     events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
-    resources::{config, RandomGenerator},
+    resources::{config, RandomCounter, RandomGenerator},
 };
-use bevy::{
-    prelude::*,
-    utils::hashbrown::{HashMap, HashSet},
-};
+use bevy::{prelude::*, utils::hashbrown::HashSet};
 
 pub enum MonsterAction {
     Attack(MonsterAttacksEvent),
     Move(MonsterMovesEvent),
 }
-
-pub type MonsterPositionSet = HashSet<IVec2>;
-pub type PlayerPositionMap = HashMap<IVec2, (Entity, PlayerId)>;
-pub type PlayersQuery<'w, 's, 't, 'p> =
-    Query<'w, 's, (&'t Transform, Entity, &'p Player), (With<Player>, Without<Monster>)>;
-pub type WallPositionSet = HashSet<IVec2>;
 
 pub struct MonsterActionDeterminer {
     current_pos: IVec2,
@@ -127,7 +119,7 @@ impl MonsterActionDeterminer {
             .collect()
     }
 
-    fn move_monster(&self, rng_counter: u128) -> MonsterAction {
+    fn move_monster(&self, rng_counter: RandomCounter) -> MonsterAction {
         MonsterAction::Move(MonsterMovesEvent::new(
             self.monster,
             self.target_pos - self.current_pos,
