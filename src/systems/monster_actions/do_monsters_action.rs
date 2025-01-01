@@ -75,7 +75,9 @@ fn create_wall_set(walls: &WallQuery) -> WallPositionSet {
 fn sorted_determiners(monsters: &MonsterQuery, time: &Time) -> Vec<MonsterActionDeterminer> {
     let mut monsters: Vec<_> = monsters
         .iter()
-        .map(|t| MonsterActionDeterminer::from_query_tuple(t, time))
+        .map(|(transform, fov, last_action, monster)| {
+            MonsterActionDeterminer::new(fov, last_action, monster, time, transform)
+        })
         .collect();
     monsters.sort_by_key(|d| d.sort_key());
 

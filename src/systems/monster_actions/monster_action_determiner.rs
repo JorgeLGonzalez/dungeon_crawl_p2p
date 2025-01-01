@@ -29,10 +29,12 @@ pub struct MonsterActionDeterminer {
 }
 
 impl MonsterActionDeterminer {
-    // todo rename to new?
-    pub fn from_query_tuple(
-        (transform, fov, last_action, monster): (&Transform, &FieldOfView, &LastAction, Entity),
+    pub fn new(
+        fov: &FieldOfView,
+        last_action: &LastAction,
+        monster: Entity,
         time: &Time,
+        transform: &Transform,
     ) -> Self {
         let is_throttled =
             time.elapsed_secs() - last_action.time < config::MONSTER_THROTTLE_SECONDS;
