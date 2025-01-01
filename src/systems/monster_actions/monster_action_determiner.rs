@@ -41,6 +41,7 @@ impl MonsterActionDeterminer {
             last_action_time: last_action.time,
             monster,
             movement: Vec2::ZERO,
+            // TODO should not recalc for every monster
             players: create_player_set(players),
             rng_counter: 0,
             target_pos: DungeonPosition::from_vec2(Vec2::ZERO),
@@ -68,7 +69,12 @@ impl MonsterActionDeterminer {
         Some(MonsterAction::Move(self.create_move_event()))
     }
 
-    pub fn plan_move(self, time: &Time, rng: &mut RandomGenerator) -> Option<Self> {
+    pub fn plan_move(
+        self,
+        time: &Time,
+        walls: &WallPositionSet,
+        rng: &mut RandomGenerator,
+    ) -> Option<Self> {
         if time.elapsed_secs() - self.last_action_time < config::MONSTER_THROTTLE_SECONDS {
             return None;
         }
@@ -83,10 +89,11 @@ impl MonsterActionDeterminer {
                     .cmp(&p1.distance_squared(monster_pos))
             })
             .map(|&player_pos| {
-                // TODO consider only valid moves
+                // TODO avoid moving into another monster
                 [IVec2::Y, IVec2::NEG_Y, IVec2::NEG_X, IVec2::X]
                     .iter()
                     .map(|&step| step + monster_pos)
+                    .filter(|t_pos| !walls.contains(&DungeonPosition::from_vec2(t_pos.as_vec2())))
                     .min_by(|m0, m1| {
                         m0.distance_squared(player_pos)
                             .cmp(&m1.distance_squared(player_pos))

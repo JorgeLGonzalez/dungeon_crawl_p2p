@@ -8,7 +8,7 @@ use crate::{
 use bevy::prelude::*;
 use bevy_ggrs::AddRollbackCommandExtension;
 
-pub fn spawn_monsters(dungeon: Res<DungeonMap>, mut commands: Commands, time: Res<Time>) {
+pub fn spawn_monsters(dungeon: Res<DungeonMap>, mut commands: Commands) {
     for pos in &dungeon.monster_starting_positions {
         commands
             .spawn((

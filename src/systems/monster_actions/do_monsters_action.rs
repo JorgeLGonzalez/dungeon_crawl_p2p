@@ -27,7 +27,7 @@ pub fn do_monsters_action(
 
     sorted_determiners(&monsters, &players)
         .into_iter()
-        .filter_map(|d| d.plan_move(&time, &mut rng))
+        .filter_map(|d| d.plan_move(&time, &walls, &mut rng))
         .filter_map(|d| d.attack().or_else(|| d.move_monster(&mut planned, &walls)))
         .for_each(|action| {
             let monster = match action {

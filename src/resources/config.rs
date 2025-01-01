@@ -4,7 +4,7 @@ use bevy_matchbox::prelude::PeerId;
 
 // Game
 #[cfg(not(target_arch = "wasm32"))]
-pub const GAME_MODE: GameMode = GameMode::MultiPlayer;
+pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
 #[cfg(target_arch = "wasm32")]
 pub const GAME_MODE: GameMode = GameMode::MultiPlayer;
 
