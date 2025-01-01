@@ -24,9 +24,7 @@ pub fn do_monsters_action(
         .into_iter()
         .filter(|d| !d.is_throttled())
         .for_each(|mut determiner| {
-            let Some(action) =
-                determiner.determine(&params.monsters, &params.players, &params.walls, &mut rng)
-            else {
+            let Some(action) = determiner.determine(&params, &mut rng) else {
                 return;
             };
 

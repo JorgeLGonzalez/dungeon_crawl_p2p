@@ -1,4 +1,6 @@
-use super::monster_action_params::{MonsterPositionSet, PlayerPositionMap, WallPositionSet};
+use super::monster_action_params::{
+    MonsterActionParams, MonsterPositionSet, PlayerPositionMap, WallPositionSet,
+};
 use crate::{
     components::{FieldOfView, LastAction},
     events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
@@ -45,14 +47,18 @@ impl MonsterActionDeterminer {
 
     pub fn determine(
         &mut self,
-        monster_positions: &MonsterPositionSet,
-        players: &PlayerPositionMap,
-        walls: &WallPositionSet,
+        params: &MonsterActionParams,
         rng: &mut RandomGenerator,
     ) -> Option<MonsterAction> {
         if self.is_throttled {
             unreachable!("Should not have been called. Check is_throttled")
         }
+
+        let MonsterActionParams {
+            monsters: monster_positions,
+            players,
+            walls,
+        } = params;
 
         let valid_moves = self.gather_valid_moves(monster_positions, walls);
         if valid_moves.is_empty() {
