@@ -57,55 +57,41 @@ impl MonsterActionDeterminer {
         rng: &mut RandomGenerator,
     ) -> Option<MonsterAction> {
         if self.is_throttled {
-            unreachable!("Should not have been called. Check is_throttled() first.");
+            unreachable!("Should not have been called. Check is_throttled")
         }
 
-        let target_pos = players
+        let goal_pos = players
             .keys()
             .filter(|player_pos| self.fov.contains(*player_pos))
             .min_by(|p0, p1| {
                 p0.distance_squared(self.current_pos)
                     .cmp(&p1.distance_squared(self.current_pos))
-            })
-            .map(|&player_pos| {
-                [IVec2::Y, IVec2::NEG_Y, IVec2::NEG_X, IVec2::X]
-                    .iter()
-                    .map(|&step| step + self.current_pos)
-                    .filter(|t_pos| !walls.contains(t_pos))
-                    .filter(|t_pos| !monster_positions.contains(t_pos))
-                    .min_by(|m0, m1| {
-                        m0.distance_squared(player_pos)
-                            .cmp(&m1.distance_squared(player_pos))
-                    })
-                    .unwrap()
             });
+
+        if goal_pos.is_none() && !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
+            return None;
+        }
+
+        let valid_moves = self.gather_valid_moves(monster_positions, walls);
+
+        let target_pos = if let Some(goal_pos) = goal_pos {
+            valid_moves.iter().min_by(|m0, m1| {
+                m0.distance_squared(*goal_pos)
+                    .cmp(&m1.distance_squared(*goal_pos))
+            })
+        } else {
+            valid_moves.get(rng.gen_range(0..valid_moves.len()))
+        };
 
         if let Some(target_pos) = target_pos {
             self.movement = target_pos - self.current_pos;
             self.rng_counter = rng.counter;
-            self.target_pos = target_pos;
-            return self
-                .attack(players)
-                .or_else(|| self.move_monster(monster_positions, walls));
+            self.target_pos = *target_pos;
+            self.attack(players)
+                .or_else(|| self.move_monster(monster_positions, walls))
+        } else {
+            None
         }
-
-        if !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
-            return None;
-        }
-
-        self.movement = match rng.gen_range(0..4) {
-            0 => IVec2::Y,
-            1 => IVec2::NEG_Y,
-            2 => IVec2::NEG_X,
-            3 => IVec2::X,
-            _ => unreachable!(),
-        };
-        self.rng_counter = rng.counter;
-        self.target_pos = self.current_pos + self.movement;
-
-        return self
-            .attack(players)
-            .or_else(|| self.move_monster(monster_positions, walls));
     }
 
     pub fn is_throttled(&self) -> bool {
@@ -117,6 +103,19 @@ impl MonsterActionDeterminer {
             .get(&self.target_pos)
             .map(|(p, id)| self.create_attack_event(*p, *id))
             .map(MonsterAction::Attack)
+    }
+
+    fn gather_valid_moves(
+        &self,
+        monster_positions: &MonsterPositionSet,
+        walls: &WallPositionSet,
+    ) -> Vec<IVec2> {
+        [IVec2::Y, IVec2::NEG_Y, IVec2::NEG_X, IVec2::X]
+            .iter()
+            .map(|&step| step + self.current_pos)
+            .filter(|t_pos| !walls.contains(t_pos))
+            .filter(|t_pos| !monster_positions.contains(t_pos))
+            .collect()
     }
 
     fn move_monster(
