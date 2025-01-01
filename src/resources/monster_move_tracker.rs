@@ -37,8 +37,8 @@ impl MonsterMoveTracker {
         self.moves.push_back(MonsterMove::new(
             frame,
             event.monster,
-            DungeonPosition::from_vec2(event.movement),
-            DungeonPosition::from_vec2(event.pos),
+            DungeonPosition::from_vec2(event.movement.as_vec2()),
+            DungeonPosition::from_vec2(event.pos.as_vec2()),
             event.rng_counter,
         ));
     }

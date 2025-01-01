@@ -16,14 +16,14 @@ pub enum PlayerMove {
 /// Helper for `handle_move_intent`.
 pub struct MoveIntentHandler {
     event: PlayerMoveIntentEvent,
-    target_pos: Vec2,
+    target_pos: IVec2,
     pub throttled: bool,
 }
 
 impl MoveIntentHandler {
     pub fn new(event: PlayerMoveIntentEvent, players: &PlayerQuery) -> Self {
         let (transform, throttle) = players.get(event.player).expect("Player not found!");
-        let target_pos = transform.translation.truncate() + event.direction;
+        let target_pos = transform.translation.truncate().as_ivec2() + event.direction;
 
         Self {
             event,
@@ -68,7 +68,7 @@ impl MoveIntentHandler {
     fn find_obstacle(&self, obstacles: &ObstacleQuery) -> Option<(Obstacle, Entity)> {
         obstacles
             .iter()
-            .find(|(t, ..)| t.translation.truncate() == self.target_pos)
+            .find(|(t, ..)| t.translation.truncate().as_ivec2() == self.target_pos)
             .map(|(_, &obstacle, entity)| (obstacle, entity))
     }
 }

@@ -34,7 +34,7 @@ pub fn do_player_action(
                 move_event.send(PlayerMoveIntentEvent::new(
                     player_entity,
                     player.id,
-                    dir.to_vec2(),
+                    dir.to_ivec2(),
                 ));
             }
             PlayerAction::None => (),

@@ -19,7 +19,7 @@ pub fn move_player(
             event.player_id,
             event.pos
         );
-        transform.translation = event.pos.extend(PLAYER_Z_LAYER);
+        transform.translation = event.pos.as_vec2().extend(PLAYER_Z_LAYER);
         commands
             .entity(event.player)
             .insert(MoveThrottle::default());

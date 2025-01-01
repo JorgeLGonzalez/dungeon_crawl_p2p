@@ -137,14 +137,14 @@ impl MonsterActionDeterminer {
     }
 
     fn create_attack_event(&self, player: Entity, player_id: usize) -> MonsterAttacksEvent {
-        MonsterAttacksEvent::new(self.monster, player, player_id, self.target_pos.as_vec2())
+        MonsterAttacksEvent::new(self.monster, player, player_id, self.target_pos)
     }
 
     fn create_move_event(&self) -> MonsterMovesEvent {
         MonsterMovesEvent::new(
             self.monster,
-            self.movement.as_vec2(),
-            self.target_pos.as_vec2(),
+            self.movement,
+            self.target_pos,
             self.rng_counter,
         )
     }

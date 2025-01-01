@@ -1,4 +1,4 @@
-use bevy::{input::ButtonInput, math::Vec2, prelude::KeyCode};
+use bevy::prelude::*;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum PlayerAction {
@@ -79,12 +79,12 @@ pub enum MoveDirection {
 }
 
 impl MoveDirection {
-    pub fn to_vec2(&self) -> Vec2 {
+    pub fn to_ivec2(&self) -> IVec2 {
         match self {
-            MoveDirection::Up => Vec2::Y,
-            MoveDirection::Down => Vec2::NEG_Y,
-            MoveDirection::Left => Vec2::NEG_X,
-            MoveDirection::Right => Vec2::X,
+            MoveDirection::Up => IVec2::Y,
+            MoveDirection::Down => IVec2::NEG_Y,
+            MoveDirection::Left => IVec2::NEG_X,
+            MoveDirection::Right => IVec2::X,
         }
     }
 }
