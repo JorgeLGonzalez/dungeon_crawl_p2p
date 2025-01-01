@@ -4,7 +4,7 @@ use super::monster_action_determiner::{
 use crate::{
     components::{FieldOfView, LastAction, Monster, WallTile},
     events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
-    resources::{DungeonPosition, RandomGenerator},
+    resources::RandomGenerator,
 };
 use bevy::prelude::*;
 
@@ -28,7 +28,7 @@ pub fn do_monsters_action(
     sorted_determiners(&monsters, &players)
         .into_iter()
         .for_each(|mut determiner| {
-            let Some(action) = determiner.determine(&mut planned, &time, &walls, &mut rng) else {
+            let Some(action) = determiner.determine(&planned, &time, &walls, &mut rng) else {
                 return;
             };
 
@@ -50,16 +50,12 @@ fn create_current_monster_positions_set(monsters: &MonsterQuery) -> MonsterPosit
     MonsterPositionSet::from_iter(
         monsters
             .iter()
-            .map(|(m, ..)| DungeonPosition::from_vec3(m.translation)),
+            .map(|(m, ..)| m.translation.truncate().as_ivec2()),
     )
 }
 
 fn create_wall_set(walls: &WallQuery) -> WallPositionSet {
-    WallPositionSet::from_iter(
-        walls
-            .iter()
-            .map(|w| DungeonPosition::from_vec3(w.translation)),
-    )
+    WallPositionSet::from_iter(walls.iter().map(|w| w.translation.truncate().as_ivec2()))
 }
 
 /// Create a Vec of [`MonsterActionDeterminer`]s to help process the actions.

@@ -1,7 +1,7 @@
 use crate::{
     components::{FieldOfView, LastAction, Monster, Player, PlayerId},
     events::{MonsterAttacksEvent, MonsterMovesEvent},
-    resources::{config, DungeonPosition, RandomCounter, RandomGenerator},
+    resources::{config, RandomCounter, RandomGenerator},
 };
 use bevy::{
     prelude::*,
@@ -13,21 +13,21 @@ pub enum MonsterAction {
     Move(MonsterMovesEvent),
 }
 
-pub type MonsterPositionSet = HashSet<DungeonPosition>;
+pub type MonsterPositionSet = HashSet<IVec2>;
 pub type PlayerPositionMap = HashMap<IVec2, (Entity, PlayerId)>;
 pub type PlayersQuery<'w, 's, 't, 'p> =
     Query<'w, 's, (&'t Transform, Entity, &'p Player), (With<Player>, Without<Monster>)>;
-pub type WallPositionSet = HashSet<DungeonPosition>;
+pub type WallPositionSet = HashSet<IVec2>;
 
 pub struct MonsterActionDeterminer {
-    current_pos: DungeonPosition,
+    current_pos: IVec2,
     fov: HashSet<IVec2>,
     last_action_time: f32,
     pub monster: Entity,
-    movement: Vec2,
+    movement: IVec2,
     players: PlayerPositionMap,
     rng_counter: RandomCounter,
-    target_pos: DungeonPosition,
+    target_pos: IVec2,
 }
 
 impl MonsterActionDeterminer {
@@ -36,15 +36,15 @@ impl MonsterActionDeterminer {
         players: &PlayersQuery,
     ) -> Self {
         Self {
-            current_pos: DungeonPosition::from_vec2(transform.translation.truncate()),
+            current_pos: transform.translation.truncate().as_ivec2(),
             fov: fov.visible_tiles.keys().copied().collect(),
             last_action_time: last_action.time,
             monster,
-            movement: Vec2::ZERO,
+            movement: IVec2::ZERO,
             // TODO should not recalc for every monster
             players: create_player_set(players),
             rng_counter: 0,
-            target_pos: DungeonPosition::from_vec2(Vec2::ZERO),
+            target_pos: IVec2::ZERO,
         }
     }
 
@@ -59,24 +59,20 @@ impl MonsterActionDeterminer {
             return None;
         }
 
-        let monster_pos = self.current_pos.to_vec2().as_ivec2();
         let target_pos = self
             .players
             .keys()
             .filter(|player_pos| self.fov.contains(*player_pos))
             .min_by(|p0, p1| {
-                p0.distance_squared(monster_pos)
-                    .cmp(&p1.distance_squared(monster_pos))
+                p0.distance_squared(self.current_pos)
+                    .cmp(&p1.distance_squared(self.current_pos))
             })
             .map(|&player_pos| {
-                // TODO avoid moving into another monster
                 [IVec2::Y, IVec2::NEG_Y, IVec2::NEG_X, IVec2::X]
                     .iter()
-                    .map(|&step| step + monster_pos)
-                    .filter(|t_pos| !walls.contains(&DungeonPosition::from_vec2(t_pos.as_vec2())))
-                    .filter(|t_pos| {
-                        !monster_positions.contains(&DungeonPosition::from_vec2(t_pos.as_vec2()))
-                    })
+                    .map(|&step| step + self.current_pos)
+                    .filter(|t_pos| !walls.contains(t_pos))
+                    .filter(|t_pos| !monster_positions.contains(t_pos))
                     .min_by(|m0, m1| {
                         m0.distance_squared(player_pos)
                             .cmp(&m1.distance_squared(player_pos))
@@ -85,13 +81,9 @@ impl MonsterActionDeterminer {
             });
 
         if let Some(target_pos) = target_pos {
-            info!(
-                "Monster {} at {} moves to {target_pos} hopefully towards player",
-                self.monster, self.current_pos
-            );
-            self.movement = (target_pos - monster_pos).as_vec2();
+            self.movement = target_pos - self.current_pos;
             self.rng_counter = rng.counter;
-            self.target_pos = DungeonPosition::from_vec2(target_pos.as_vec2());
+            self.target_pos = target_pos;
             return self
                 .attack()
                 .or_else(|| self.move_monster(monster_positions, walls));
@@ -102,14 +94,14 @@ impl MonsterActionDeterminer {
         }
 
         self.movement = match rng.gen_range(0..4) {
-            0 => Vec2::Y,
-            1 => Vec2::NEG_Y,
-            2 => Vec2::NEG_X,
-            3 => Vec2::X,
+            0 => IVec2::Y,
+            1 => IVec2::NEG_Y,
+            2 => IVec2::NEG_X,
+            3 => IVec2::X,
             _ => unreachable!(),
         };
         self.rng_counter = rng.counter;
-        self.target_pos = DungeonPosition::from_vec2(self.current_pos.to_vec2() + self.movement);
+        self.target_pos = self.current_pos + self.movement;
 
         return self
             .attack()
@@ -118,7 +110,7 @@ impl MonsterActionDeterminer {
 
     fn attack(&self) -> Option<MonsterAction> {
         self.players
-            .get(&self.target_pos.to_vec2().as_ivec2())
+            .get(&self.target_pos)
             .map(|(p, id)| self.create_attack_event(*p, *id))
             .map(MonsterAction::Attack)
     }
@@ -145,14 +137,14 @@ impl MonsterActionDeterminer {
     }
 
     fn create_attack_event(&self, player: Entity, player_id: usize) -> MonsterAttacksEvent {
-        MonsterAttacksEvent::new(self.monster, player, player_id, self.target_pos.to_vec2())
+        MonsterAttacksEvent::new(self.monster, player, player_id, self.target_pos.as_vec2())
     }
 
     fn create_move_event(&self) -> MonsterMovesEvent {
         MonsterMovesEvent::new(
             self.monster,
-            self.movement,
-            self.target_pos.to_vec2(),
+            self.movement.as_vec2(),
+            self.target_pos.as_vec2(),
             self.rng_counter,
         )
     }
