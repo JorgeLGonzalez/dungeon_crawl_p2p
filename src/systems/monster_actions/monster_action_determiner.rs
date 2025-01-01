@@ -65,25 +65,15 @@ impl MonsterActionDeterminer {
 
         self.try_attack(players)
             .map_or_else(
-                || {
-                    rng.gen_bool(config::MONSTER_MOVE_CHANCE)
-                        .then(|| valid_moves.get(rng.gen_range(0..valid_moves.len())))
-                        .flatten()
-                },
-                |attack_goal| {
-                    valid_moves.iter().min_by(|m0, m1| {
-                        m0.distance_squared(attack_goal)
-                            .cmp(&m1.distance_squared(attack_goal))
-                    })
-                },
+                || self.random_move(rng, &valid_moves),
+                |attack_goal| self.chase(attack_goal, &valid_moves),
             )
-            .map(|&target_pos| {
+            .map(|target_pos| {
                 self.target_pos = target_pos;
                 self.rng_counter = rng.counter;
 
-                self.attack(players).or_else(|| Some(self.move_monster()))
+                self.attack(players).unwrap_or_else(|| self.move_monster())
             })
-            .flatten()
     }
 
     pub fn is_throttled(&self) -> bool {
@@ -104,6 +94,16 @@ impl MonsterActionDeterminer {
             .get(&self.target_pos)
             .map(|(p, id)| self.create_attack_event(*p, *id))
             .map(MonsterAction::Attack)
+    }
+
+    fn chase(&self, attack_goal: IVec2, valid_moves: &[IVec2]) -> Option<IVec2> {
+        valid_moves
+            .iter()
+            .min_by(|m0, m1| {
+                m0.distance_squared(attack_goal)
+                    .cmp(&m1.distance_squared(attack_goal))
+            })
+            .copied()
     }
 
     fn create_attack_event(&self, player: Entity, player_id: usize) -> MonsterAttacksEvent {
@@ -130,6 +130,16 @@ impl MonsterActionDeterminer {
             self.target_pos,
             self.rng_counter,
         ))
+    }
+
+    fn random_move(&self, rng: &mut RandomGenerator, valid_moves: &[IVec2]) -> Option<IVec2> {
+        if rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
+            valid_moves
+                .get(rng.gen_range(0..valid_moves.len()))
+                .copied()
+        } else {
+            None
+        }
     }
 
     fn try_attack(&self, players: &PlayerPositionMap) -> Option<IVec2> {
