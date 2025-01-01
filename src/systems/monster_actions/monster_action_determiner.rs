@@ -1,5 +1,5 @@
 use crate::{
-    components::PlayerId,
+    components::{FieldOfView, Monster, Player, PlayerId},
     events::{MonsterAttacksEvent, MonsterMovesEvent},
     resources::{config, DungeonPosition, RandomCounter, RandomGenerator},
 };
@@ -14,31 +14,40 @@ pub enum MonsterAction {
 }
 
 pub type MonsterPositionSet = HashSet<DungeonPosition>;
-pub type PlayerPositionMap = HashMap<DungeonPosition, (Entity, PlayerId)>;
+pub type PlayerPositionMap = HashMap<IVec2, (Entity, PlayerId)>;
+pub type PlayersQuery<'w, 's, 't, 'p> =
+    Query<'w, 's, (&'t Transform, Entity, &'p Player), (With<Player>, Without<Monster>)>;
 pub type WallPositionSet = HashSet<DungeonPosition>;
 
 pub struct MonsterActionDeterminer {
     current_pos: DungeonPosition,
+    fov: HashSet<IVec2>,
     monster: Entity,
     movement: Vec2,
+    players: PlayerPositionMap,
     rng_counter: RandomCounter,
     target_pos: DungeonPosition,
 }
 
 impl MonsterActionDeterminer {
-    pub fn from_query_tuple((transform, monster): (&Transform, Entity)) -> Self {
+    pub fn from_query_tuple(
+        (transform, fov, monster): (&Transform, &FieldOfView, Entity),
+        players: &PlayersQuery,
+    ) -> Self {
         Self {
             current_pos: DungeonPosition::from_vec2(transform.translation.truncate()),
+            fov: fov.visible_tiles.keys().copied().collect(),
             monster,
             movement: Vec2::ZERO,
+            players: create_player_set(players),
             rng_counter: 0,
             target_pos: DungeonPosition::from_vec2(Vec2::ZERO),
         }
     }
 
-    pub fn attack(&self, players: &PlayerPositionMap) -> Option<MonsterAction> {
-        players
-            .get(&self.target_pos)
+    pub fn attack(&self) -> Option<MonsterAction> {
+        self.players
+            .get(&self.target_pos.to_vec2().as_ivec2())
             .map(|(p, id)| self.create_attack_event(*p, *id))
             .map(MonsterAction::Attack)
     }
@@ -58,6 +67,13 @@ impl MonsterActionDeterminer {
     }
 
     pub fn plan_move(self, rng: &mut RandomGenerator) -> Option<Self> {
+        self.players
+            .keys()
+            .filter(|player_pos| self.fov.contains(*player_pos))
+            .for_each(|player_pos| {
+                info!("Monster {} can see player at {}", self.monster, player_pos);
+            });
+
         if !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
             return None;
         }
@@ -101,4 +117,13 @@ impl MonsterActionDeterminer {
             self.rng_counter,
         )
     }
+}
+
+fn create_player_set(players: &PlayersQuery) -> PlayerPositionMap {
+    PlayerPositionMap::from_iter(players.iter().map(|(p, player_entity, player)| {
+        (
+            p.translation.truncate().as_ivec2(),
+            (player_entity, player.id),
+        )
+    }))
 }
