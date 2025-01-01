@@ -1,7 +1,7 @@
 use crate::{
     components::{FieldOfView, LastAction, Monster, Player, PlayerId},
     events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
-    resources::{config, RandomCounter, RandomGenerator},
+    resources::{config, RandomGenerator},
 };
 use bevy::{
     prelude::*,
@@ -24,7 +24,6 @@ pub struct MonsterActionDeterminer {
     fov: HashSet<IVec2>,
     is_throttled: bool,
     monster: Entity,
-    rng_counter: RandomCounter,
     target_pos: IVec2,
 }
 
@@ -44,7 +43,6 @@ impl MonsterActionDeterminer {
             fov: fov.visible_tiles.keys().copied().collect(),
             is_throttled,
             monster,
-            rng_counter: 0,
             target_pos: IVec2::ZERO,
         }
     }
@@ -76,9 +74,9 @@ impl MonsterActionDeterminer {
             )
             .map(|target_pos| {
                 self.target_pos = target_pos;
-                self.rng_counter = rng.counter;
 
-                self.attack(players).unwrap_or_else(|| self.move_monster())
+                self.attack(players)
+                    .unwrap_or_else(|| self.move_monster(rng.counter))
             })
     }
 
@@ -129,12 +127,12 @@ impl MonsterActionDeterminer {
             .collect()
     }
 
-    fn move_monster(&self) -> MonsterAction {
+    fn move_monster(&self, rng_counter: u128) -> MonsterAction {
         MonsterAction::Move(MonsterMovesEvent::new(
             self.monster,
             self.target_pos - self.current_pos,
             self.target_pos,
-            self.rng_counter,
+            rng_counter,
         ))
     }
 
