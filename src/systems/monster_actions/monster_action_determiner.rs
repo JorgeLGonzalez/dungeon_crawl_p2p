@@ -23,7 +23,7 @@ pub struct MonsterActionDeterminer {
     current_pos: DungeonPosition,
     fov: HashSet<IVec2>,
     last_action_time: f32,
-    monster: Entity,
+    pub monster: Entity,
     movement: Vec2,
     players: PlayerPositionMap,
     rng_counter: RandomCounter,
@@ -48,33 +48,13 @@ impl MonsterActionDeterminer {
         }
     }
 
-    pub fn attack(&self) -> Option<MonsterAction> {
-        self.players
-            .get(&self.target_pos.to_vec2().as_ivec2())
-            .map(|(p, id)| self.create_attack_event(*p, *id))
-            .map(MonsterAction::Attack)
-    }
-
-    pub fn move_monster(
-        &self,
-        monster_positions: &mut MonsterPositionSet,
-        walls: &WallPositionSet,
-    ) -> Option<MonsterAction> {
-        if monster_positions.contains(&self.target_pos) || walls.contains(&self.target_pos) {
-            return None;
-        }
-
-        self.update_monster_positions(monster_positions);
-
-        Some(MonsterAction::Move(self.create_move_event()))
-    }
-
-    pub fn plan_move(
-        self,
+    pub fn determine(
+        &mut self,
+        monster_positions: &MonsterPositionSet,
         time: &Time,
         walls: &WallPositionSet,
         rng: &mut RandomGenerator,
-    ) -> Option<Self> {
+    ) -> Option<MonsterAction> {
         if time.elapsed_secs() - self.last_action_time < config::MONSTER_THROTTLE_SECONDS {
             return None;
         }
@@ -94,6 +74,9 @@ impl MonsterActionDeterminer {
                     .iter()
                     .map(|&step| step + monster_pos)
                     .filter(|t_pos| !walls.contains(&DungeonPosition::from_vec2(t_pos.as_vec2())))
+                    .filter(|t_pos| {
+                        !monster_positions.contains(&DungeonPosition::from_vec2(t_pos.as_vec2()))
+                    })
                     .min_by(|m0, m1| {
                         m0.distance_squared(player_pos)
                             .cmp(&m1.distance_squared(player_pos))
@@ -106,40 +89,57 @@ impl MonsterActionDeterminer {
                 "Monster {} at {} moves to {target_pos} hopefully towards player",
                 self.monster, self.current_pos
             );
-            return Some(Self {
-                movement: (target_pos - monster_pos).as_vec2(),
-                target_pos: DungeonPosition::from_vec2(target_pos.as_vec2()),
-                ..self
-            });
+            self.movement = (target_pos - monster_pos).as_vec2();
+            self.rng_counter = rng.counter;
+            self.target_pos = DungeonPosition::from_vec2(target_pos.as_vec2());
+            return self
+                .attack()
+                .or_else(|| self.move_monster(monster_positions, walls));
         }
 
         if !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
             return None;
         }
 
-        let movement = match rng.gen_range(0..4) {
+        self.movement = match rng.gen_range(0..4) {
             0 => Vec2::Y,
             1 => Vec2::NEG_Y,
             2 => Vec2::NEG_X,
             3 => Vec2::X,
             _ => unreachable!(),
         };
-        let target_pos = DungeonPosition::from_vec2(self.current_pos.to_vec2() + movement);
-        let rng_counter = rng.counter;
+        self.rng_counter = rng.counter;
+        self.target_pos = DungeonPosition::from_vec2(self.current_pos.to_vec2() + self.movement);
 
-        Some(Self {
-            movement,
-            rng_counter,
-            target_pos,
-            ..self
-        })
+        return self
+            .attack()
+            .or_else(|| self.move_monster(monster_positions, walls));
+    }
+
+    fn attack(&self) -> Option<MonsterAction> {
+        self.players
+            .get(&self.target_pos.to_vec2().as_ivec2())
+            .map(|(p, id)| self.create_attack_event(*p, *id))
+            .map(MonsterAction::Attack)
+    }
+
+    fn move_monster(
+        &self,
+        monster_positions: &MonsterPositionSet,
+        walls: &WallPositionSet,
+    ) -> Option<MonsterAction> {
+        if monster_positions.contains(&self.target_pos) || walls.contains(&self.target_pos) {
+            return None;
+        }
+
+        Some(MonsterAction::Move(self.create_move_event()))
     }
 
     pub fn sort_key(&self) -> u32 {
         self.monster.index()
     }
 
-    fn update_monster_positions(&self, monster_positions: &mut MonsterPositionSet) {
+    pub fn update_monster_positions(&self, monster_positions: &mut MonsterPositionSet) {
         monster_positions.remove(&self.current_pos);
         monster_positions.insert(self.target_pos);
     }

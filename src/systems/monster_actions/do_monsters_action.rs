@@ -27,23 +27,22 @@ pub fn do_monsters_action(
 
     sorted_determiners(&monsters, &players)
         .into_iter()
-        .filter_map(|d| d.plan_move(&time, &walls, &mut rng))
-        .filter_map(|d| d.attack().or_else(|| d.move_monster(&mut planned, &walls)))
-        .for_each(|action| {
-            let monster = match action {
+        .for_each(|mut determiner| {
+            let Some(action) = determiner.determine(&mut planned, &time, &walls, &mut rng) else {
+                return;
+            };
+
+            determiner.update_monster_positions(&mut planned);
+            match action {
                 MonsterAction::Attack(e) => {
-                    let monster = e.monster;
                     attack_event.send(e);
-                    monster
                 }
                 MonsterAction::Move(e) => {
-                    let monster = e.monster;
                     move_event.send(e);
-                    monster
                 }
             };
 
-            acted_events.send(MonsterActedEvent::new(monster));
+            acted_events.send(MonsterActedEvent::new(determiner.monster));
         });
 }
 

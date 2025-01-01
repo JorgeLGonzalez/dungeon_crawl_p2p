@@ -39,7 +39,7 @@ pub const MONSTER_Z_LAYER: f32 = 90.;
 /// Probability that a monster will attempt to move in a given frame.
 /// See monster_movement.
 pub const MONSTER_MOVE_CHANCE: f64 = 0.01;
-pub const MONSTER_THROTTLE_SECONDS: f32 = 0.5;
+pub const MONSTER_THROTTLE_SECONDS: f32 = 0.15;
 /// Auto save tracked monster moves when threshold is reached
 pub const MONSTER_TRACKER_AUTO_SAVE_ENABLED: bool = false;
 pub const MONSTER_TRACKER_AUTO_SAVE_THRESHOLD: usize = 100;
