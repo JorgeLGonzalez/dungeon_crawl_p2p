@@ -2,7 +2,7 @@ use crate::{
     components::*,
     events::{PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent},
 };
-use bevy::{math::Vec2, prelude::*};
+use bevy::prelude::*;
 
 pub type ObstacleQuery<'w, 's, 't, 'o> = Query<'w, 's, (&'t Transform, &'o Obstacle, Entity)>;
 pub type PlayerQuery<'w, 's, 't, 'm> =

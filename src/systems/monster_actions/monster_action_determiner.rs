@@ -25,7 +25,6 @@ pub struct MonsterActionDeterminer {
     last_action_time: f32,
     pub monster: Entity,
     movement: IVec2,
-    players: PlayerPositionMap,
     rng_counter: RandomCounter,
     target_pos: IVec2,
 }
@@ -33,7 +32,6 @@ pub struct MonsterActionDeterminer {
 impl MonsterActionDeterminer {
     pub fn from_query_tuple(
         (transform, fov, last_action, monster): (&Transform, &FieldOfView, &LastAction, Entity),
-        players: &PlayersQuery,
     ) -> Self {
         Self {
             current_pos: transform.translation.truncate().as_ivec2(),
@@ -41,8 +39,6 @@ impl MonsterActionDeterminer {
             last_action_time: last_action.time,
             monster,
             movement: IVec2::ZERO,
-            // TODO should not recalc for every monster
-            players: create_player_set(players),
             rng_counter: 0,
             target_pos: IVec2::ZERO,
         }
@@ -51,6 +47,7 @@ impl MonsterActionDeterminer {
     pub fn determine(
         &mut self,
         monster_positions: &MonsterPositionSet,
+        players: &PlayerPositionMap,
         time: &Time,
         walls: &WallPositionSet,
         rng: &mut RandomGenerator,
@@ -59,8 +56,7 @@ impl MonsterActionDeterminer {
             return None;
         }
 
-        let target_pos = self
-            .players
+        let target_pos = players
             .keys()
             .filter(|player_pos| self.fov.contains(*player_pos))
             .min_by(|p0, p1| {
@@ -85,7 +81,7 @@ impl MonsterActionDeterminer {
             self.rng_counter = rng.counter;
             self.target_pos = target_pos;
             return self
-                .attack()
+                .attack(players)
                 .or_else(|| self.move_monster(monster_positions, walls));
         }
 
@@ -104,12 +100,12 @@ impl MonsterActionDeterminer {
         self.target_pos = self.current_pos + self.movement;
 
         return self
-            .attack()
+            .attack(players)
             .or_else(|| self.move_monster(monster_positions, walls));
     }
 
-    fn attack(&self) -> Option<MonsterAction> {
-        self.players
+    fn attack(&self, players: &PlayerPositionMap) -> Option<MonsterAction> {
+        players
             .get(&self.target_pos)
             .map(|(p, id)| self.create_attack_event(*p, *id))
             .map(MonsterAction::Attack)
@@ -148,13 +144,4 @@ impl MonsterActionDeterminer {
             self.rng_counter,
         )
     }
-}
-
-fn create_player_set(players: &PlayersQuery) -> PlayerPositionMap {
-    PlayerPositionMap::from_iter(players.iter().map(|(p, player_entity, player)| {
-        (
-            p.translation.truncate().as_ivec2(),
-            (player_entity, player.id),
-        )
-    }))
 }

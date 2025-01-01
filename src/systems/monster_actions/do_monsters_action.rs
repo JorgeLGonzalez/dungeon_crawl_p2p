@@ -1,5 +1,6 @@
 use super::monster_action_determiner::{
-    MonsterAction, MonsterActionDeterminer, MonsterPositionSet, PlayersQuery, WallPositionSet,
+    MonsterAction, MonsterActionDeterminer, MonsterPositionSet, PlayerPositionMap, PlayersQuery,
+    WallPositionSet,
 };
 use crate::{
     components::{FieldOfView, LastAction, Monster, WallTile},
@@ -23,12 +24,14 @@ pub fn do_monsters_action(
     wall_tiles: WallQuery,
 ) {
     let mut planned = create_current_monster_positions_set(&monsters);
+    let player_set = create_player_set(&players);
     let walls = create_wall_set(&wall_tiles);
 
-    sorted_determiners(&monsters, &players)
+    sorted_determiners(&monsters)
         .into_iter()
         .for_each(|mut determiner| {
-            let Some(action) = determiner.determine(&planned, &time, &walls, &mut rng) else {
+            let Some(action) = determiner.determine(&planned, &player_set, &time, &walls, &mut rng)
+            else {
                 return;
             };
 
@@ -54,19 +57,25 @@ fn create_current_monster_positions_set(monsters: &MonsterQuery) -> MonsterPosit
     )
 }
 
+fn create_player_set(players: &PlayersQuery) -> PlayerPositionMap {
+    PlayerPositionMap::from_iter(players.iter().map(|(p, player_entity, player)| {
+        (
+            p.translation.truncate().as_ivec2(),
+            (player_entity, player.id),
+        )
+    }))
+}
+
 fn create_wall_set(walls: &WallQuery) -> WallPositionSet {
     WallPositionSet::from_iter(walls.iter().map(|w| w.translation.truncate().as_ivec2()))
 }
 
 /// Create a Vec of [`MonsterActionDeterminer`]s to help process the actions.
 /// Sort them monsters to ensure all p2p clients process moves in the same order.
-fn sorted_determiners(
-    monsters: &MonsterQuery,
-    players: &PlayersQuery,
-) -> Vec<MonsterActionDeterminer> {
+fn sorted_determiners(monsters: &MonsterQuery) -> Vec<MonsterActionDeterminer> {
     let mut monsters: Vec<_> = monsters
         .iter()
-        .map(|t| MonsterActionDeterminer::from_query_tuple(t, &players))
+        .map(MonsterActionDeterminer::from_query_tuple)
         .collect();
     monsters.sort_by_key(|d| d.sort_key());
 
