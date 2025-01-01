@@ -3,6 +3,17 @@ use bevy::{
     prelude::{Entity, Event},
 };
 
+#[derive(Event)]
+pub struct MonsterActedEvent {
+    pub monster: Entity,
+}
+
+impl MonsterActedEvent {
+    pub fn new(monster: Entity) -> Self {
+        Self { monster }
+    }
+}
+
 /// Event: Monster attacks player
 #[derive(Event)]
 pub struct MonsterAttacksEvent {

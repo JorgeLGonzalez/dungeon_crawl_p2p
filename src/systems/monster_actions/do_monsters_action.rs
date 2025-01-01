@@ -2,22 +2,24 @@ use super::monster_action_determiner::{
     MonsterAction, MonsterActionDeterminer, MonsterPositionSet, PlayersQuery, WallPositionSet,
 };
 use crate::{
-    components::{FieldOfView, Monster, WallTile},
-    events::{MonsterAttacksEvent, MonsterMovesEvent},
+    components::{FieldOfView, LastAction, Monster, WallTile},
+    events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
     resources::{DungeonPosition, RandomGenerator},
 };
 use bevy::prelude::*;
 
-type MonsterQuery<'w, 's, 't, 'f> =
-    Query<'w, 's, (&'t Transform, &'f FieldOfView, Entity), With<Monster>>;
+type MonsterQuery<'w, 's, 't, 'f, 'a> =
+    Query<'w, 's, (&'t Transform, &'f FieldOfView, &'a LastAction, Entity), With<Monster>>;
 type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Monster>)>;
 
 pub fn do_monsters_action(
+    mut acted_events: EventWriter<MonsterActedEvent>,
     mut attack_event: EventWriter<MonsterAttacksEvent>,
     mut move_event: EventWriter<MonsterMovesEvent>,
     mut rng: ResMut<RandomGenerator>,
     monsters: MonsterQuery,
     players: PlayersQuery,
+    time: Res<Time>,
     wall_tiles: WallQuery,
 ) {
     let mut planned = create_current_monster_positions_set(&monsters);
@@ -25,15 +27,23 @@ pub fn do_monsters_action(
 
     sorted_determiners(&monsters, &players)
         .into_iter()
-        .filter_map(|d| d.plan_move(&mut rng))
+        .filter_map(|d| d.plan_move(&time, &mut rng))
         .filter_map(|d| d.attack().or_else(|| d.move_monster(&mut planned, &walls)))
-        .for_each(|action| match action {
-            MonsterAction::Attack(e) => {
-                attack_event.send(e);
-            }
-            MonsterAction::Move(e) => {
-                move_event.send(e);
-            }
+        .for_each(|action| {
+            let monster = match action {
+                MonsterAction::Attack(e) => {
+                    let monster = e.monster;
+                    attack_event.send(e);
+                    monster
+                }
+                MonsterAction::Move(e) => {
+                    let monster = e.monster;
+                    move_event.send(e);
+                    monster
+                }
+            };
+
+            acted_events.send(MonsterActedEvent::new(monster));
         });
 }
 

@@ -1,5 +1,5 @@
 use crate::{
-    components::{FieldOfView, Monster, Player, PlayerId},
+    components::{FieldOfView, LastAction, Monster, Player, PlayerId},
     events::{MonsterAttacksEvent, MonsterMovesEvent},
     resources::{config, DungeonPosition, RandomCounter, RandomGenerator},
 };
@@ -22,6 +22,7 @@ pub type WallPositionSet = HashSet<DungeonPosition>;
 pub struct MonsterActionDeterminer {
     current_pos: DungeonPosition,
     fov: HashSet<IVec2>,
+    last_action_time: f32,
     monster: Entity,
     movement: Vec2,
     players: PlayerPositionMap,
@@ -31,12 +32,13 @@ pub struct MonsterActionDeterminer {
 
 impl MonsterActionDeterminer {
     pub fn from_query_tuple(
-        (transform, fov, monster): (&Transform, &FieldOfView, Entity),
+        (transform, fov, last_action, monster): (&Transform, &FieldOfView, &LastAction, Entity),
         players: &PlayersQuery,
     ) -> Self {
         Self {
             current_pos: DungeonPosition::from_vec2(transform.translation.truncate()),
             fov: fov.visible_tiles.keys().copied().collect(),
+            last_action_time: last_action.time,
             monster,
             movement: Vec2::ZERO,
             players: create_player_set(players),
@@ -66,13 +68,43 @@ impl MonsterActionDeterminer {
         Some(MonsterAction::Move(self.create_move_event()))
     }
 
-    pub fn plan_move(self, rng: &mut RandomGenerator) -> Option<Self> {
-        self.players
+    pub fn plan_move(self, time: &Time, rng: &mut RandomGenerator) -> Option<Self> {
+        if time.elapsed_secs() - self.last_action_time < config::MONSTER_THROTTLE_SECONDS {
+            return None;
+        }
+
+        let monster_pos = self.current_pos.to_vec2().as_ivec2();
+        let target_pos = self
+            .players
             .keys()
             .filter(|player_pos| self.fov.contains(*player_pos))
-            .for_each(|player_pos| {
-                info!("Monster {} can see player at {}", self.monster, player_pos);
+            .min_by(|p0, p1| {
+                p0.distance_squared(monster_pos)
+                    .cmp(&p1.distance_squared(monster_pos))
+            })
+            .map(|&player_pos| {
+                // TODO consider only valid moves
+                [IVec2::Y, IVec2::NEG_Y, IVec2::NEG_X, IVec2::X]
+                    .iter()
+                    .map(|&step| step + monster_pos)
+                    .min_by(|m0, m1| {
+                        m0.distance_squared(player_pos)
+                            .cmp(&m1.distance_squared(player_pos))
+                    })
+                    .unwrap()
             });
+
+        if let Some(target_pos) = target_pos {
+            info!(
+                "Monster {} at {} moves to {target_pos} hopefully towards player",
+                self.monster, self.current_pos
+            );
+            return Some(Self {
+                movement: (target_pos - monster_pos).as_vec2(),
+                target_pos: DungeonPosition::from_vec2(target_pos.as_vec2()),
+                ..self
+            });
+        }
 
         if !rng.gen_bool(config::MONSTER_MOVE_CHANCE) {
             return None;

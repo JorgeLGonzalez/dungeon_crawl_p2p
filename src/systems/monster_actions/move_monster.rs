@@ -16,10 +16,9 @@ pub fn move_monster(
     let frame = frame_count.0;
 
     for event in move_events.read() {
-        if let Ok(mut transform) = monsters.get_mut(event.monster) {
-            transform.translation = event.pos.extend(config::MONSTER_Z_LAYER);
-            monster_tracker.push(frame, event);
-            fov_event.send(RecalculateFovEvent::new(event.monster, event.pos));
-        }
+        let mut transform = monsters.get_mut(event.monster).expect("Inconceivable!");
+        transform.translation = event.pos.extend(config::MONSTER_Z_LAYER);
+        monster_tracker.push(frame, event);
+        fov_event.send(RecalculateFovEvent::new(event.monster, event.pos));
     }
 }
