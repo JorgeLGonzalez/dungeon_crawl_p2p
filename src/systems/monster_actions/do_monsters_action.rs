@@ -27,11 +27,11 @@ pub fn do_monsters_action(
     let player_set = create_player_set(&players);
     let walls = create_wall_set(&wall_tiles);
 
-    sorted_determiners(&monsters)
+    sorted_determiners(&monsters, &time)
         .into_iter()
+        .filter(|d| !d.is_throttled())
         .for_each(|mut determiner| {
-            let Some(action) = determiner.determine(&planned, &player_set, &time, &walls, &mut rng)
-            else {
+            let Some(action) = determiner.determine(&planned, &player_set, &walls, &mut rng) else {
                 return;
             };
 
@@ -72,10 +72,10 @@ fn create_wall_set(walls: &WallQuery) -> WallPositionSet {
 
 /// Create a Vec of [`MonsterActionDeterminer`]s to help process the actions.
 /// Sort them monsters to ensure all p2p clients process moves in the same order.
-fn sorted_determiners(monsters: &MonsterQuery) -> Vec<MonsterActionDeterminer> {
+fn sorted_determiners(monsters: &MonsterQuery, time: &Time) -> Vec<MonsterActionDeterminer> {
     let mut monsters: Vec<_> = monsters
         .iter()
-        .map(MonsterActionDeterminer::from_query_tuple)
+        .map(|t| MonsterActionDeterminer::from_query_tuple(t, time))
         .collect();
     monsters.sort_by_key(|d| d.sort_key());
 

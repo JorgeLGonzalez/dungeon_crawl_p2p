@@ -22,7 +22,7 @@ pub type WallPositionSet = HashSet<IVec2>;
 pub struct MonsterActionDeterminer {
     current_pos: IVec2,
     fov: HashSet<IVec2>,
-    last_action_time: f32,
+    is_throttled: bool,
     pub monster: Entity,
     movement: IVec2,
     rng_counter: RandomCounter,
@@ -30,13 +30,18 @@ pub struct MonsterActionDeterminer {
 }
 
 impl MonsterActionDeterminer {
+    // todo rename to new?
     pub fn from_query_tuple(
         (transform, fov, last_action, monster): (&Transform, &FieldOfView, &LastAction, Entity),
+        time: &Time,
     ) -> Self {
+        let is_throttled =
+            time.elapsed_secs() - last_action.time < config::MONSTER_THROTTLE_SECONDS;
+
         Self {
             current_pos: transform.translation.truncate().as_ivec2(),
             fov: fov.visible_tiles.keys().copied().collect(),
-            last_action_time: last_action.time,
+            is_throttled,
             monster,
             movement: IVec2::ZERO,
             rng_counter: 0,
@@ -48,12 +53,11 @@ impl MonsterActionDeterminer {
         &mut self,
         monster_positions: &MonsterPositionSet,
         players: &PlayerPositionMap,
-        time: &Time,
         walls: &WallPositionSet,
         rng: &mut RandomGenerator,
     ) -> Option<MonsterAction> {
-        if time.elapsed_secs() - self.last_action_time < config::MONSTER_THROTTLE_SECONDS {
-            return None;
+        if self.is_throttled {
+            unreachable!("Should not have been called. Check is_throttled() first.");
         }
 
         let target_pos = players
@@ -102,6 +106,10 @@ impl MonsterActionDeterminer {
         return self
             .attack(players)
             .or_else(|| self.move_monster(monster_positions, walls));
+    }
+
+    pub fn is_throttled(&self) -> bool {
+        self.is_throttled
     }
 
     fn attack(&self, players: &PlayerPositionMap) -> Option<MonsterAction> {
