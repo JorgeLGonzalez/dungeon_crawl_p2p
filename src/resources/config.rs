@@ -34,6 +34,7 @@ pub const HUD_Z_LAYER: f32 = 900.;
 
 // Monsters
 pub const MONSTER_COLOR: Color = Color::srgb(0.8, 0.2, 0.2);
+pub const MONSTER_FOV_RADIUS: FovRadius = 6;
 pub const MONSTER_Z_LAYER: f32 = 90.;
 /// Probability that a monster will attempt to move in a given frame.
 /// See monster_movement.
