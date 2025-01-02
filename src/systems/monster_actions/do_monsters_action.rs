@@ -37,7 +37,7 @@ pub fn do_monsters_action(
                 }
             };
 
-            determiner.update_monster_positions(&mut params.monsters);
+            params.update_monster_position(determiner.old_pos(), determiner.target_pos());
             acted_events.send(determiner.create_acted_event());
         });
 }

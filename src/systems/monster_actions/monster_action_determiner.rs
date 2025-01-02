@@ -82,13 +82,16 @@ impl MonsterActionDeterminer {
         self.is_throttled
     }
 
+    pub fn old_pos(&self) -> IVec2 {
+        self.current_pos
+    }
+
     pub fn sort_key(&self) -> u32 {
         self.monster.index()
     }
 
-    pub fn update_monster_positions(&self, monster_positions: &mut MonsterPositionSet) {
-        monster_positions.remove(&self.current_pos);
-        monster_positions.insert(self.target_pos);
+    pub fn target_pos(&self) -> IVec2 {
+        self.target_pos
     }
 
     fn attack(&self, players: &PlayerPositionMap) -> Option<MonsterAction> {

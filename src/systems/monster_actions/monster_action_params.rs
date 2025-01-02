@@ -29,6 +29,11 @@ impl MonsterActionParams {
         }
     }
 
+    pub fn update_monster_position(&mut self, old_pos: IVec2, new_pos: IVec2) {
+        self.monsters.remove(&old_pos);
+        self.monsters.insert(new_pos);
+    }
+
     fn create_current_monster_positions_set(monsters: &MonsterQuery) -> MonsterPositionSet {
         MonsterPositionSet::from_iter(
             monsters
