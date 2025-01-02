@@ -95,6 +95,18 @@ impl PlayerMoveIntentEvent {
 }
 
 #[derive(Event)]
+pub struct RecalculateFovEvent {
+    pub entity: Entity,
+    pub pos: Vec2,
+}
+
+impl RecalculateFovEvent {
+    pub fn new(entity: Entity, pos: Vec2) -> Self {
+        Self { entity, pos }
+    }
+}
+
+#[derive(Event)]
 pub struct SnapshotStateEvent {
     pub player_id: usize,
 }

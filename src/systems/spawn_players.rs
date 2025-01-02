@@ -1,5 +1,5 @@
 use crate::{
-    components::{Health, Obstacle, Player},
+    components::{FieldOfView, Health, Obstacle, Player},
     resources::{
         config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
         DungeonMap,
@@ -11,13 +11,14 @@ use bevy_ggrs::AddRollbackCommandExtension;
 pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
     for (player_idx, &player_pos) in dungeon.player_starting_positions.iter().enumerate() {
         let color = match player_idx {
-            0 => Color::srgb(0., 0., 1.),
-            _ => Color::srgb(0., 1., 0.),
+            0 => config::PLAYER_0_COLOR,
+            _ => config::PLAYER_1_COLOR,
         };
 
         let id = commands
             .spawn((
                 Player { id: player_idx },
+                FieldOfView::new(config::PLAYER_FOV_RADIUS),
                 Health::new(config::PLAYER_HEALTH_MAX),
                 Obstacle::Player,
                 Sprite {

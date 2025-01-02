@@ -47,12 +47,12 @@ impl MoveIntentHandler {
                     player_id, target_pos, entity,
                 ))),
                 Obstacle::Player => {
-                    info!("Player {player_id} move to {target_pos} blocked by another player");
+                    trace!("Player {player_id} move to {target_pos} blocked by another player");
 
                     None
                 }
                 Obstacle::Wall => {
-                    info!("Player {player_id} move to {target_pos} blocked by a wall");
+                    trace!("Player {player_id} move to {target_pos} blocked by a wall");
 
                     None
                 }

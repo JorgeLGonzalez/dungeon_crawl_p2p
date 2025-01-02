@@ -14,6 +14,23 @@ use bevy::prelude::*;
 pub struct ExitTile;
 
 #[derive(Component)]
+pub struct FieldOfView {
+    pub radius: FovRadius,
+    pub visible_tiles: Vec<Entity>,
+}
+
+impl FieldOfView {
+    pub fn new(radius: FovRadius) -> Self {
+        Self {
+            radius,
+            visible_tiles: vec![],
+        }
+    }
+}
+
+pub type FovRadius = u8;
+
+#[derive(Component)]
 pub struct FloorTile;
 
 #[derive(Component)]
