@@ -1,5 +1,5 @@
 use crate::{
-    components::{Health, HealthUnit, Monster},
+    components::{Healing, Health, HealthUnit, Monster},
     events::PlayerAttacksEvent,
 };
 use bevy::{log::info, prelude::*};
@@ -18,6 +18,7 @@ pub fn attack_monster(
             commands.entity(event.monster).despawn_recursive();
         } else {
             health.current -= event.damage;
+            commands.entity(event.monster).insert(Healing::default());
         }
     }
 }
