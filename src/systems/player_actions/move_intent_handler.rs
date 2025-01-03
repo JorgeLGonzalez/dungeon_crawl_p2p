@@ -5,8 +5,8 @@ use crate::{
 use bevy::prelude::*;
 
 pub type ObstacleQuery<'w, 's, 't, 'o> = Query<'w, 's, (&'t Transform, &'o Obstacle, Entity)>;
-pub type PlayerQuery<'w, 's, 't, 'm> =
-    Query<'w, 's, (&'t Transform, Option<&'m MoveThrottle>), With<Player>>;
+pub type PlayerQuery<'w, 's, 't, 'd, 'm> =
+    Query<'w, 's, (&'t Transform, &'d Damage, Option<&'m MoveThrottle>), With<Player>>;
 
 pub enum PlayerMove {
     Attack(PlayerAttacksEvent),
@@ -15,6 +15,7 @@ pub enum PlayerMove {
 
 /// Helper for `handle_move_intent`.
 pub struct MoveIntentHandler {
+    damage: DamageUnit,
     event: PlayerMoveIntentEvent,
     target_pos: IVec2,
     pub throttled: bool,
@@ -22,10 +23,11 @@ pub struct MoveIntentHandler {
 
 impl MoveIntentHandler {
     pub fn new(event: PlayerMoveIntentEvent, players: &PlayerQuery) -> Self {
-        let (transform, throttle) = players.get(event.player).expect("Player not found!");
+        let (transform, damage, throttle) = players.get(event.player).expect("Player not found!");
         let target_pos = transform.translation.truncate().as_ivec2() + event.direction;
 
         Self {
+            damage: damage.0,
             event,
             target_pos,
             throttled: throttle.is_some(),
@@ -44,7 +46,10 @@ impl MoveIntentHandler {
         if let Some((obstacle, entity)) = self.find_obstacle(obstacles) {
             match obstacle {
                 Obstacle::Monster => Some(PlayerMove::Attack(PlayerAttacksEvent::new(
-                    player_id, target_pos, entity,
+                    player_id,
+                    target_pos,
+                    entity,
+                    self.damage,
                 ))),
                 Obstacle::Player => {
                     trace!("Player {player_id} move to {target_pos} blocked by another player");

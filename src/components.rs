@@ -11,6 +11,11 @@ pub use move_throttle::MoveThrottle;
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 
 #[derive(Component)]
+pub struct Damage(pub DamageUnit);
+
+pub type DamageUnit = u8;
+
+#[derive(Component)]
 pub struct ExitTile;
 
 #[derive(Component)]
@@ -52,6 +57,14 @@ impl LastAction {
 
 #[derive(Clone, Component, Copy, Debug)]
 pub struct Monster;
+
+#[derive(Component)]
+pub enum MonsterType {
+    Ettin,
+    Goblin,
+    Ogre,
+    Orc,
+}
 
 /// An entity that can interfere with a player's intended movement
 #[derive(Component, Clone, Copy)]
