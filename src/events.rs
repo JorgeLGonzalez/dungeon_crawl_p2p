@@ -15,6 +15,7 @@ impl MonsterActedEvent {
 /// Event: Monster attacks player
 #[derive(Event)]
 pub struct MonsterAttacksEvent {
+    pub damage: DamageUnit,
     pub monster: Entity,
     pub player: Entity,
     pub player_id: usize,
@@ -22,8 +23,15 @@ pub struct MonsterAttacksEvent {
 }
 
 impl MonsterAttacksEvent {
-    pub fn new(monster: Entity, player: Entity, player_id: usize, pos: IVec2) -> Self {
+    pub fn new(
+        monster: Entity,
+        damage: DamageUnit,
+        player: Entity,
+        player_id: usize,
+        pos: IVec2,
+    ) -> Self {
         Self {
+            damage,
             monster,
             player,
             player_id,

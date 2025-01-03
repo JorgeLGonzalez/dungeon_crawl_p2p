@@ -2,7 +2,7 @@ use super::monster_action_params::{
     MonsterActionParams, MonsterPositionSet, PlayerPositionMap, WallPositionSet,
 };
 use crate::{
-    components::{FieldOfView, LastAction},
+    components::{DamageUnit, FieldOfView, LastAction},
     events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
     resources::{config, RandomCounter, RandomGenerator},
 };
@@ -15,6 +15,7 @@ pub enum MonsterAction {
 
 pub struct MonsterActionDeterminer {
     current_pos: IVec2,
+    damage: DamageUnit,
     fov: HashSet<IVec2>,
     is_throttled: bool,
     monster: Entity,
@@ -23,6 +24,7 @@ pub struct MonsterActionDeterminer {
 
 impl MonsterActionDeterminer {
     pub fn new(
+        damage: DamageUnit,
         fov: &FieldOfView,
         last_action: &LastAction,
         monster: Entity,
@@ -34,6 +36,7 @@ impl MonsterActionDeterminer {
 
         Self {
             current_pos: transform.translation.truncate().as_ivec2(),
+            damage,
             fov: fov.visible_tiles.keys().copied().collect(),
             is_throttled,
             monster,
@@ -112,7 +115,13 @@ impl MonsterActionDeterminer {
     }
 
     fn create_attack_event(&self, player: Entity, player_id: usize) -> MonsterAttacksEvent {
-        MonsterAttacksEvent::new(self.monster, player, player_id, self.target_pos)
+        MonsterAttacksEvent::new(
+            self.monster,
+            self.damage,
+            player,
+            player_id,
+            self.target_pos,
+        )
     }
 
     fn gather_valid_moves(
