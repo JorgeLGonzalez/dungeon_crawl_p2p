@@ -3,7 +3,7 @@ use super::{
     line_of_sight::{BresenhamLineOfSight, WallQuery},
 };
 use crate::{
-    components::{FieldOfView, Player},
+    components::{FieldOfView, FovTileMap, Player},
     events::RecalculateFovEvent,
 };
 use bevy::prelude::*;
@@ -21,11 +21,10 @@ pub fn recalculate_fov(
         let mut fov = fov_query.get_mut(event.entity).expect("Inconceivable!");
         let viewer = BresenhamLineOfSight::new(event.pos, fov.radius, &walls);
 
-        let visible_tiles: Vec<Entity> = floor
+        let visible_tiles: FovTileMap = floor
             .iter()
             .map(|(t, tile, _)| (t.translation.truncate().as_ivec2(), tile))
             .filter(|(floor_pos, _)| viewer.can_see(floor_pos))
-            .map(|(_, tile)| tile)
             .collect();
 
         Illuminator::if_local_player(event.entity, &local_players, &players)

@@ -1,5 +1,5 @@
 use crate::{
-    components::{Health, Monster, Obstacle},
+    components::{FieldOfView, Health, LastAction, Monster, Obstacle},
     resources::{
         config::{self, TILE_HEIGHT, TILE_WIDTH},
         DungeonMap,
@@ -13,7 +13,9 @@ pub fn spawn_monsters(dungeon: Res<DungeonMap>, mut commands: Commands) {
         commands
             .spawn((
                 Monster,
+                FieldOfView::new(config::MONSTER_FOV_RADIUS),
                 Health::new(1),
+                LastAction::new(),
                 Obstacle::Monster,
                 Sprite {
                     color: config::MONSTER_COLOR,

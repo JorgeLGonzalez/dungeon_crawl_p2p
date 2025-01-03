@@ -13,9 +13,9 @@ pub struct BresenhamLineOfSight {
 }
 
 impl BresenhamLineOfSight {
-    pub fn new(entity_pos: Vec2, radius: FovRadius, walls: &WallQuery) -> Self {
+    pub fn new(entity_pos: IVec2, radius: FovRadius, walls: &WallQuery) -> Self {
         Self {
-            pos: entity_pos.as_ivec2(),
+            pos: entity_pos,
             radius_sq: (radius * radius) as i32,
             wall_set: Self::create_wall_set(walls),
         }

@@ -1,8 +1,5 @@
 use crate::components::MoveThrottle;
-use bevy::{
-    prelude::{Commands, Entity, Query, Res},
-    time::Time,
-};
+use bevy::prelude::*;
 
 /// Tick movement throttle (i.e. advance timer) and remove if timer has finished.
 pub fn tick_move_throttle(

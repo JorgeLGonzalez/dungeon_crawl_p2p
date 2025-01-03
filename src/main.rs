@@ -5,7 +5,7 @@ mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
-use components::{checksum_transform, Healing, Health, Monster, MoveThrottle, Player};
+use components::{checksum_transform, Healing, Health, LastAction, Monster, MoveThrottle, Player};
 use resources::{
     config::{self, GameMode, GAME_MODE},
     DesyncEvent, MonsterMoveTracker, RandomGenerator,
@@ -64,6 +64,7 @@ fn main() {
         do_monsters_action,
         attack_player,
         move_monster,
+        update_last_action,
         recalculate_fov,
         health_bar,
     )
@@ -99,6 +100,7 @@ fn main() {
 
 fn add_events(app: &mut App) {
     app.add_event::<DesyncEvent>()
+        .add_event::<events::MonsterActedEvent>()
         .add_event::<events::MonsterAttacksEvent>()
         .add_event::<events::MonsterMovesEvent>()
         .add_event::<events::PlayerAttacksEvent>()
@@ -120,6 +122,7 @@ fn ggrs_setup(app: &mut App) {
         // .rollback_component_with_clone::<ViewVisibility>()
         // .rollback_component_with_clone::<Visibility>()
         .rollback_component_with_copy::<Health>()
+        .rollback_component_with_copy::<LastAction>()
         .rollback_component_with_copy::<Monster>()
         .rollback_component_with_copy::<Player>()
         .rollback_resource_with_clone::<RandomGenerator>()

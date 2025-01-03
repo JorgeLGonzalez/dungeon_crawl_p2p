@@ -1,5 +1,5 @@
 use crate::{
-    components::{FloorTile, Player},
+    components::{FloorTile, FovTileMap, Player},
     resources::config,
     systems::player::LocalPlayer,
 };
@@ -30,24 +30,25 @@ impl Illuminator {
         }
     }
 
-    pub fn with_prior_fov(self, fov: &Vec<Entity>) -> Self {
+    pub fn with_prior_fov(self, fov: &FovTileMap) -> Self {
         if !self.is_local_player {
             return self;
         }
 
         Self {
             is_local_player: true,
-            prior_set: fov.iter().map(|e| *e).collect(),
+            prior_set: fov.values().map(|e| *e).collect(),
         }
     }
 
-    pub fn illuminate(&mut self, floor: &mut FloorQuery, fov: &Vec<Entity>) {
+    pub fn illuminate(&mut self, floor: &mut FloorQuery, fov: &FovTileMap) {
         if !self.is_local_player {
             return;
         }
 
-        fov.iter().for_each(|tile| {
+        fov.values().for_each(|tile| {
             if self.prior_set.contains(tile) {
+                // already illuminated
                 self.prior_set.remove(tile);
             } else {
                 let (.., mut sprite) = floor.get_mut(*tile).expect("Inconceivable!");
@@ -55,6 +56,11 @@ impl Illuminator {
             }
         });
 
+        self.darken_discarded_prior(floor);
+    }
+
+    /// darken tiles that were previously illuminated and no longer in FOV
+    fn darken_discarded_prior(&self, floor: &mut FloorQuery) {
         self.prior_set.iter().for_each(|tile| {
             let (.., mut sprite) = floor.get_mut(*tile).expect("Inconceivable!");
             sprite.color = config::FLOOR_COLOR;

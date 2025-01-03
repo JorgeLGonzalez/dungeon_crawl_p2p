@@ -18,9 +18,14 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] Elapsed time healing
   - [x] synctest.
 - [x] health bar
-- [ ] monster FOV
-- [ ] player FOV
+- [x] player FOV
 - [ ] monster follows player
+  - [x] FOV contains hash set of positions (or hashmap of position to tile entity)
+  - [x] monster FOV
+  - [x] MonsterActionDeterminer.plan_move. move towards any player it can see, otherwise move randomly
+    - [x] Slow down the monster move to attack
+    - [x] chase move needs to avoid invalid moves
+- [ ] monsters now move intentionally, but still not very smart. If they see any players, they will hone in on the closest one and take any valid step that brings them closer to that player, but it is a shortsighted strategy since the distance to the player does not account for any obstacles, so there's probably situations where going to a farther player would be better or where stepping further first is a better path. In other words, there's no path-finding like Dikjstra path. They also have no memory so they will stop chasing a player who escapes their FOV like just around a corner.
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
 - [ ] restart game on game over key press
 - [ ] other dungeons
