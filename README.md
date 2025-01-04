@@ -27,12 +27,33 @@ And lets create the diff room architects. We can add exit and amulet and player.
     - [x] chase move needs to avoid invalid moves
 - [x] deal monster-based damage to players
 - [x] heal monsters
-- [ ] monsters now move intentionally, but still not very smart. If they see any players, they will hone in on the closest one and take any valid step that brings them closer to that player, but it is a shortsighted strategy since the distance to the player does not account for any obstacles, so there's probably situations where going to a farther player would be better or where stepping further first is a better path. In other words, there's no path-finding like Dikjstra path. They also have no memory so they will stop chasing a player who escapes their FOV like just around a corner.
+- [ ] hide unexplored dungeon
+- [ ] hide monsters outside FOV
+- [ ] tool tips to show monster name and health
+- [ ] text on health bar
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
-- [ ] restart game on game over key press
-- [ ] other dungeons
-  - [ ] spawn_dungeon: should use insert_batch as that is more efficient
+- [ ] healing potions
+- [ ] inventory and item usage
+- [ ] map revealer
+- [ ] data driven dungeon monsters and items
+- [ ] weapons
 - [ ] deploy such that it can be used across devices (ideally over internet)
+- [ ] cellular automat dungeon generation
+  - [ ] spawn_dungeon: should use insert_batch as that is more efficient
+- [ ] drunkard walk dungeon generation
+- [ ] prefab dungeon sections
+- [ ] stairs and dungeon levels
+  - [ ] show level in HUD
+- [ ] player sprites
+- [ ] monster sprites
+- [ ] improve lighting simulation
+- [ ] amulet. In original it is placed farthest from player. But we now have 2 randomly placed players.
+  - [ ] Game won state and screen
+- [ ] monsters now move intentionally, but still not very smart. If they see any players, they will hone in on the closest one and take any valid step that brings them closer to that player, but it is a shortsighted strategy since the distance to the player does not account for any obstacles, so there's probably situations where going to a farther player would be better or where stepping further first is a better path. In other words, there's no path-finding like Dikjstra path. They also have no memory so they will stop chasing a player who escapes their FOV like just around a corner.
+- [ ] restart game on game over key press. And actual game over systems and display
+- [ ] dungeon themes
+- [ ] score points for defeating monsters, picking up coins ?
+- [ ] monster patrol strategies (explore, guard, rest)
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
 - [x] how to enable trace logging only for my app (or per module)
 - [x] tunnel between rooms
