@@ -66,6 +66,7 @@ fn main() {
         move_monster,
         update_last_action,
         recalculate_fov,
+        toggle_monster_visibility,
         health_bar,
     )
         .chain();
@@ -108,7 +109,8 @@ fn add_events(app: &mut App) {
         .add_event::<events::PlayerMoveIntentEvent>()
         .add_event::<events::RecalculateFovEvent>()
         .add_event::<events::SnapshotStateEvent>()
-        .add_event::<events::StopMovingEvent>();
+        .add_event::<events::StopMovingEvent>()
+        .add_event::<events::ToggleMonsterVisibilityEvent>();
 }
 
 /// Register components and resources for GGRS snapshots and rollback
