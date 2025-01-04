@@ -1,5 +1,5 @@
 use crate::{
-    components::{FloorTile, FovTileMap, Monster, Player},
+    components::{FloorTile, FovTileMap, Player},
     resources::config,
     systems::player::LocalPlayer,
 };
@@ -8,8 +8,7 @@ use bevy_ggrs::LocalPlayers;
 
 pub type FloorQuery<'w, 's, 't, 'r, 'v> =
     Query<'w, 's, (&'t Transform, Entity, &'r mut Sprite, &'v mut Visibility), With<FloorTile>>;
-pub type MonsterQuery<'w, 's, 't, 'v> =
-    Query<'w, 's, (Entity, &'t Transform, &'v mut Visibility), (With<Monster>, Without<FloorTile>)>;
+pub type PlayerQuery<'w, 's, 'p> = Query<'w, 's, &'p Player>;
 
 pub struct Illuminator {
     is_local_player: bool,
@@ -20,7 +19,7 @@ impl Illuminator {
     pub fn if_local_player(
         entity: Entity,
         local_players: &LocalPlayers,
-        players: &Query<&Player>,
+        players: &PlayerQuery,
     ) -> Self {
         let is_local_player = players
             .get(entity)
@@ -40,12 +39,13 @@ impl Illuminator {
         Self {
             is_local_player: true,
             prior_set: fov.values().map(|e| *e).collect(),
+            ..self
         }
     }
 
-    pub fn illuminate(mut self, floor: &mut FloorQuery, fov: &FovTileMap) -> Self {
+    pub fn illuminate(mut self, floor: &mut FloorQuery, fov: &FovTileMap) {
         if !self.is_local_player {
-            return self;
+            return;
         }
 
         fov.values().for_each(|tile| {
@@ -61,33 +61,6 @@ impl Illuminator {
         });
 
         self.darken_discarded_prior(floor);
-
-        self
-    }
-
-    pub fn toggle_monster_visibility(&self, fov: &FovTileMap, monsters: &mut MonsterQuery) {
-        if !self.is_local_player {
-            return;
-        }
-
-        let should_toggle = |(visibility, pos): &(Mut<Visibility>, IVec2)| match **visibility {
-            Visibility::Hidden => fov.contains_key(pos),
-            Visibility::Visible => !fov.contains_key(pos),
-            _ => false,
-        };
-
-        monsters
-            .iter_mut()
-            .map(|(_, transform, visibility)| {
-                (visibility, transform.translation.truncate().as_ivec2())
-            })
-            .filter(should_toggle)
-            .for_each(|(mut visibility, pos)| {
-                info!(
-                    "Local player FOV change causes visibility toggle from {visibility:?} for monster at {pos}"
-                );
-                visibility.toggle_visible_hidden();
-            });
     }
 
     /// darken tiles that were previously illuminated and no longer in FOV

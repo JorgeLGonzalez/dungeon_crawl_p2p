@@ -131,7 +131,7 @@ impl RecalculateFovEvent {
     }
 }
 
-#[derive(PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum FovRecalculationEntityType {
     Monster,
     Player,
