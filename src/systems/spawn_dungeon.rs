@@ -14,11 +14,13 @@ pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
         let sprite = create_sprite(tile.tile_type);
         let transform = Transform::from_translation(tile.pos.into());
 
-        match tile.tile_type {
-            TileType::Exit => commands.spawn((ExitTile, sprite, transform)),
-            TileType::Floor => commands.spawn((FloorTile, sprite, transform)),
-            TileType::Wall => commands.spawn((WallTile, Obstacle::Wall, sprite, transform)),
+        let mut tile_entity = match tile.tile_type {
+            TileType::Exit => commands.spawn((ExitTile,)),
+            TileType::Floor => commands.spawn((FloorTile,)),
+            TileType::Wall => commands.spawn((WallTile, Obstacle::Wall)),
         };
+
+        tile_entity.insert((sprite, transform, Visibility::Hidden));
     }
 
     commands.insert_resource(dungeon);
