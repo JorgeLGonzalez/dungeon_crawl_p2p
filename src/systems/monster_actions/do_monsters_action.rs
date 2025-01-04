@@ -47,8 +47,8 @@ pub fn do_monsters_action(
 fn sorted_determiners(monsters: &MonsterQuery, time: &Time) -> Vec<MonsterActionDeterminer> {
     let mut monsters: Vec<_> = monsters
         .iter()
-        .map(|(transform, fov, last_action, monster)| {
-            MonsterActionDeterminer::new(fov, last_action, monster, time, transform)
+        .map(|(damage, fov, last_action, monster, transform)| {
+            MonsterActionDeterminer::new(damage.0, fov, last_action, monster, time, transform)
         })
         .collect();
     monsters.sort_by_key(|d| d.sort_key());

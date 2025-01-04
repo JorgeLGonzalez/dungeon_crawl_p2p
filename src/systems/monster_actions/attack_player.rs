@@ -13,31 +13,36 @@ pub fn attack_player(
 ) {
     for event in attack_events.read() {
         let mut health = players.get_mut(event.player).expect("Inconceivable!");
-        health.current -= 1;
+
         log(&health, event);
 
-        if health.current == 0 {
+        if event.damage >= health.current {
+            health.current = 0;
             next_state.set(GameState::GameOver);
         } else {
+            health.current -= event.damage;
             commands.entity(event.player).insert(Healing::default());
         }
     }
 }
 
 fn log(health: &Health, event: &MonsterAttacksEvent) {
-    let result = if health.current > 0 {
+    let action = if health.current > 0 {
         "attacks"
     } else {
         "kills"
     };
     let MonsterAttacksEvent {
+        damage,
         monster,
         player_id,
         pos,
         ..
     } = event;
+    let remaining = health.current - event.damage.min(health.current);
     info!(
-        "Monster {monster} {result} player {player_id} at {pos}. Current health={}/{}",
-        health.current, health.max
+        "Monster {monster} {action} player {player_id} at {pos} inflicting \
+        {damage} damage points. Remaining health={remaining}/{}",
+        health.max
     );
 }

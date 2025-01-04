@@ -1,3 +1,4 @@
+use crate::components::DamageUnit;
 use bevy::prelude::*;
 
 #[derive(Event)]
@@ -14,6 +15,7 @@ impl MonsterActedEvent {
 /// Event: Monster attacks player
 #[derive(Event)]
 pub struct MonsterAttacksEvent {
+    pub damage: DamageUnit,
     pub monster: Entity,
     pub player: Entity,
     pub player_id: usize,
@@ -21,8 +23,15 @@ pub struct MonsterAttacksEvent {
 }
 
 impl MonsterAttacksEvent {
-    pub fn new(monster: Entity, player: Entity, player_id: usize, pos: IVec2) -> Self {
+    pub fn new(
+        monster: Entity,
+        damage: DamageUnit,
+        player: Entity,
+        player_id: usize,
+        pos: IVec2,
+    ) -> Self {
         Self {
+            damage,
             monster,
             player,
             player_id,
@@ -53,14 +62,16 @@ impl MonsterMovesEvent {
 /// Event: Player attacks monster
 #[derive(Event)]
 pub struct PlayerAttacksEvent {
+    pub damage: DamageUnit,
     pub monster: Entity,
     pub player_id: usize,
     pub pos: IVec2,
 }
 
 impl PlayerAttacksEvent {
-    pub fn new(player_id: usize, pos: IVec2, monster: Entity) -> Self {
+    pub fn new(player_id: usize, pos: IVec2, monster: Entity, damage: DamageUnit) -> Self {
         Self {
+            damage,
             monster,
             player_id,
             pos,

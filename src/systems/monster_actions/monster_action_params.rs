@@ -1,11 +1,21 @@
-use crate::components::{FieldOfView, LastAction, Monster, Player, PlayerId, WallTile};
+use crate::components::{Damage, FieldOfView, LastAction, Monster, Player, PlayerId, WallTile};
 use bevy::{
     prelude::*,
     utils::hashbrown::{HashMap, HashSet},
 };
 
-pub type MonsterQuery<'w, 's, 't, 'f, 'a> =
-    Query<'w, 's, (&'t Transform, &'f FieldOfView, &'a LastAction, Entity), With<Monster>>;
+pub type MonsterQuery<'w, 's, 'd, 'f, 'a, 't> = Query<
+    'w,
+    's,
+    (
+        &'d Damage,
+        &'f FieldOfView,
+        &'a LastAction,
+        Entity,
+        &'t Transform,
+    ),
+    With<Monster>,
+>;
 pub type PlayersQuery<'w, 's, 't, 'p> =
     Query<'w, 's, (&'t Transform, Entity, &'p Player), (With<Player>, Without<Monster>)>;
 pub type WallQuery<'w, 's, 't> = Query<'w, 's, &'t Transform, (With<WallTile>, Without<Monster>)>;
@@ -38,7 +48,7 @@ impl MonsterActionParams {
         MonsterPositionSet::from_iter(
             monsters
                 .iter()
-                .map(|(m, ..)| m.translation.truncate().as_ivec2()),
+                .map(|(.., m)| m.translation.truncate().as_ivec2()),
         )
     }
 
