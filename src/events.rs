@@ -158,14 +158,3 @@ impl StopMovingEvent {
         Self { player }
     }
 }
-
-#[derive(Event)]
-pub struct ToggleMonsterVisibilityEvent {
-    pub monster: Entity,
-}
-
-impl ToggleMonsterVisibilityEvent {
-    pub fn new(monster: Entity) -> Self {
-        Self { monster }
-    }
-}
