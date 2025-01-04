@@ -1,13 +1,18 @@
 use crate::{
-    components::{FloorTile, FovTileMap, Player},
+    components::{FloorTile, FovTileMap, Monster, Player},
     resources::config,
     systems::player::LocalPlayer,
 };
-use bevy::{prelude::*, utils::hashbrown::HashSet};
+use bevy::{
+    prelude::*,
+    utils::hashbrown::{HashMap, HashSet},
+};
 use bevy_ggrs::LocalPlayers;
 
 pub type FloorQuery<'w, 's, 't, 'r, 'v> =
     Query<'w, 's, (&'t Transform, Entity, &'r mut Sprite, &'v mut Visibility), With<FloorTile>>;
+pub type MonsterQuery<'w, 's, 't, 'v> =
+    Query<'w, 's, (Entity, &'t Transform, &'v mut Visibility), (With<Monster>, Without<FloorTile>)>;
 
 pub struct Illuminator {
     is_local_player: bool,
@@ -41,20 +46,39 @@ impl Illuminator {
         }
     }
 
-    pub fn illuminate(&mut self, floor: &mut FloorQuery, fov: &FovTileMap) {
+    pub fn illuminate(
+        &mut self,
+        floor: &mut FloorQuery,
+        fov: &FovTileMap,
+        monsters: &mut MonsterQuery,
+    ) {
         if !self.is_local_player {
             return;
         }
+
+        let invisible_monsters: HashMap<IVec2, Entity> = monsters
+            .iter()
+            .filter_map(|(e, t, v)| match *v {
+                Visibility::Hidden => Some((t.translation.truncate().as_ivec2(), e)),
+                _ => None,
+            })
+            .collect();
 
         fov.values().for_each(|tile| {
             if self.prior_set.contains(tile) {
                 // already illuminated
                 self.prior_set.remove(tile);
             } else {
-                let (.., mut sprite, mut visibility) =
+                let (tile_transform, _, mut sprite, mut visibility) =
                     floor.get_mut(*tile).expect("Inconceivable!");
                 sprite.color = config::FLOOR_ILLUMINATED_COLOR;
                 *visibility = Visibility::Visible;
+
+                let tile_pos = tile_transform.translation.truncate().as_ivec2();
+                if let Some(monster) = invisible_monsters.get(&tile_pos) {
+                    let (.., mut visibility) = monsters.get_mut(*monster).expect("Inconceivable!");
+                    *visibility = Visibility::Visible;
+                }
             }
         });
 

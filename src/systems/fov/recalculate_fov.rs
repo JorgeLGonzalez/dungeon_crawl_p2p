@@ -1,5 +1,5 @@
 use super::{
-    illuminator::{FloorQuery, Illuminator},
+    illuminator::{FloorQuery, Illuminator, MonsterQuery},
     line_of_sight::{BresenhamLineOfSight, WallQuery},
 };
 use crate::{
@@ -13,6 +13,7 @@ pub fn recalculate_fov(
     mut fov_query: Query<&mut FieldOfView, With<FieldOfView>>,
     mut recalculate_events: EventReader<RecalculateFovEvent>,
     mut floor: FloorQuery,
+    mut monsters: MonsterQuery,
     local_players: Res<LocalPlayers>,
     players: Query<&Player>,
     walls: WallQuery,
@@ -29,7 +30,7 @@ pub fn recalculate_fov(
 
         Illuminator::if_local_player(event.entity, &local_players, &players)
             .with_prior_fov(&fov.visible_tiles)
-            .illuminate(&mut floor, &visible_tiles);
+            .illuminate(&mut floor, &visible_tiles, &mut monsters);
 
         fov.visible_tiles = visible_tiles;
     }
