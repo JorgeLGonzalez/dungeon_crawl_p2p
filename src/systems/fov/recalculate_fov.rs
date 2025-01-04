@@ -23,7 +23,7 @@ pub fn recalculate_fov(
 
         let visible_tiles: FovTileMap = floor
             .iter()
-            .map(|(t, tile, _)| (t.translation.truncate().as_ivec2(), tile))
+            .map(|(t, tile, ..)| (t.translation.truncate().as_ivec2(), tile))
             .filter(|(floor_pos, _)| viewer.can_see(floor_pos))
             .collect();
 

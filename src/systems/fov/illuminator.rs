@@ -6,8 +6,8 @@ use crate::{
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 use bevy_ggrs::LocalPlayers;
 
-pub type FloorQuery<'w, 's, 't, 'r> =
-    Query<'w, 's, (&'t Transform, Entity, &'r mut Sprite), With<FloorTile>>;
+pub type FloorQuery<'w, 's, 't, 'r, 'v> =
+    Query<'w, 's, (&'t Transform, Entity, &'r mut Sprite, &'v mut Visibility), With<FloorTile>>;
 
 pub struct Illuminator {
     is_local_player: bool,
@@ -51,8 +51,10 @@ impl Illuminator {
                 // already illuminated
                 self.prior_set.remove(tile);
             } else {
-                let (.., mut sprite) = floor.get_mut(*tile).expect("Inconceivable!");
+                let (.., mut sprite, mut visibility) =
+                    floor.get_mut(*tile).expect("Inconceivable!");
                 sprite.color = config::FLOOR_ILLUMINATED_COLOR;
+                *visibility = Visibility::Visible;
             }
         });
 
@@ -62,7 +64,7 @@ impl Illuminator {
     /// darken tiles that were previously illuminated and no longer in FOV
     fn darken_discarded_prior(&self, floor: &mut FloorQuery) {
         self.prior_set.iter().for_each(|tile| {
-            let (.., mut sprite) = floor.get_mut(*tile).expect("Inconceivable!");
+            let (.., mut sprite, _) = floor.get_mut(*tile).expect("Inconceivable!");
             sprite.color = config::FLOOR_COLOR;
         });
     }
