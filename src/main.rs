@@ -68,7 +68,8 @@ fn main() {
         recalculate_fov,
         health_bar,
     )
-        .chain();
+        .chain()
+        .run_if(in_state(GameState::InGame));
 
     if game_mode(GameMode::SinglePlayer) {
         app.add_systems(
@@ -79,10 +80,7 @@ fn main() {
         ggrs_setup(&mut app);
 
         app.add_systems(ReadInputs, read_player_inputs)
-            .add_systems(
-                GgrsSchedule,
-                core_systems.run_if(in_state(GameState::InGame)),
-            )
+            .add_systems(GgrsSchedule, core_systems)
             .add_systems(GgrsSchedule, persist_monster_moves.after(move_monster))
             .add_systems(
                 Update,

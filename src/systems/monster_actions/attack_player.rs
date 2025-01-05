@@ -27,11 +27,8 @@ pub fn attack_player(
 }
 
 fn log(health: &Health, event: &MonsterAttacksEvent) {
-    let action = if health.current > 0 {
-        "attacks"
-    } else {
-        "kills"
-    };
+    let remaining = health.current - event.damage.min(health.current);
+    let action = if remaining > 0 { "attacks" } else { "kills" };
     let MonsterAttacksEvent {
         damage,
         monster,
@@ -39,7 +36,6 @@ fn log(health: &Health, event: &MonsterAttacksEvent) {
         pos,
         ..
     } = event;
-    let remaining = health.current - event.damage.min(health.current);
     info!(
         "Monster {monster} {action} player {player_id} at {pos} inflicting \
         {damage} damage points. Remaining health={remaining}/{}",
