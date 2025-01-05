@@ -1,3 +1,4 @@
+pub mod assets;
 pub mod config;
 mod dungeon_map;
 mod monster_move_tracker;

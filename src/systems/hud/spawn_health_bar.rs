@@ -1,10 +1,13 @@
 use crate::{
     components::{HealthBar, HealthPointsText},
-    resources::config::{self, HUD_Z_LAYER},
+    resources::{
+        assets::FontAssets,
+        config::{self, HUD_Z_LAYER},
+    },
 };
 use bevy::{prelude::*, sprite::Anchor};
 
-pub fn spawn_health_bar(mut commands: Commands /* assets: Res<AssetServer> */) {
+pub fn spawn_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
     const BAR_HEIGHT: f32 = 0.5;
     const BAR_WIDTH: f32 = config::PLAYER_HEALTH_MAX as f32;
     let anchor = Anchor::CenterLeft;
@@ -37,7 +40,7 @@ pub fn spawn_health_bar(mut commands: Commands /* assets: Res<AssetServer> */) {
             parent.spawn((
                 Text2d::new("Health"),
                 TextFont {
-                    // font: assets.load("fonts/FiraSans-Bold.ttf"), // works on web not mac (path not found)
+                    font: font_assets.fira_sans_bold.clone(),
                     font_size,
                     ..default()
                 },
