@@ -1,4 +1,7 @@
-use super::super::{LocalPlayer, PlayersQuery};
+use super::{
+    super::{LocalPlayer, PlayersQuery},
+    PlayerCamera,
+};
 use crate::components::Player;
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
@@ -6,7 +9,7 @@ use bevy_ggrs::LocalPlayers;
 pub fn follow_with_camera(
     local_players: Res<LocalPlayers>,
     players: PlayersQuery,
-    mut cameras: Query<&mut Transform, (With<Camera>, Without<Player>)>,
+    mut cameras: Query<&mut Transform, (With<PlayerCamera>, Without<Player>)>,
 ) {
     let player = LocalPlayer::new(&local_players, &players);
 

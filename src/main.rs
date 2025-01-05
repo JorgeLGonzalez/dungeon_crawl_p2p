@@ -47,18 +47,21 @@ fn main() {
 
     add_events(&mut app);
 
-    app.add_systems(OnEnter(GameState::Startup), (player::setup_camera, startup))
-        .add_systems(
-            OnEnter(GameState::InGame),
-            (
-                spawn_dungeon,
-                spawn_players,
-                hud::setup_health_bar,
-                spawn_monsters,
-            )
-                .chain(),
+    app.add_systems(
+        OnEnter(GameState::Startup),
+        (hud::setup_camera, player::setup_camera, startup),
+    )
+    .add_systems(
+        OnEnter(GameState::InGame),
+        (
+            spawn_dungeon,
+            spawn_players,
+            hud::setup_health_bar,
+            spawn_monsters,
         )
-        .add_systems(OnEnter(GameState::GameOver), game_over);
+            .chain(),
+    )
+    .add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (

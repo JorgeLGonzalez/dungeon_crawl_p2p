@@ -1,8 +1,10 @@
+mod camera_setup;
 mod health_bar;
-mod spawn_health_bar;
+mod health_bar_setup;
 
+pub use camera_setup::setup_camera;
 pub use health_bar::health_bar;
-pub use spawn_health_bar::setup_health_bar;
+pub use health_bar_setup::setup_health_bar;
 
 use bevy::prelude::*;
 
@@ -11,3 +13,6 @@ pub struct HealthBar;
 
 #[derive(Component)]
 pub struct HealthPointsText;
+
+#[derive(Component)]
+pub struct HudCamera;
