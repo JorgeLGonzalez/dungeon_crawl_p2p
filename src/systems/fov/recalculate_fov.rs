@@ -8,6 +8,11 @@ use crate::{components::FovTileMap, events::RecalculateFovEvent};
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 
+/// Recalculate the field of view for the entity that triggered the event.
+/// If the FOV is for the local player, illuminate or darken the floor tiles
+/// based on the new FOV.
+/// Then toggle the visibility of monsters based on the new position of the player
+/// or the monster.
 pub fn recalculate_fov(
     mut fov_query: FovQuery,
     mut recalculate_events: EventReader<RecalculateFovEvent>,
@@ -36,7 +41,7 @@ pub fn recalculate_fov(
 
         fov.visible_tiles = visible_tiles.clone();
 
-        MonsterVisibilityToggler::new(event.entity, event.entity_type).toggle(
+        MonsterVisibilityToggler::new(event).toggle(
             &mut monsters,
             &visible_tiles,
             &fov_query,

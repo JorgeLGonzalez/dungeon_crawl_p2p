@@ -1,7 +1,7 @@
 use super::fov_queries::FovQuery;
 use crate::{
     components::{FloorTile, FovTileMap, Monster},
-    events::FovRecalculationEntityType,
+    events::{FovRecalculationEntityType, RecalculateFovEvent},
     systems::player::LocalPlayer,
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};
@@ -10,19 +10,23 @@ use bevy_ggrs::LocalPlayers;
 pub type MonsterQuery<'w, 's, 't, 'v> =
     Query<'w, 's, (&'t Transform, &'v mut Visibility), (With<Monster>, Without<FloorTile>)>;
 
+/// Toggle the visibility of monsters based on the new position of the monster
+/// or player.
 pub struct MonsterVisibilityToggler {
     entity: Entity,
     entity_type: FovRecalculationEntityType,
 }
 
 impl MonsterVisibilityToggler {
-    pub fn new(entity: Entity, entity_type: FovRecalculationEntityType) -> Self {
+    pub fn new(event: &RecalculateFovEvent) -> Self {
         Self {
-            entity,
-            entity_type,
+            entity: event.entity,
+            entity_type: event.entity_type,
         }
     }
 
+    /// Toggle the visibility of monsters based on the new position of the monster
+    /// or player
     pub fn toggle(
         &self,
         monsters: &mut MonsterQuery,
@@ -40,6 +44,9 @@ impl MonsterVisibilityToggler {
         }
     }
 
+    /// Handle the case where the visibility of the monster may have changed because
+    /// the monster moved. In this case we need to get the local player's FOV to
+    /// see whether it includes the monster's new position.
     fn due_to_monster_move(
         &self,
         monsters: &mut MonsterQuery,
@@ -57,12 +64,18 @@ impl MonsterVisibilityToggler {
         self.toggle_if_needed(&player_fov, transform, &mut visibility);
     }
 
+    /// Handle the case where the visibility of the monsters may have changed because
+    /// the player moved. In this case we need to check all the monsters to see
+    /// whether they are in the player's FOV.
     fn due_to_player_move(&self, monsters: &mut MonsterQuery, player_fov: HashSet<IVec2>) {
         monsters.iter_mut().for_each(|(transform, mut visibility)| {
             self.toggle_if_needed(&player_fov, transform, &mut visibility);
         });
     }
 
+    /// Now that we have the player's FOV and a specific monster's position and
+    /// visibility, we can toggle the monster's visibility based on the player's
+    /// FOV.
     fn toggle_if_needed(
         &self,
         player_fov: &HashSet<IVec2>,
