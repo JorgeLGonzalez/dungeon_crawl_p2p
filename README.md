@@ -29,12 +29,21 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] heal monsters
 - [x] hide unexplored dungeon
 - [x] hide monsters outside FOV
-- [ ] tool tips to show monster name and health
 - [ ] text on health bar
+  - [ ] health to left
+  - [ ] health points x/10 to right
+  - [ ] update health points text
+  - [ ] use custom font on both web and mac
+  - [ ] re-arrange to have parent container with text and bars as children
+  - [ ] center the whole thing
+  - [ ] experiment using UI instead of sprites/transforms
+- [ ] tool tips to show monster name and health
+- [ ] map revealer
+- [ ] zoom in/out
+  - [ ] HUD should not change. Does this mean a different camera or?
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
 - [ ] healing potions
 - [ ] inventory and item usage
-- [ ] map revealer
 - [ ] data driven dungeon monsters and items
 - [ ] weapons
 - [ ] deploy such that it can be used across devices (ideally over internet)

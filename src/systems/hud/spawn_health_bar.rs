@@ -43,7 +43,21 @@ pub fn spawn_health_bar(mut commands: Commands /* assets: Res<AssetServer> */) {
                 },
                 TextLayout::new_with_justify(JustifyText::Right),
                 Transform {
-                    translation: Vec3::new(-1., 0., 1.),
+                    translation: Vec3::new(-1., 0., 0.),
+                    scale,
+                    ..default()
+                },
+            ));
+
+            parent.spawn((
+                Text2d::new("10/10"),
+                TextFont {
+                    font_size,
+                    ..default()
+                },
+                TextLayout::new_with_justify(JustifyText::Left),
+                Transform {
+                    translation: Vec3::new(BAR_WIDTH + 1., 0., 0.),
                     scale,
                     ..default()
                 },
