@@ -2,7 +2,7 @@ use super::fov_queries::FovQuery;
 use crate::{
     components::{FloorTile, FovTileMap, Monster},
     events::{FovRecalculationEntityType, RecalculateFovEvent},
-    systems::player::LocalPlayer,
+    player::LocalPlayer,
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 use bevy_ggrs::LocalPlayers;

@@ -1,5 +1,6 @@
 mod components;
 mod events;
+mod player;
 mod resources;
 mod systems;
 
@@ -45,7 +46,7 @@ fn main() {
 
     add_events(&mut app);
 
-    app.add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
+    app.add_systems(OnEnter(GameState::Startup), (player::setup_camera, startup))
         .add_systems(
             OnEnter(GameState::InGame),
             (
@@ -67,7 +68,7 @@ fn main() {
         handle_move_intent,
         attack_monster,
         move_player,
-        move_camera,
+        player::follow_with_camera,
         do_monsters_action,
         attack_player,
         move_monster,
