@@ -27,7 +27,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
     - [x] chase move needs to avoid invalid moves
 - [x] deal monster-based damage to players
 - [x] heal monsters
-- [ ] hide unexplored dungeon
+- [x] hide unexplored dungeon
 - [ ] hide monsters outside FOV
 - [ ] tool tips to show monster name and health
 - [ ] text on health bar
@@ -46,6 +46,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [ ] show level in HUD
 - [ ] player sprites
 - [ ] monster sprites
+- [ ] tile sprites
+  - [ ] note wall tiles are currently always hidden. will need to adjust `recalculate_fov`
 - [ ] improve lighting simulation
 - [ ] amulet. In original it is placed farthest from player. But we now have 2 randomly placed players.
   - [ ] Game won state and screen

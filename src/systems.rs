@@ -16,7 +16,7 @@ mod startup;
 
 pub use camera::{move_camera, spawn_camera};
 pub use create_p2p_session::create_p2p_session;
-pub use fov::recalculate_fov;
+pub use fov::*;
 pub use game_over::game_over;
 pub use handle_ggrs_events::handle_ggrs_events;
 pub use healing::healing;

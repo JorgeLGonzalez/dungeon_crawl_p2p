@@ -30,6 +30,7 @@ pub fn spawn_monsters(
                     ..default()
                 },
                 Transform::from_translation(pos.to_vec3(config::MONSTER_Z_LAYER)),
+                Visibility::Hidden,
             ))
             .add_rollback();
     }

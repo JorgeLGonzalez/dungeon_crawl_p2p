@@ -1,6 +1,6 @@
 use crate::{
     components::{MoveThrottle, Player},
-    events::{PlayerMovesEvent, RecalculateFovEvent},
+    events::{FovRecalculationEntityType, PlayerMovesEvent, RecalculateFovEvent},
     resources::config::PLAYER_Z_LAYER,
 };
 use bevy::prelude::*;
@@ -23,6 +23,6 @@ pub fn move_player(
         commands
             .entity(event.player)
             .insert(MoveThrottle::default());
-        recalculate_fov.send(RecalculateFovEvent::new(event.player, event.pos));
+        recalculate_fov.send(RecalculateFovEvent::new(event.player, FovRecalculationEntityType::Player, event.pos));
     }
 }

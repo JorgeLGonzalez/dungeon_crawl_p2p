@@ -1,4 +1,5 @@
 use crate::components::DamageUnit;
+use bevy::prelude::Event;
 use bevy::prelude::*;
 
 #[derive(Event)]
@@ -116,13 +117,24 @@ impl PlayerMoveIntentEvent {
 #[derive(Event)]
 pub struct RecalculateFovEvent {
     pub entity: Entity,
+    pub entity_type: FovRecalculationEntityType,
     pub pos: IVec2,
 }
 
 impl RecalculateFovEvent {
-    pub fn new(entity: Entity, pos: IVec2) -> Self {
-        Self { entity, pos }
+    pub fn new(entity: Entity, entity_type: FovRecalculationEntityType, pos: IVec2) -> Self {
+        Self {
+            entity,
+            entity_type,
+            pos,
+        }
     }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub enum FovRecalculationEntityType {
+    Monster,
+    Player,
 }
 
 #[derive(Event)]
