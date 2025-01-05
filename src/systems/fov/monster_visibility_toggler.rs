@@ -7,7 +7,7 @@ use bevy::{prelude::*, utils::hashbrown::HashSet};
 use bevy_ggrs::LocalPlayers;
 
 pub type MonsterQuery<'w, 's, 't, 'v> =
-    Query<'w, 's, (Entity, &'t Transform, &'v mut Visibility), (With<Monster>, Without<FloorTile>)>;
+    Query<'w, 's, (&'t Transform, &'v mut Visibility), (With<Monster>, Without<FloorTile>)>;
 
 pub struct MonsterVisibilityToggler {
     entity: Entity,
@@ -34,7 +34,7 @@ impl MonsterVisibilityToggler {
                 self.due_to_monster_move(monsters, fov_query, local_players);
             }
             FovRecalculationEntityType::Player => {
-                self.due_to_player_move(monsters, fov);
+                self.due_to_player_move(monsters, fov.keys().copied().collect())
             }
         }
     }
@@ -52,40 +52,33 @@ impl MonsterVisibilityToggler {
                 .map(|(fov, _)| fov.visible_tiles.keys().copied().collect())
                 .expect("Inconceivable!");
 
-            let (_, transform, mut visibility) =
+            let (transform, mut visibility) =
                 monsters.get_mut(self.entity).expect("Inconceivable!");
-            let monster_pos = transform.translation.truncate().as_ivec2();
 
-            let expected_visibility = match player_fov.contains(&monster_pos) {
-                false => Visibility::Hidden,
-                true => Visibility::Visible,
-            };
-
-            if *visibility != expected_visibility {
-                info!(
-                  "Toggling visibility {visibility:?} for monster at {monster_pos} for player {player_id}",
-
-              );
-                visibility.toggle_visible_hidden();
-            }
+            self.toggle_if_needed(&player_fov, transform, &mut visibility);
         }
     }
 
-    fn due_to_player_move(&self, monsters: &mut MonsterQuery, player_fov: &FovTileMap) {
-        let should_toggle = |(visibility, pos): &(Mut<Visibility>, IVec2)| match **visibility {
-            Visibility::Hidden => player_fov.contains_key(pos),
-            Visibility::Visible => !player_fov.contains_key(pos),
-            _ => false,
+    fn due_to_player_move(&self, monsters: &mut MonsterQuery, player_fov: HashSet<IVec2>) {
+        monsters.iter_mut().for_each(|(transform, mut visibility)| {
+            self.toggle_if_needed(&player_fov, transform, &mut visibility);
+        });
+    }
+
+    fn toggle_if_needed(
+        &self,
+        player_fov: &HashSet<IVec2>,
+        monster_transform: &Transform,
+        visibility: &mut Visibility,
+    ) {
+        let monster_pos = monster_transform.translation.truncate().as_ivec2();
+        let expected_visibility = match player_fov.contains(&monster_pos) {
+            false => Visibility::Hidden,
+            true => Visibility::Visible,
         };
 
-        monsters
-            .iter_mut()
-            .map(|(_, transform, visibility)| {
-                (visibility, transform.translation.truncate().as_ivec2())
-            })
-            .filter(should_toggle)
-            .for_each(|(mut visibility, _)| {
-                visibility.toggle_visible_hidden();
-            });
+        if *visibility != expected_visibility {
+            visibility.toggle_visible_hidden();
+        }
     }
 }
