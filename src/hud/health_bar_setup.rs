@@ -1,68 +1,84 @@
 use super::{HealthBar, HealthPointsText};
 use crate::resources::{
     assets::FontAssets,
-    config::{self, HUD_Z_LAYER},
+    config::{self},
 };
-use bevy::{prelude::*, sprite::Anchor};
+use bevy::{
+    color::palettes::css::{GRAY, WHITE},
+    prelude::*,
+    render::view::RenderLayers,
+};
 
 pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
-    const BAR_HEIGHT: f32 = 0.5;
-    const BAR_WIDTH: f32 = config::PLAYER_HEALTH_MAX as f32;
-    let anchor = Anchor::CenterLeft;
-    let custom_size = Some(Vec2::new(BAR_WIDTH, BAR_HEIGHT));
+    let display = Display::Flex;
+    let text_color = TextColor(WHITE.into());
+    let text_font = TextFont {
+        font: font_assets.fira_sans_bold.clone(),
+        font_size: 20.,
+        ..default()
+    };
+    let text_node = Node {
+        display,
+        ..default()
+    };
 
     commands
+        // HUD container (top bar)
         .spawn((
-            HealthBar,
-            Sprite {
-                anchor,
-                color: Color::srgb(0., 0.7, 0.),
-                custom_size,
+            Node {
+                display,
+                position_type: PositionType::Absolute,
+                overflow: Overflow::clip(),
+                width: Val::Percent(100.),
+                height: Val::Px(40.),
+                justify_content: JustifyContent::Center,
+                align_items: AlignItems::Center,
                 ..default()
             },
-            Transform::from_xyz(0., config::VIEWPORT_HEIGHT, HUD_Z_LAYER + 1.),
+            BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
+            RenderLayers::layer(config::HUD_CAMERA_RENDER_LAYER),
         ))
         .with_children(|parent| {
             parent.spawn((
-                Sprite {
-                    anchor,
-                    color: Color::srgb(0.5, 0.5, 0.5),
-                    custom_size,
-                    ..default()
-                },
-                Transform::from_xyz(0., 0., -1.),
+                Text::new("Health"),
+                text_color.clone(),
+                text_font.clone(),
+                text_node.clone(),
             ));
 
-            let font_size = 20.;
-            let scale = Vec3::splat(BAR_HEIGHT / font_size);
-            parent.spawn((
-                Text2d::new("Health"),
-                TextFont {
-                    font: font_assets.fira_sans_bold.clone(),
-                    font_size,
-                    ..default()
-                },
-                TextLayout::new_with_justify(JustifyText::Right),
-                Transform {
-                    translation: Vec3::new(-1., 0., 0.),
-                    scale,
-                    ..default()
-                },
-            ));
+            // health bar itself. background rect with green rect child on top
+            parent
+                .spawn((
+                    Node {
+                        display,
+                        height: Val::Px(20.),
+                        margin: UiRect::horizontal(Val::Px(10.)),
+                        width: Val::Px(200.),
+                        ..default()
+                    },
+                    BackgroundColor(GRAY.into()),
+                ))
+                .with_child((
+                    HealthBar,
+                    Node {
+                        display,
+                        width: Val::Percent(100.),
+                        height: Val::Percent(100.),
+                        ..default()
+                    },
+                    BackgroundColor(Color::srgb(0., 0.7, 0.)),
+                ));
 
             parent.spawn((
                 HealthPointsText,
-                Text2d::new("10/10"),
-                TextFont {
-                    font_size,
-                    ..default()
-                },
-                TextLayout::new_with_justify(JustifyText::Left),
-                Transform {
-                    translation: Vec3::new(BAR_WIDTH + 1., 0., 0.),
-                    scale,
-                    ..default()
-                },
+                Text::new(format!(
+                    "{}/{}",
+                    config::PLAYER_HEALTH_MAX,
+                    config::PLAYER_HEALTH_MAX
+                )),
+                text_color,
+                text_font,
+                text_node,
             ));
         });
 }

@@ -50,9 +50,10 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 ## See Also
 
-- [resources](./src/resources/README.md)
 - [GGRS](./src/ggrs/README.md)
+- [HUD](./src/hud/README.md)
 - [Player Actions](./src/systems/player_actions/README.md).
+- [resources](./src/resources/README.md)
 
 ## Archived TODO
 
