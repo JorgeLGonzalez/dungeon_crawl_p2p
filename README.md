@@ -6,29 +6,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [x] simplify player inputs
-- [x] re-enable snapshots
-- [x] should we add/remove PlayerMovement component instead? More generally, the throttle is weird as it is only reset when there is a move. it should reset also when key is released?
-- [x] simplify intersects on player moves. check against monster moves
-- [x] set game mode to p2p for wasm by default and sp otherwise
-- [x] monster attack player. For now, it just transitions to GameOver which simply logs out game over. What should happen in p2p mode? Respawn dead player?
-- [x] Maintain single list of systems for player/monster actions. Not sure how best to do this. Something like defining an array/tuple of the set of systems that are the same between GgrsSchedule and Update. Quick dialog w/ copilot suggests a macro. But it is ugly. Perhaps combine a single do_player_action which internally branches based on GAME_MODE? This way the tuple is the same and can be defined as a var that can be used in both places, if the borrow checker allows? Or maybe have an add_systems that selects the GgrsSchedule vs Update based on GAME_MODE?
-- [x] prevent players from moving onto each other (no attacks yet)
-- [x] Health component and give player 10
-  - [x] Elapsed time healing
-  - [x] synctest.
-- [x] health bar
-- [x] player FOV
-- [ ] monster follows player
-  - [x] FOV contains hash set of positions (or hashmap of position to tile entity)
-  - [x] monster FOV
-  - [x] MonsterActionDeterminer.plan_move. move towards any player it can see, otherwise move randomly
-    - [x] Slow down the monster move to attack
-    - [x] chase move needs to avoid invalid moves
-- [x] deal monster-based damage to players
-- [x] heal monsters
-- [x] hide unexplored dungeon
-- [x] hide monsters outside FOV
 - [ ] text on health bar
   - [x] health to left
   - [x] health points x/10 to right
@@ -66,6 +43,42 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] score points for defeating monsters, picking up coins ?
 - [ ] monster patrol strategies (explore, guard, rest)
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
+
+## Issues
+
+- [ ] Browser tab title
+
+## See Also
+
+- [resources](./src/resources/README.md)
+- [GGRS](./src/ggrs/README.md)
+- [Player Actions](./src/systems/player_actions/README.md).
+
+## Archived TODO
+
+- [x] simplify player inputs
+- [x] re-enable snapshots
+- [x] should we add/remove PlayerMovement component instead? More generally, the throttle is weird as it is only reset when there is a move. it should reset also when key is released?
+- [x] simplify intersects on player moves. check against monster moves
+- [x] set game mode to p2p for wasm by default and sp otherwise
+- [x] monster attack player. For now, it just transitions to GameOver which simply logs out game over. What should happen in p2p mode? Respawn dead player?
+- [x] Maintain single list of systems for player/monster actions. Not sure how best to do this. Something like defining an array/tuple of the set of systems that are the same between GgrsSchedule and Update. Quick dialog w/ copilot suggests a macro. But it is ugly. Perhaps combine a single do_player_action which internally branches based on GAME_MODE? This way the tuple is the same and can be defined as a var that can be used in both places, if the borrow checker allows? Or maybe have an add_systems that selects the GgrsSchedule vs Update based on GAME_MODE?
+- [x] prevent players from moving onto each other (no attacks yet)
+- [x] Health component and give player 10
+  - [x] Elapsed time healing
+  - [x] synctest.
+- [x] health bar
+- [x] player FOV
+- [ ] monster follows player
+  - [x] FOV contains hash set of positions (or hashmap of position to tile entity)
+  - [x] monster FOV
+  - [x] MonsterActionDeterminer.plan_move. move towards any player it can see, otherwise move randomly
+    - [x] Slow down the monster move to attack
+    - [x] chase move needs to avoid invalid moves
+- [x] deal monster-based damage to players
+- [x] heal monsters
+- [x] hide unexplored dungeon
+- [x] hide monsters outside FOV
 - [x] how to enable trace logging only for my app (or per module)
 - [x] tunnel between rooms
 - [x] zoom in/out in dungeon or scroll (or both)
@@ -88,14 +101,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] adapt to multi player
   - [x] getting desyncs. Note there is a bug in desync detection, but I am pretty sure I have my own bugs because I see visually things going out of sync. It happens even if i do not despawn monsters. Even registering Time does not solve it. Hmm...
 
-## Issues
+### Archived Issues
 
 - [x] synctest mode does not work. It spawns the 2 players, but they are not seen in the GgrsSchedule systems (move_players and camera_follow). Solved by starting sync test when entering the MatchMaking state rather than in the Update. See commit 6dfacc59a686f72e3ac49ac957130c72407bb7f0.
 - [x] matchbox does not work with bevy 0.15, unless using fork from haihala. Hope to get revised bevy_ggrs and matchbox once [PRs](https://github.com/johanhelsing/matchbox/pull/466) merged
-- [ ] Browser tab title
-
-## See Also
-
-- [resources](./src/resources/README.md)
-- [GGRS](./src/ggrs/README.md)
-- [Player Actions](./src/systems/player_actions/README.md).
