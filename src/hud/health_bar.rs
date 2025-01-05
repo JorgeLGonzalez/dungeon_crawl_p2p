@@ -1,5 +1,6 @@
+use super::{HealthBar, HealthPointsText};
 use crate::{
-    components::{HealthBar, HealthPointsText, Player},
+    components::Player,
     player::{LocalPlayer, PlayersQuery},
     resources::config,
 };

@@ -1,13 +1,11 @@
-use crate::{
-    components::{HealthBar, HealthPointsText},
-    resources::{
-        assets::FontAssets,
-        config::{self, HUD_Z_LAYER},
-    },
+use super::{HealthBar, HealthPointsText};
+use crate::resources::{
+    assets::FontAssets,
+    config::{self, HUD_Z_LAYER},
 };
 use bevy::{prelude::*, sprite::Anchor};
 
-pub fn spawn_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
+pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
     const BAR_HEIGHT: f32 = 0.5;
     const BAR_WIDTH: f32 = config::PLAYER_HEALTH_MAX as f32;
     let anchor = Anchor::CenterLeft;

@@ -1,5 +1,6 @@
 mod components;
 mod events;
+mod hud;
 mod player;
 mod resources;
 mod systems;
@@ -52,7 +53,7 @@ fn main() {
             (
                 spawn_dungeon,
                 spawn_players,
-                spawn_health_bar,
+                hud::setup_health_bar,
                 spawn_monsters,
             )
                 .chain(),
@@ -74,7 +75,7 @@ fn main() {
         move_monster,
         update_last_action,
         recalculate_fov,
-        health_bar,
+        hud::health_bar,
     )
         .chain()
         .run_if(in_state(GameState::InGame));
