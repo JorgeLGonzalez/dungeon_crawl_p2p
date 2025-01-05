@@ -1,5 +1,5 @@
 use crate::{
-    components::HealthBar,
+    components::{HealthBar, HealthPointsText},
     resources::config::{self, HUD_Z_LAYER},
 };
 use bevy::{prelude::*, sprite::Anchor};
@@ -50,6 +50,7 @@ pub fn spawn_health_bar(mut commands: Commands /* assets: Res<AssetServer> */) {
             ));
 
             parent.spawn((
+                HealthPointsText,
                 Text2d::new("10/10"),
                 TextFont {
                     font_size,
