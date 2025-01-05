@@ -28,7 +28,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] deal monster-based damage to players
 - [x] heal monsters
 - [x] hide unexplored dungeon
-- [ ] hide monsters outside FOV
+- [x] hide monsters outside FOV
 - [ ] tool tips to show monster name and health
 - [ ] text on health bar
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
