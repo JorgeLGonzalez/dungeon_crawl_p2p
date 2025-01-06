@@ -6,14 +6,14 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] text on health bar
+- [x] text on health bar
   - [x] health to left
   - [x] health points x/10 to right
   - [x] update health points text
   - [x] use custom font on both web and mac
-  - [ ] re-arrange to have parent container with text and bars as children
-  - [ ] center the whole thing
-  - [ ] experiment using UI instead of sprites/transforms
+  - [x] re-arrange to have parent container with text and bars as children
+  - [x] center the whole thing
+  - [x] experiment using UI instead of sprites/transforms
 - [ ] tool tips to show monster name and health
 - [ ] map revealer
 - [ ] zoom in/out
