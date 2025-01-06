@@ -65,6 +65,7 @@ fn main() {
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (
+        hud::tooltip,
         do_player_action,
         tick_move_throttle,
         healing,

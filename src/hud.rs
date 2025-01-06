@@ -1,10 +1,12 @@
 mod camera_setup;
 mod health_bar;
 mod health_bar_setup;
+mod tooltips;
 
 pub use camera_setup::setup_camera;
 pub use health_bar::health_bar;
 pub use health_bar_setup::setup_health_bar;
+pub use tooltips::tooltip;
 
 use bevy::prelude::*;
 
@@ -16,3 +18,6 @@ pub struct HealthPointsText;
 
 #[derive(Component)]
 pub struct HudCamera;
+
+#[derive(Component)]
+pub struct Tooltip(pub String);

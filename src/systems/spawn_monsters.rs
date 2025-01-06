@@ -1,9 +1,8 @@
 use crate::{
-    components::{Damage, FieldOfView, Health, LastAction, Monster, MonsterType, Obstacle},
-    resources::{
+    components::{Damage, FieldOfView, Health, LastAction, Monster, MonsterType, Obstacle}, hud::Tooltip, resources::{
         config::{self, TILE_HEIGHT, TILE_WIDTH},
         DungeonMap, RandomGenerator,
-    },
+    }
 };
 use bevy::prelude::*;
 use bevy_ggrs::AddRollbackCommandExtension;
@@ -29,6 +28,7 @@ pub fn spawn_monsters(
                     custom_size: Some(Vec2::new(TILE_WIDTH, TILE_HEIGHT)),
                     ..default()
                 },
+                Tooltip("Monster".to_string()),
                 Transform::from_translation(pos.to_vec3(config::MONSTER_Z_LAYER)),
                 Visibility::Hidden,
             ))
