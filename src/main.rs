@@ -4,9 +4,11 @@ mod resources;
 mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
+use bevy_asset_loader::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
 use components::{checksum_transform, Healing, Health, LastAction, Monster, MoveThrottle, Player};
 use resources::{
+    assets::FontAssets,
     config::{self, GameMode, GAME_MODE},
     DesyncEvent, MonsterMoveTracker, RandomGenerator,
 };
@@ -34,6 +36,11 @@ fn main() {
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
     ))
     .init_state::<GameState>()
+    .add_loading_state(
+        LoadingState::new(GameState::Loading)
+            .continue_to_state(GameState::Startup)
+            .load_collection::<FontAssets>(),
+    )
     .init_resource::<MonsterMoveTracker>();
 
     add_events(&mut app);
@@ -68,7 +75,8 @@ fn main() {
         recalculate_fov,
         health_bar,
     )
-        .chain();
+        .chain()
+        .run_if(in_state(GameState::InGame));
 
     if game_mode(GameMode::SinglePlayer) {
         app.add_systems(
@@ -79,10 +87,7 @@ fn main() {
         ggrs_setup(&mut app);
 
         app.add_systems(ReadInputs, read_player_inputs)
-            .add_systems(
-                GgrsSchedule,
-                core_systems.run_if(in_state(GameState::InGame)),
-            )
+            .add_systems(GgrsSchedule, core_systems)
             .add_systems(GgrsSchedule, persist_monster_moves.after(move_monster))
             .add_systems(
                 Update,
@@ -136,8 +141,9 @@ fn ggrs_setup(app: &mut App) {
 enum GameState {
     GameOver,
     InGame,
-    Paused,
     #[default]
+    Loading,
+    Paused,
     Startup,
 }
 

@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 bevy = { version = "0.15", features = ["bevy_window"] }
+bevy_asset_loader = "0.22"
 bevy_ggrs = { version = "0.17", features = ["wasm-bindgen"] }
 # bevy_ggrs = { path = "../bevy_ggrs", features = ["wasm-bindgen"] }
 bevy_matchbox = { version = "0.11", features = ["ggrs"] }

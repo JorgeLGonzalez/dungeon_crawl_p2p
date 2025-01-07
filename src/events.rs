@@ -2,6 +2,10 @@ use crate::components::DamageUnit;
 use bevy::prelude::Event;
 use bevy::prelude::*;
 
+/**
+ * REMEMBER to use bevy App `add_events` to register events!
+ */
+
 #[derive(Event)]
 pub struct MonsterActedEvent {
     pub monster: Entity,
