@@ -39,12 +39,6 @@ pub type FovTileMap = HashMap<IVec2, Entity>;
 #[derive(Component)]
 pub struct FloorTile;
 
-#[derive(Component)]
-pub struct HealthBar;
-
-#[derive(Component)]
-pub struct HealthPointsText;
-
 #[derive(Component, Clone, Copy)]
 pub struct LastAction {
     pub time: f32,

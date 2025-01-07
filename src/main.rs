@@ -1,5 +1,7 @@
 mod components;
 mod events;
+mod hud;
+mod player;
 mod resources;
 mod systems;
 
@@ -45,18 +47,21 @@ fn main() {
 
     add_events(&mut app);
 
-    app.add_systems(OnEnter(GameState::Startup), (spawn_camera, startup))
-        .add_systems(
-            OnEnter(GameState::InGame),
-            (
-                spawn_dungeon,
-                spawn_players,
-                spawn_health_bar,
-                spawn_monsters,
-            )
-                .chain(),
+    app.add_systems(
+        OnEnter(GameState::Startup),
+        (hud::setup_camera, player::setup_camera, startup),
+    )
+    .add_systems(
+        OnEnter(GameState::InGame),
+        (
+            spawn_dungeon,
+            spawn_players,
+            hud::setup_health_bar,
+            spawn_monsters,
         )
-        .add_systems(OnEnter(GameState::GameOver), game_over);
+            .chain(),
+    )
+    .add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (
@@ -67,13 +72,13 @@ fn main() {
         handle_move_intent,
         attack_monster,
         move_player,
-        move_camera,
+        player::follow_with_camera,
         do_monsters_action,
         attack_player,
         move_monster,
         update_last_action,
         recalculate_fov,
-        health_bar,
+        hud::health_bar,
     )
         .chain()
         .run_if(in_state(GameState::InGame));

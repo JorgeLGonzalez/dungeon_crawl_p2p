@@ -1,5 +1,5 @@
 use crate::components::FovRadius;
-use bevy::color::Color;
+use bevy::{color::Color, render::view::Layer};
 use bevy_matchbox::prelude::PeerId;
 
 // Game
@@ -16,6 +16,10 @@ pub enum GameMode {
     SinglePlayer,
 }
 
+// Camera
+pub const CAMERA_RENDER_LAYER: Layer = 0;
+pub const CAMERA_SCALE: f32 = 2.;
+
 // Dungeon view
 pub const FLOOR_COLOR: Color = Color::srgb(0.3, 0.3, 0.3); // not illuminated: dark gray
 pub const FLOOR_ILLUMINATED_COLOR: Color = Color::srgb(0.7, 0.7, 0.4); // illuminated: warm yellow-gray
@@ -29,8 +33,7 @@ pub const TILE_HEIGHT: f32 = TILE_WIDTH;
 pub const VIEWPORT_HEIGHT: f32 = 20.;
 
 // HUD
-pub const CAMERA_SCALE: f32 = 2.;
-pub const HUD_Z_LAYER: f32 = 900.;
+pub const HUD_CAMERA_RENDER_LAYER: Layer = 1;
 
 // Monsters
 pub const MONSTER_FOV_RADIUS: FovRadius = 6;

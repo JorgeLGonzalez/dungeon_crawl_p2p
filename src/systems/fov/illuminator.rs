@@ -1,7 +1,7 @@
 use crate::{
     components::{FloorTile, FovTileMap, Player},
+    player::LocalPlayer,
     resources::config,
-    systems::player::LocalPlayer,
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 use bevy_ggrs::LocalPlayers;
