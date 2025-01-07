@@ -15,6 +15,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] center the whole thing
   - [x] experiment using UI instead of sprites/transforms
 - [ ] tool tips to show monster name and health
+  - [ ] only show when monster is in player's FOV
+  - [ ] Do we want to show current health on monster or max?
 - [ ] map revealer
 - [ ] zoom in/out
   - [ ] HUD should not change. Does this mean a different camera or?

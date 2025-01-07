@@ -49,7 +49,12 @@ fn main() {
 
     app.add_systems(
         OnEnter(GameState::Startup),
-        (hud::setup_camera, player::setup_camera, startup),
+        (
+            hud::setup_camera,
+            hud::spawn_tooltip,
+            player::setup_camera,
+            startup,
+        ),
     )
     .add_systems(
         OnEnter(GameState::InGame),

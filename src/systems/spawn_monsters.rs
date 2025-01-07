@@ -1,6 +1,6 @@
 use crate::{
     components::{Damage, FieldOfView, Health, LastAction, Monster, MonsterType, Obstacle},
-    hud::Tooltip,
+    hud::TooltipLabel,
     resources::{
         config::{self, TILE_HEIGHT, TILE_WIDTH},
         DungeonMap, RandomGenerator,
@@ -38,7 +38,7 @@ pub fn spawn_monsters(
     }
 }
 
-fn random_monster(rng: &mut RandomGenerator) -> (Tooltip, Damage, MonsterType, Health, Color) {
+fn random_monster(rng: &mut RandomGenerator) -> (TooltipLabel, Damage, MonsterType, Health, Color) {
     let monster_type = match rng.gen_range(0..10) {
         0 => MonsterType::Ettin,
         1 => MonsterType::Ogre,
@@ -69,7 +69,7 @@ fn random_monster(rng: &mut RandomGenerator) -> (Tooltip, Damage, MonsterType, H
     };
 
     (
-        Tooltip(format!("{name}: {} hp", health.max)),
+        TooltipLabel(format!("{name}: {} hp", health.max)),
         damage,
         monster_type,
         health,
