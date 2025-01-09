@@ -25,5 +25,7 @@ pub struct TooltipLabel(pub String);
 
 /// The single UI entity that is used to display the tooltip label as part of the
 /// HUD UI
-#[derive(Component)]
-pub struct TooltipUI;
+#[derive(Component, Default)]
+pub struct TooltipUI {
+    pub entity: Option<Entity>,
+}

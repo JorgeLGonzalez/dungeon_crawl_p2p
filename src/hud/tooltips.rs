@@ -1,13 +1,17 @@
 use super::{HudCamera, TooltipLabel, TooltipUI};
 use crate::{
-    player::PlayerCamera,
+    components::{FieldOfView, Player},
+    player::{LocalPlayer, PlayerCamera},
     resources::{assets::FontAssets, config},
 };
-use bevy::{color::palettes::css::WHITE, prelude::*, render::view::RenderLayers};
+use bevy::{
+    color::palettes::css::WHITE, prelude::*, render::view::RenderLayers, window::PrimaryWindow,
+};
+use bevy_ggrs::LocalPlayers;
 
 pub fn spawn_tooltip(mut commands: Commands, font_assets: Res<FontAssets>) {
     commands.spawn((
-        TooltipUI,
+        TooltipUI::default(),
         Text::new(String::new()),
         BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
         TextColor(WHITE.into()),
@@ -25,41 +29,113 @@ pub fn spawn_tooltip(mut commands: Commands, font_assets: Res<FontAssets>) {
     ));
 }
 
+/// Display or hide a tooltip when hovering over an entity marked with [`TooltipLabel`].
+/// The [`TooltipUI`] component marks the entity used to display the tooltip whereas
+/// the [`TooltipLabel`] component marks entities that can be hovered over to display
+/// a tooltip.
+/// Tooltips are only displayed for the local player.
+/// We need to convert the mouse cursor position from window space to world space
+/// coordinates.
 pub fn tooltip(
     mut cursor_events: EventReader<CursorMoved>,
-    mut tooltip_ui: Query<(&mut Node, &mut Text), With<TooltipUI>>,
+    mut tooltip_ui: Query<(&mut Node, &mut Text, &mut TooltipUI)>,
     camera_query: Query<(&Camera, &GlobalTransform), With<PlayerCamera>>,
     hud_camera_query: Query<(&Camera, &GlobalTransform), With<HudCamera>>,
-    tooltip_labels: Query<(&TooltipLabel, &Transform)>,
+    local_players: Res<LocalPlayers>,
+    players: Query<(&Player, &FieldOfView)>,
+    tooltip_entities: Query<(Entity, &TooltipLabel, &Transform)>,
+    windows: Query<&Window, With<PrimaryWindow>>,
 ) {
+    let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
+    let (camera, camera_transform) = camera_query.single();
+
+    if let Some(entity) = tooltip.entity.as_mut() {
+        if let Some(cursor_position) = windows.single().cursor_position() {
+            if let Ok((.., transform)) = tooltip_entities.get(*entity) {
+                let game_pos = camera
+                    .viewport_to_world_2d(camera_transform, cursor_position)
+                    .expect("Inconceivable!");
+
+                let is_visible = players
+                    .iter()
+                    .find(|(player, _)| LocalPlayer::is_local(player, &local_players))
+                    .map(|(_, fov)| fov)
+                    .expect("No local player to follow!")
+                    .visible_tiles
+                    .contains_key(&game_pos.as_ivec2());
+
+                if !is_visible {
+                    // info!("Cursor no longer in player's FOV");
+                    tooltip_node.display = Display::None;
+                    tooltip_text.0 = String::new();
+                    tooltip.entity = None;
+                    // info!("Entity no longer in player's FOV");
+
+                    return;
+                }
+
+                if hit_test(game_pos, transform) {
+                    // TODO only return if we're still in player's FOV
+                    // info!("Still hovering over tooltip entity");
+                    return;
+                }
+            } else {
+                error!("No transform found for tooltip entity");
+            }
+        } else {
+            error!("No cursor position found");
+        }
+
+        // info!("Entity moved out from under cursor");
+        tooltip_node.display = Display::None;
+        tooltip_text.0 = String::new();
+        tooltip.entity = None;
+    }
+
     let Some(event) = cursor_events.read().last() else {
         return;
     };
 
-    // TODO only for player's FOV.
-    // TODO skip if delta is too small?
-    // TODO player ID tooltip
-
-    let (camera, camera_transform) = camera_query.single();
     let game_pos = camera
         .viewport_to_world_2d(camera_transform, event.position)
         .expect("Inconceivable!");
 
-    let (mut tooltip_node, mut tooltip_text) = tooltip_ui.single_mut();
+    // TODO skip if delta is too small?
+    // TODO player ID tooltip
 
-    let Some(tooltip_label) = tooltip_labels
+    let is_visible = players
         .iter()
-        .find(|(_, transform)| hit_test(game_pos, transform))
-        .map(|(label, _)| label.0.clone())
-    else {
+        .find(|(player, _)| LocalPlayer::is_local(player, &local_players))
+        .map(|(_, fov)| fov)
+        .expect("No local player to follow!")
+        .visible_tiles
+        .contains_key(&game_pos.as_ivec2());
+
+    if !is_visible {
+        // info!("Cursor not in player's FOV");
         tooltip_node.display = Display::None;
         tooltip_text.0 = String::new();
+        tooltip.entity = None;
+
+        return;
+    }
+
+    let Some((tooltip_entity, tooltip_label)) = tooltip_entities
+        .iter()
+        .find(|(.., transform)| hit_test(game_pos, transform))
+        .map(|(entity, label, _)| (entity, label.0.clone()))
+    else {
+        // info!("Cursor not over tooltip entity");
+        tooltip_node.display = Display::None;
+        tooltip_text.0 = String::new();
+        tooltip.entity = None;
 
         return;
     };
 
     tooltip_node.display = Display::Block;
     tooltip_text.0 = tooltip_label;
+    tooltip.entity = Some(tooltip_entity);
 
     let (hud_camera, hud_transform) = hud_camera_query.single();
     let ui_pos = hud_camera
