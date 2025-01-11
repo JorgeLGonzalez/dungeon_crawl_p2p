@@ -1,4 +1,5 @@
-use super::{hider::TooltipHider, queries::TooltipEntityQuery, shower::TooltipShower};
+use super::{hider::TooltipHider, shower::TooltipShower};
+use crate::hud::TooltipLabel;
 use bevy::prelude::*;
 
 pub enum TooltipToggleAction {
@@ -32,28 +33,35 @@ impl TooltipDeterminer {
         }
     }
 
-    pub fn determine(&mut self, tooltip_entities: &TooltipEntityQuery) -> TooltipToggleAction {
-        if let Some(shower) = self.try_create_shower(tooltip_entities) {
+    pub fn determine(
+        &self,
+        finder: impl FnOnce(&Self) -> Option<(Entity, String)>,
+        transform_getter: &impl Fn(Entity) -> Transform,
+    ) -> TooltipToggleAction {
+        if let Some(shower) = self.try_create_shower(finder, transform_getter) {
             TooltipToggleAction::Show(shower)
-        } else if self.active_tooltip() && !self.still_on_entity(tooltip_entities) {
+        } else if self.active_tooltip() && !self.still_on_entity(transform_getter) {
             TooltipToggleAction::Hide(TooltipHider)
         } else {
             TooltipToggleAction::None
         }
     }
 
-    fn active_tooltip(&self) -> bool {
-        self.tooltipped_entity.is_some()
+    pub fn test_entity(
+        &self,
+        entity: Entity,
+        label: &TooltipLabel,
+        transform: &Transform,
+    ) -> Option<(Entity, String)> {
+        if self.hit_test(transform) {
+            Some((entity, label.0.clone()))
+        } else {
+            None
+        }
     }
 
-    fn find_entity_to_tooltip(
-        &self,
-        tooltip_entities: &TooltipEntityQuery,
-    ) -> Option<(Entity, String)> {
-        tooltip_entities
-            .iter()
-            .find(|(.., transform)| self.hit_test(transform))
-            .map(|(entity, label, _)| (entity, label.0.clone()))
+    fn active_tooltip(&self) -> bool {
+        self.tooltipped_entity.is_some()
     }
 
     fn hit_test(&self, transform: &Transform) -> bool {
@@ -68,8 +76,24 @@ impl TooltipDeterminer {
         point.x > min.x && point.x < max.x && point.y > min.y && point.y < max.y
     }
 
-    fn try_create_shower(&self, tooltip_entities: &TooltipEntityQuery) -> Option<TooltipShower> {
-        if !self.in_fov || !self.mouse_moved || self.still_on_entity(tooltip_entities) {
+    fn still_on_entity(&self, get_transform: &impl Fn(Entity) -> Transform) -> bool {
+        if let Some(entity) = self.tooltipped_entity {
+            let transform = get_transform(entity);
+            self.hit_test(&transform)
+        } else {
+            false
+        }
+    }
+
+    fn try_create_shower(
+        &self,
+        find_entity_to_tooltip: impl FnOnce(&Self) -> Option<(Entity, String)>,
+        get_tooltipped_entity_transform: &impl Fn(Entity) -> Transform,
+    ) -> Option<TooltipShower> {
+        if !self.in_fov
+            || !self.mouse_moved
+            || self.still_on_entity(get_tooltipped_entity_transform)
+        {
             // Bail out early based on cheap tests. Obviously no need to show if:
             // - mouse not in FOV
             // - or mouse has not moved, so it has not moved ONTO anything
@@ -77,8 +101,7 @@ impl TooltipDeterminer {
             return None;
         }
 
-        if let Some((tooltip_entity, tooltip_label)) = self.find_entity_to_tooltip(tooltip_entities)
-        {
+        if let Some((tooltip_entity, tooltip_label)) = find_entity_to_tooltip(self) {
             Some(TooltipShower::new(
                 self.mouse_pos.unwrap(),
                 tooltip_entity,
@@ -86,16 +109,6 @@ impl TooltipDeterminer {
             ))
         } else {
             None
-        }
-    }
-
-    fn still_on_entity(&self, tooltip_entities: &TooltipEntityQuery) -> bool {
-        if let Some(entity) = self.tooltipped_entity {
-            let (.., transform) = tooltip_entities.get(entity).expect("Inconceivable!");
-
-            self.hit_test(transform)
-        } else {
-            false
         }
     }
 }

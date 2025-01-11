@@ -8,7 +8,7 @@ use super::TooltipUI;
 use crate::resources::{assets::FontAssets, config};
 use bevy::{color::palettes::css::WHITE, prelude::*, render::view::RenderLayers};
 use bevy_ggrs::LocalPlayers;
-use determiner::TooltipToggleAction;
+use determiner::{TooltipDeterminer, TooltipToggleAction};
 use determiner_factory::TooltipDeterminerFactory;
 use queries::{
     CameraQuery, HudCameraQuery, PlayerQuery, TooltipEntityQuery, TooltipUIQuery, WindowQuery,
@@ -59,11 +59,28 @@ pub fn tooltip(
         &tooltip_ui,
         &windows,
     )
-    .determine(&tooltip_entities);
+    .determine(|d| find_entity_to_tooltip(d, &tooltip_entities), &|e| {
+        get_transform(e, &tooltip_entities)
+    });
 
     match toggle_action {
         TooltipToggleAction::Hide(hider) => hider.hide(&mut tooltip_ui),
         TooltipToggleAction::None => {}
         TooltipToggleAction::Show(shower) => shower.show(&hud_camera_query, &mut tooltip_ui),
     }
+}
+
+fn find_entity_to_tooltip(
+    determiner: &TooltipDeterminer,
+    tooltip_entities: &TooltipEntityQuery,
+) -> Option<(Entity, String)> {
+    tooltip_entities
+        .iter()
+        .find_map(|(entity, label, transform)| determiner.test_entity(entity, label, transform))
+}
+
+fn get_transform(entity: Entity, tooltip_entities: &TooltipEntityQuery) -> Transform {
+    let (.., transform) = tooltip_entities.get(entity).expect("Inconceivable!");
+
+    *transform
 }
