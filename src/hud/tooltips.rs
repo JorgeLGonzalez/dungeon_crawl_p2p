@@ -46,35 +46,43 @@ pub fn tooltip(
     tooltip_entities: Query<(Entity, &TooltipLabel, &Transform)>,
     windows: Query<&Window, With<PrimaryWindow>>,
 ) {
-    let mut ctrl = TooltipController::new(&camera_query, &mut cursor_events, &tooltip_ui, &windows);
-    let result = ctrl.determine(&local_players, &players, &tooltip_entities, &mut tooltip_ui);
+    let result = TooltipController::new(
+        &camera_query,
+        &mut cursor_events,
+        &local_players,
+        &players,
+        &tooltip_ui,
+        &windows,
+    )
+    .determine(&tooltip_entities, &mut tooltip_ui);
 
     match result {
-        TooltipResult::Hide => ctrl.hide(&mut tooltip_ui),
+        TooltipResult::Hide(hider) => hider.hide(&mut tooltip_ui),
         TooltipResult::NoChange => {}
-        TooltipResult::Show => ctrl.show(&hud_camera_query, &mut tooltip_ui),
+        TooltipResult::Show(shower) => shower.show(&hud_camera_query, &mut tooltip_ui),
     }
 }
 
 enum TooltipResult {
-    Hide,
+    Hide(TooltipHider),
     NoChange,
-    Show,
+    Show(TooltipShower),
 }
 
 struct TooltipController {
     game_pos: Option<Vec2>,
+    in_fov: bool,
     is_shown: bool,
     mouse_moved: bool,
     mouse_pos: Option<Vec2>,
-    target_entity: Option<Entity>,
-    text: String,
 }
 
 impl TooltipController {
     pub fn new(
         camera_query: &Query<(&Camera, &GlobalTransform), With<PlayerCamera>>,
         cursor_events: &mut EventReader<CursorMoved>,
+        local_players: &LocalPlayers,
+        players: &Query<(&Player, &FieldOfView)>,
         tooltip_ui: &Query<(&mut Node, &mut Text, &mut TooltipUI)>,
         windows: &Query<&Window, With<PrimaryWindow>>,
     ) -> Self {
@@ -86,83 +94,32 @@ impl TooltipController {
 
         let mouse_pos = windows.single().cursor_position();
         let game_pos = Self::to_game_pos(mouse_pos, camera_query);
+        let in_fov = game_pos.is_some_and(|pos| Self::in_player_fov(pos, local_players, players));
 
         Self {
             game_pos,
+            in_fov,
             is_shown,
             mouse_moved,
             mouse_pos,
-            target_entity: None,
-            text: String::new(),
         }
     }
 
     pub fn determine(
         &mut self,
-        local_players: &LocalPlayers,
-        players: &Query<(&Player, &FieldOfView)>,
+
         tooltip_entities: &Query<(Entity, &TooltipLabel, &Transform)>,
-        tooltip_ui: &mut Query<(&mut Node, &mut Text, &mut TooltipUI)>,
+        tooltip_ui: &Query<(&mut Node, &mut Text, &mut TooltipUI)>,
     ) -> TooltipResult {
-        if self.is_shown {
-            if self.game_pos.is_none() || !self.in_player_fov(local_players, players) {
-                return TooltipResult::Hide;
-            }
+        let interim_result = self.try_create_shower(tooltip_entities, tooltip_ui);
 
-            if self.still_on_entity(tooltip_entities, tooltip_ui) {
-                return TooltipResult::NoChange;
-            } // else continue below
-        }
-        // tooltip hidden or shown and no longer over entity
-
-        if self.game_pos.is_none()
-            || !self.in_player_fov(local_players, players)
-            || !self.mouse_moved
-        {
-            return TooltipResult::NoChange;
-        }
-
-        if let Some((tooltip_entity, tooltip_label)) = self.find_entity_to_tooltip(tooltip_entities)
-        {
-            self.target_entity = Some(tooltip_entity);
-            self.text = tooltip_label;
-            return TooltipResult::Show;
+        if let Some(shower) = interim_result.tooltip_shower {
+            TooltipResult::Show(shower)
+        } else if self.is_shown && !interim_result.still_on_entity {
+            TooltipResult::Hide(TooltipHider)
         } else {
-            if self.is_shown {
-                return TooltipResult::Hide;
-            }
-            return TooltipResult::NoChange;
+            TooltipResult::NoChange
         }
-    }
-
-    pub fn hide(&self, tooltip_ui: &mut Query<(&mut Node, &mut Text, &mut TooltipUI)>) {
-        let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
-        tooltip_node.display = Display::None;
-        tooltip_text.0 = String::new();
-        tooltip.entity = None;
-    }
-
-    pub fn show(
-        &self,
-        hud_camera_query: &Query<(&Camera, &GlobalTransform), With<HudCamera>>,
-        tooltip_ui: &mut Query<(&mut Node, &mut Text, &mut TooltipUI)>,
-    ) {
-        let target_entity = self.target_entity.expect("Target entity not set!");
-
-        let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
-
-        tooltip_node.display = Display::Block;
-        tooltip_text.0 = self.text.clone();
-        tooltip.entity = Some(target_entity);
-
-        let mouse_pos = self.mouse_pos.expect("MousePos not set!");
-        let (hud_camera, hud_transform) = hud_camera_query.single();
-        let ui_pos = hud_camera
-            .viewport_to_world_2d(hud_transform, mouse_pos)
-            .expect("Inconceivable!");
-
-        tooltip_node.left = Val::Px(ui_pos.x);
-        tooltip_node.bottom = Val::Px(ui_pos.y);
     }
 
     fn find_entity_to_tooltip(
@@ -188,14 +145,10 @@ impl TooltipController {
     }
 
     fn in_player_fov(
-        &self,
+        game_pos: Vec2,
         local_players: &LocalPlayers,
         players: &Query<(&Player, &FieldOfView)>,
     ) -> bool {
-        let Some(game_pos) = self.game_pos else {
-            return false;
-        };
-
         players
             .iter()
             .find(|(player, _)| LocalPlayer::is_local(player, &local_players))
@@ -205,10 +158,51 @@ impl TooltipController {
             .contains_key(&game_pos.as_ivec2())
     }
 
+    fn try_create_shower(
+        &mut self,
+        tooltip_entities: &Query<(Entity, &TooltipLabel, &Transform)>,
+        tooltip_ui: &Query<(&mut Node, &mut Text, &mut TooltipUI)>,
+    ) -> InterimResult {
+        if !self.in_fov || !self.mouse_moved {
+            return InterimResult {
+                still_on_entity: false,
+                tooltip_shower: None,
+            };
+        }
+
+        if self.is_shown && self.still_on_entity(tooltip_entities, tooltip_ui) {
+            // already showing on the same entity, so no need to change
+            return InterimResult {
+                still_on_entity: true,
+                tooltip_shower: None,
+            };
+        }
+
+        // Now we get the relatively expensive test to see if mouse is over
+        // a relevant entity. Either a tooltip shown but now invalid or no
+        // tooltip being shown but might need to be
+        if let Some((tooltip_entity, tooltip_label)) = self.find_entity_to_tooltip(tooltip_entities)
+        {
+            InterimResult {
+                still_on_entity: false,
+                tooltip_shower: Some(TooltipShower {
+                    mouse_pos: self.mouse_pos.unwrap(),
+                    target_entity: tooltip_entity,
+                    text: tooltip_label,
+                }),
+            }
+        } else {
+            InterimResult {
+                still_on_entity: false,
+                tooltip_shower: None,
+            }
+        }
+    }
+
     fn still_on_entity(
         &self,
         tooltip_entities: &Query<(Entity, &TooltipLabel, &Transform)>,
-        tooltip_ui: &mut Query<(&mut Node, &mut Text, &mut TooltipUI)>,
+        tooltip_ui: &Query<(&mut Node, &mut Text, &mut TooltipUI)>,
     ) -> bool {
         let (.., tooltip) = tooltip_ui.single();
         let tooltip_entity = tooltip.entity.expect("No active entity!");
@@ -232,4 +226,48 @@ impl TooltipController {
                 .expect("Inconceivable!")
         })
     }
+}
+
+struct TooltipHider;
+
+impl TooltipHider {
+    pub fn hide(&self, tooltip_ui: &mut Query<(&mut Node, &mut Text, &mut TooltipUI)>) {
+        let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
+        tooltip_node.display = Display::None;
+        tooltip_text.0 = String::new();
+        tooltip.entity = None;
+    }
+}
+
+struct TooltipShower {
+    mouse_pos: Vec2,
+    target_entity: Entity,
+    text: String,
+}
+
+impl TooltipShower {
+    pub fn show(
+        &self,
+        hud_camera_query: &Query<(&Camera, &GlobalTransform), With<HudCamera>>,
+        tooltip_ui: &mut Query<(&mut Node, &mut Text, &mut TooltipUI)>,
+    ) {
+        let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
+
+        tooltip_node.display = Display::Block;
+        tooltip_text.0 = self.text.clone();
+        tooltip.entity = Some(self.target_entity);
+
+        let (hud_camera, hud_transform) = hud_camera_query.single();
+        let ui_pos = hud_camera
+            .viewport_to_world_2d(hud_transform, self.mouse_pos)
+            .expect("Inconceivable!");
+
+        tooltip_node.left = Val::Px(ui_pos.x);
+        tooltip_node.bottom = Val::Px(ui_pos.y);
+    }
+}
+
+struct InterimResult {
+    still_on_entity: bool,
+    tooltip_shower: Option<TooltipShower>,
 }
