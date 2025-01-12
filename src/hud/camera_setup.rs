@@ -10,7 +10,10 @@ pub fn setup_camera(mut commands: Commands) {
             order: 1,
             ..default()
         },
-        OrthographicProjection::default_2d(),
+        OrthographicProjection {
+            viewport_origin: Vec2::new(0., 0.),
+            ..OrthographicProjection::default_2d()
+        },
         RenderLayers::layer(config::HUD_CAMERA_RENDER_LAYER),
     ));
 }

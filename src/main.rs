@@ -49,7 +49,12 @@ fn main() {
 
     app.add_systems(
         OnEnter(GameState::Startup),
-        (hud::setup_camera, player::setup_camera, startup),
+        (
+            hud::setup_camera,
+            hud::spawn_tooltip,
+            player::setup_camera,
+            startup,
+        ),
     )
     .add_systems(
         OnEnter(GameState::InGame),
@@ -65,6 +70,7 @@ fn main() {
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (
+        hud::tooltip,
         do_player_action,
         tick_move_throttle,
         healing,

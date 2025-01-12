@@ -5,7 +5,10 @@
     "despawned",
     "desync",
     "Ettin",
+    "fira",
     "ggrs",
-    "spawnable"
-  ]
+    "spawnable",
+    "tooltipped"
+  ],
+  "editor.inlayHints.enabled": "offUnlessPressed"
 }

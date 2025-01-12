@@ -1,5 +1,6 @@
 use crate::{
     components::{Damage, FieldOfView, Health, Obstacle, Player},
+    hud::TooltipLabel,
     resources::{
         config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
         DungeonMap,
@@ -27,6 +28,7 @@ pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
                     custom_size: Some(Vec2::new(PLAYER_WIDTH, PLAYER_HEIGHT)),
                     ..default()
                 },
+                TooltipLabel(format!("Player {}", player_idx)),
                 Transform::from_translation(player_pos.to_vec3(config::PLAYER_Z_LAYER)),
             ))
             .add_rollback()
