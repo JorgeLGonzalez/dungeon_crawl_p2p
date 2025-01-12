@@ -1,4 +1,5 @@
 mod components;
+mod dungeon;
 mod events;
 mod hud;
 mod player;
@@ -125,6 +126,8 @@ fn add_events(app: &mut App) {
         .add_event::<events::RecalculateFovEvent>()
         .add_event::<events::SnapshotStateEvent>()
         .add_event::<events::StopMovingEvent>();
+
+    dungeon::add_events(app);
 }
 
 /// Register components and resources for GGRS snapshots and rollback

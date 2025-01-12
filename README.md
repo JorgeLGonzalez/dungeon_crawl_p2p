@@ -22,6 +22,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [ ] HUD should not change. Does this mean a different camera or?
 - [ ] only show other player when in FOV
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
+  - [ ] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
 - [ ] healing potions
 - [ ] inventory and item usage
 - [ ] data driven dungeon monsters and items

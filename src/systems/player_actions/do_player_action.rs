@@ -1,6 +1,7 @@
 use super::PlayerAction;
 use crate::{
     components::Player,
+    dungeon::RevealDungeonCheatEvent,
     events::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent},
     resources::config::{self, GameMode},
 };
@@ -15,6 +16,7 @@ use bevy_ggrs::PlayerInputs;
 pub fn do_player_action(
     mut move_event: EventWriter<PlayerMoveIntentEvent>,
     mut snapshot_event: EventWriter<SnapshotStateEvent>,
+    mut reveal_event: EventWriter<RevealDungeonCheatEvent>,
     mut stop_moving_event: EventWriter<StopMovingEvent>,
     ggrs_inputs: Option<Res<PlayerInputs<config::GgrsSessionConfig>>>,
     keys: Res<ButtonInput<KeyCode>>,
@@ -38,6 +40,9 @@ pub fn do_player_action(
                 ));
             }
             PlayerAction::None => (),
+            PlayerAction::RevealDungeonCheat => {
+                reveal_event.send(RevealDungeonCheatEvent::new(player.id));
+            }
             PlayerAction::Snapshot => {
                 snapshot_event.send(SnapshotStateEvent::new(player.id));
             }
