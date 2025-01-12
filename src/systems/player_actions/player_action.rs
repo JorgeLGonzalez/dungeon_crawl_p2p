@@ -9,6 +9,8 @@ pub enum PlayerAction {
     RevealDungeonCheat,
     Snapshot,
     StopMoving,
+    ZoomIn,
+    ZoomOut,
 }
 
 /// Convert from u8 which is how the action is encoded for sharing via GGRS
@@ -20,6 +22,8 @@ impl From<u8> for PlayerAction {
             3 => PlayerAction::Move(MoveDirection::Left),
             4 => PlayerAction::Move(MoveDirection::Right),
             5 => PlayerAction::StopMoving,
+            50 => PlayerAction::ZoomIn,
+            51 => PlayerAction::ZoomOut,
             100 => PlayerAction::Snapshot,
             101 => PlayerAction::RevealDungeonCheat,
 
@@ -41,12 +45,22 @@ impl From<&ButtonInput<KeyCode>> for PlayerAction {
                     .map(|_| PlayerAction::StopMoving)
             })
             .or_else(|| {
+                keys.just_released(KeyCode::KeyM)
+                    .then_some(PlayerAction::RevealDungeonCheat)
+            })
+            .or_else(|| {
                 keys.just_released(KeyCode::KeyP)
                     .then_some(PlayerAction::Snapshot)
             })
             .or_else(|| {
-                keys.just_released(KeyCode::KeyM)
-                    .then_some(PlayerAction::RevealDungeonCheat)
+                (keys.just_released(KeyCode::Equal)
+                    && keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]))
+                .then_some(PlayerAction::ZoomIn)
+            })
+            .or_else(|| {
+                (keys.just_released(KeyCode::Minus)
+                    && keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]))
+                .then_some(PlayerAction::ZoomOut)
             })
             .unwrap_or(PlayerAction::None)
     }
@@ -63,6 +77,8 @@ impl Into<u8> for PlayerAction {
             PlayerAction::RevealDungeonCheat => 101,
             PlayerAction::StopMoving => 5,
             PlayerAction::Snapshot => 100,
+            PlayerAction::ZoomIn => 50,
+            PlayerAction::ZoomOut => 51,
             PlayerAction::None => 0,
         }
     }

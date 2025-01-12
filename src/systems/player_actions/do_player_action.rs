@@ -1,7 +1,7 @@
 use super::PlayerAction;
 use crate::{
     components::Player,
-    dungeon::RevealDungeonCheatEvent,
+    dungeon::{RevealDungeonCheatEvent, ZoomDirection, ZoomEvent},
     events::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent},
     resources::config::{self, GameMode},
 };
@@ -18,6 +18,7 @@ pub fn do_player_action(
     mut snapshot_event: EventWriter<SnapshotStateEvent>,
     mut reveal_event: EventWriter<RevealDungeonCheatEvent>,
     mut stop_moving_event: EventWriter<StopMovingEvent>,
+    mut zoom_event: EventWriter<ZoomEvent>,
     ggrs_inputs: Option<Res<PlayerInputs<config::GgrsSessionConfig>>>,
     keys: Res<ButtonInput<KeyCode>>,
     players: Query<(Entity, &Player)>,
@@ -48,6 +49,12 @@ pub fn do_player_action(
             }
             PlayerAction::StopMoving => {
                 stop_moving_event.send(StopMovingEvent::new(player_entity));
+            }
+            PlayerAction::ZoomIn => {
+                zoom_event.send(ZoomEvent::zoom_in(player.id));
+            }
+            PlayerAction::ZoomOut => {
+                zoom_event.send(ZoomEvent::zoom_out(player.id));
             }
         };
     }
