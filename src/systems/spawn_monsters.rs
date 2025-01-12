@@ -1,9 +1,10 @@
 use crate::{
     components::{Damage, FieldOfView, Health, LastAction, Monster, MonsterType, Obstacle},
+    dungeon::DungeonMap,
     hud::TooltipLabel,
     resources::{
         config::{self, TILE_HEIGHT, TILE_WIDTH},
-        DungeonMap, RandomGenerator,
+        RandomGenerator,
     },
 };
 use bevy::prelude::*;

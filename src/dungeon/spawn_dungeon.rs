@@ -1,9 +1,10 @@
-use super::{ExitTile, FloorTile, WallTile};
+use super::dungeon_map::RandomRoomsBuilder;
+use super::{ExitTile, FloorTile, TileType, WallTile};
 use crate::{
     components::Obstacle,
     resources::{
         config::{self, TILE_HEIGHT, TILE_WIDTH},
-        RandomGenerator, RandomRoomsBuilder, TileType,
+        RandomGenerator,
     },
 };
 use bevy::prelude::*;

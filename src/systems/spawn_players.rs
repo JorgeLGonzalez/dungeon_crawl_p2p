@@ -1,10 +1,8 @@
 use crate::{
     components::{Damage, FieldOfView, Health, Obstacle, Player},
+    dungeon::DungeonMap,
     hud::TooltipLabel,
-    resources::{
-        config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
-        DungeonMap,
-    },
+    resources::config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
 };
 use bevy::prelude::*;
 use bevy_ggrs::AddRollbackCommandExtension;
