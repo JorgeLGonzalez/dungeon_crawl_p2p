@@ -34,6 +34,7 @@ impl ZoomEvent {
     }
 }
 
+#[derive(Debug, Clone, Copy)]
 pub enum ZoomDirection {
     In,
     Out,

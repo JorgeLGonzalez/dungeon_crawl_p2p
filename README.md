@@ -6,20 +6,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [x] text on health bar
-  - [x] health to left
-  - [x] health points x/10 to right
-  - [x] update health points text
-  - [x] use custom font on both web and mac
-  - [x] re-arrange to have parent container with text and bars as children
-  - [x] center the whole thing
-  - [x] experiment using UI instead of sprites/transforms
-- [x] tool tips to show monster name and health
-  - [x] only show when monster is in player's FOV
-  - [x] Do we want to show current health on monster or max? Showing max for now
-- [x] map revealer debug key
-- [ ] zoom in/out
-  - [ ] HUD should not change. Does this mean a different camera or?
 - [ ] only show other player when in FOV
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
   - [ ] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
@@ -105,6 +91,20 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] player attack on monster
   - [x] adapt to multi player
   - [x] getting desyncs. Note there is a bug in desync detection, but I am pretty sure I have my own bugs because I see visually things going out of sync. It happens even if i do not despawn monsters. Even registering Time does not solve it. Hmm...
+- [x] text on health bar
+  - [x] health to left
+  - [x] health points x/10 to right
+  - [x] update health points text
+  - [x] use custom font on both web and mac
+  - [x] re-arrange to have parent container with text and bars as children
+  - [x] center the whole thing
+  - [x] experiment using UI instead of sprites/transforms
+- [x] tool tips to show monster name and health
+  - [x] only show when monster is in player's FOV
+  - [x] Do we want to show current health on monster or max? Showing max for now
+- [x] map revealer debug key
+- [x] zoom in/out
+  - [x] HUD should not change. Does this mean a different camera or?
 
 ### Archived Issues
 
