@@ -1,7 +1,7 @@
 use super::PlayerAction;
 use crate::{
     components::Player,
-    dungeon::{RevealDungeonCheatEvent, ZoomDirection, ZoomEvent},
+    dungeon::{RevealDungeonCheatEvent, ZoomEvent},
     events::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent},
     resources::config::{self, GameMode},
 };
