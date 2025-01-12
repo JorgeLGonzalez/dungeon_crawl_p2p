@@ -86,6 +86,7 @@ fn main() {
         update_last_action,
         recalculate_fov,
         hud::health_bar,
+        dungeon::reveal_cheat,
     )
         .chain()
         .run_if(in_state(GameState::InGame));

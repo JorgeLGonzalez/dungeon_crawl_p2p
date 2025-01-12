@@ -17,7 +17,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] tool tips to show monster name and health
   - [x] only show when monster is in player's FOV
   - [x] Do we want to show current health on monster or max? Showing max for now
-- [ ] map revealer debug key
+- [x] map revealer debug key
 - [ ] zoom in/out
   - [ ] HUD should not change. Does this mean a different camera or?
 - [ ] only show other player when in FOV
