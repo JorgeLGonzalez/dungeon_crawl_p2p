@@ -1,5 +1,4 @@
-use super::RevealDungeonCheatEvent;
-use crate::components::FloorTile;
+use super::{FloorTile, RevealDungeonCheatEvent};
 use bevy::prelude::*;
 
 pub fn reveal_cheat(

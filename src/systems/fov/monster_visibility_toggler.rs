@@ -1,6 +1,7 @@
 use super::fov_queries::FovQuery;
 use crate::{
-    components::{FloorTile, FovTileMap, Monster},
+    components::{FovTileMap, Monster},
+    dungeon::FloorTile,
     events::{FovRecalculationEntityType, RecalculateFovEvent},
     player::LocalPlayer,
 };

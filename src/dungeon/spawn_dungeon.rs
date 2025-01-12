@@ -1,5 +1,6 @@
+use super::{ExitTile, FloorTile, WallTile};
 use crate::{
-    components::{ExitTile, FloorTile, Obstacle, WallTile},
+    components::Obstacle,
     resources::{
         config::{self, TILE_HEIGHT, TILE_WIDTH},
         RandomGenerator, RandomRoomsBuilder, TileType,
