@@ -1,11 +1,6 @@
 use super::player_action::PlayerAction;
 use crate::resources::config;
-use bevy::{
-    input::ButtonInput,
-    log::info,
-    prelude::{Commands, KeyCode, Res},
-    utils::hashbrown::HashMap,
-};
+use bevy::{prelude::*, utils::hashbrown::HashMap};
 use bevy_ggrs::{LocalInputs, LocalPlayers};
 
 /// Used in GGRS mode to determine PlayerAction and store into LocalInputs resource.
@@ -22,10 +17,6 @@ pub fn read_player_inputs(
         .fold(HashMap::new(), |mut acc, &player_handle| {
             let action = PlayerAction::from(keys.as_ref());
             acc.insert(player_handle, action.into());
-
-            if action == PlayerAction::Snapshot {
-                info!("Player {} requested snapshot", player_handle);
-            }
 
             acc
         });

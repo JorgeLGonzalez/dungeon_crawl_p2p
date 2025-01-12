@@ -16,9 +16,6 @@ pub struct Damage(pub DamageUnit);
 pub type DamageUnit = u8;
 
 #[derive(Component)]
-pub struct ExitTile;
-
-#[derive(Component)]
 pub struct FieldOfView {
     pub radius: FovRadius,
     pub visible_tiles: FovTileMap,
@@ -35,9 +32,6 @@ impl FieldOfView {
 
 pub type FovRadius = u8;
 pub type FovTileMap = HashMap<IVec2, Entity>;
-
-#[derive(Component)]
-pub struct FloorTile;
 
 #[derive(Component, Clone, Copy)]
 pub struct LastAction {
@@ -77,6 +71,3 @@ pub struct Player {
 }
 
 pub type PlayerId = usize;
-
-#[derive(Component)]
-pub struct WallTile;

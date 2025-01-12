@@ -1,4 +1,7 @@
-use crate::components::{Damage, FieldOfView, LastAction, Monster, Player, PlayerId, WallTile};
+use crate::{
+    components::{Damage, FieldOfView, LastAction, Monster, Player, PlayerId},
+    dungeon::WallTile,
+};
 use bevy::{
     prelude::*,
     utils::hashbrown::{HashMap, HashSet},

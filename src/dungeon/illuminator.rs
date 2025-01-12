@@ -1,5 +1,6 @@
+use super::FloorTile;
 use crate::{
-    components::{FloorTile, FovTileMap, Player},
+    components::{FovTileMap, Player},
     player::LocalPlayer,
     resources::config,
 };

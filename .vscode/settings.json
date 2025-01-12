@@ -4,10 +4,16 @@
     "despawn",
     "despawned",
     "desync",
+    "desyncs",
+    "Dikjstra",
     "Ettin",
     "fira",
     "ggrs",
+    "hashbrown",
+    "Respawn",
     "spawnable",
+    "srgb",
+    "synctest",
     "tooltipped"
   ],
   "editor.inlayHints.enabled": "offUnlessPressed"

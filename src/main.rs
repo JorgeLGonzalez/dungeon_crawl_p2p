@@ -1,4 +1,5 @@
 mod components;
+mod dungeon;
 mod events;
 mod hud;
 mod player;
@@ -59,7 +60,7 @@ fn main() {
     .add_systems(
         OnEnter(GameState::InGame),
         (
-            spawn_dungeon,
+            dungeon::spawn_dungeon,
             spawn_players,
             hud::setup_health_bar,
             spawn_monsters,
@@ -85,6 +86,7 @@ fn main() {
         update_last_action,
         recalculate_fov,
         hud::health_bar,
+        dungeon::reveal_cheat,
     )
         .chain()
         .run_if(in_state(GameState::InGame));
@@ -125,6 +127,8 @@ fn add_events(app: &mut App) {
         .add_event::<events::RecalculateFovEvent>()
         .add_event::<events::SnapshotStateEvent>()
         .add_event::<events::StopMovingEvent>();
+
+    dungeon::add_events(app);
 }
 
 /// Register components and resources for GGRS snapshots and rollback

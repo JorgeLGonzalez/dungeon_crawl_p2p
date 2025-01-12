@@ -1,10 +1,13 @@
 use super::{
     fov_queries::FovQuery,
-    illuminator::{FloorQuery, Illuminator, PlayerQuery},
     line_of_sight::{BresenhamLineOfSight, WallQuery},
     monster_visibility_toggler::{MonsterQuery, MonsterVisibilityToggler},
 };
-use crate::{components::FovTileMap, events::RecalculateFovEvent};
+use crate::{
+    components::FovTileMap,
+    dungeon::{FloorQuery, Illuminator, PlayerQuery},
+    events::RecalculateFovEvent,
+};
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 

@@ -1,8 +1,5 @@
-use super::{
-    config::{MONSTER_TRACKER_AUTO_SAVE_ENABLED, MONSTER_TRACKER_AUTO_SAVE_THRESHOLD},
-    DungeonPosition,
-};
-use crate::{events::MonsterMovesEvent, resources::config::NUM_MONSTERS};
+use super::config::{MONSTER_TRACKER_AUTO_SAVE_ENABLED, MONSTER_TRACKER_AUTO_SAVE_THRESHOLD};
+use crate::{dungeon::DungeonPosition, events::MonsterMovesEvent, resources::config::NUM_MONSTERS};
 use bevy::prelude::*;
 use bevy_ggrs::ggrs::Frame;
 use std::collections::VecDeque;

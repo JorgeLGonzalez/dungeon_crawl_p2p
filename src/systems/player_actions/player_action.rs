@@ -5,6 +5,8 @@ pub enum PlayerAction {
     Move(MoveDirection),
     #[default]
     None,
+    /// Show the full dungeon map
+    RevealDungeonCheat,
     Snapshot,
     StopMoving,
 }
@@ -19,6 +21,7 @@ impl From<u8> for PlayerAction {
             4 => PlayerAction::Move(MoveDirection::Right),
             5 => PlayerAction::StopMoving,
             100 => PlayerAction::Snapshot,
+            101 => PlayerAction::RevealDungeonCheat,
 
             _ => PlayerAction::None,
         }
@@ -41,6 +44,10 @@ impl From<&ButtonInput<KeyCode>> for PlayerAction {
                 keys.just_released(KeyCode::KeyP)
                     .then_some(PlayerAction::Snapshot)
             })
+            .or_else(|| {
+                keys.just_released(KeyCode::KeyM)
+                    .then_some(PlayerAction::RevealDungeonCheat)
+            })
             .unwrap_or(PlayerAction::None)
     }
 }
@@ -53,6 +60,7 @@ impl Into<u8> for PlayerAction {
             PlayerAction::Move(MoveDirection::Down) => 2,
             PlayerAction::Move(MoveDirection::Left) => 3,
             PlayerAction::Move(MoveDirection::Right) => 4,
+            PlayerAction::RevealDungeonCheat => 101,
             PlayerAction::StopMoving => 5,
             PlayerAction::Snapshot => 100,
             PlayerAction::None => 0,
