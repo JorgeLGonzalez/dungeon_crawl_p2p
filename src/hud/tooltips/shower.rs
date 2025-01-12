@@ -16,6 +16,7 @@ impl TooltipShower {
         }
     }
 
+    /// Show the tooltip at the mouse position and associate it with the target entity.
     pub fn show(&self, hud_camera_query: &HudCameraQuery, tooltip_ui: &mut TooltipUIQuery) {
         let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
 

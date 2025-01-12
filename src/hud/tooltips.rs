@@ -1,5 +1,5 @@
 mod determiner;
-mod determiner_factory;
+mod determiner_builder;
 mod hider;
 mod queries;
 mod shower;
@@ -9,7 +9,7 @@ use crate::resources::{assets::FontAssets, config};
 use bevy::{color::palettes::css::WHITE, prelude::*, render::view::RenderLayers};
 use bevy_ggrs::LocalPlayers;
 use determiner::TooltipToggleAction;
-use determiner_factory::TooltipDeterminerFactory;
+use determiner_builder::TooltipDeterminerBuilder;
 use queries::{
     CameraQuery, HudCameraQuery, PlayerQuery, TooltipEntityQuery, TooltipUIQuery, WindowQuery,
 };
@@ -39,8 +39,8 @@ pub fn spawn_tooltip(mut commands: Commands, font_assets: Res<FontAssets>) {
 /// the [`TooltipLabel`] component marks entities that can be hovered over to display
 /// a tooltip.
 /// Tooltips are only displayed for the local player.
-/// We need to convert the mouse cursor position from window space to world space
-/// coordinates.
+/// We need to convert the mouse cursor position from window to world coordinates.
+/// See README.md for more information.
 pub fn tooltip(
     mut cursor_events: EventReader<CursorMoved>,
     mut tooltip_ui: TooltipUIQuery,
@@ -51,15 +51,11 @@ pub fn tooltip(
     tooltip_entities: TooltipEntityQuery,
     windows: WindowQuery,
 ) {
-    let toggle_action = TooltipDeterminerFactory::create(
-        &camera_query,
-        &mut cursor_events,
-        &local_players,
-        &players,
-        &tooltip_ui,
-        &windows,
-    )
-    .determine(&tooltip_entities);
+    let toggle_action = TooltipDeterminerBuilder::new(&camera_query, &mut cursor_events, &windows)
+        .local_player_fov(&local_players, &players)
+        .with_tooltip_ui(&mut tooltip_ui)
+        .build()
+        .determine(&tooltip_entities);
 
     match toggle_action {
         TooltipToggleAction::Hide(hider) => hider.hide(&mut tooltip_ui),

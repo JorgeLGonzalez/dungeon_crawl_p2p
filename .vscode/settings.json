@@ -9,5 +9,6 @@
     "ggrs",
     "spawnable",
     "tooltipped"
-  ]
+  ],
+  "editor.inlayHints.enabled": "offUnlessPressed"
 }
