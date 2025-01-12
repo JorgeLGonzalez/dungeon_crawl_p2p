@@ -60,7 +60,7 @@ fn main() {
     .add_systems(
         OnEnter(GameState::InGame),
         (
-            spawn_dungeon,
+            dungeon::spawn_dungeon,
             spawn_players,
             hud::setup_health_bar,
             spawn_monsters,
