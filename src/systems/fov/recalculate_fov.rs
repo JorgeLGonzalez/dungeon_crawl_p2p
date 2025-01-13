@@ -1,7 +1,7 @@
 use super::{
     fov_queries::FovQuery,
     line_of_sight::{BresenhamLineOfSight, WallQuery},
-    monster_visibility_toggler::{MonsterQuery, MonsterVisibilityToggler},
+    visibility_toggler::{VisibilityQuery, VisibilityToggler},
 };
 use crate::{
     components::FovTileMap,
@@ -14,13 +14,12 @@ use bevy_ggrs::LocalPlayers;
 /// Recalculate the field of view for the entity that triggered the event.
 /// If the FOV is for the local player, illuminate or darken the floor tiles
 /// based on the new FOV.
-/// Then toggle the visibility of monsters based on the new position of the player
-/// or the monster.
+/// Then toggle the visibility of monsters and other player based on the new FOV.
 pub fn recalculate_fov(
     mut fov_query: FovQuery,
     mut recalculate_events: EventReader<RecalculateFovEvent>,
     mut floor: FloorQuery,
-    mut monsters: MonsterQuery,
+    mut monsters: VisibilityQuery,
     local_players: Res<LocalPlayers>,
     players: PlayerQuery,
     walls: WallQuery,
@@ -44,7 +43,7 @@ pub fn recalculate_fov(
 
         fov.visible_tiles = visible_tiles.clone();
 
-        MonsterVisibilityToggler::new(event).toggle(
+        VisibilityToggler::new(event).toggle(
             &mut monsters,
             &visible_tiles,
             &fov_query,

@@ -1,6 +1,6 @@
 use super::fov_queries::FovQuery;
 use crate::{
-    components::{FovTileMap, Monster},
+    components::FovTileMap,
     dungeon::FloorTile,
     events::{FovRecalculationEntityType, RecalculateFovEvent},
     player::LocalPlayer,
@@ -8,17 +8,16 @@ use crate::{
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 use bevy_ggrs::LocalPlayers;
 
-pub type MonsterQuery<'w, 's, 't, 'v> =
-    Query<'w, 's, (&'t Transform, &'v mut Visibility), (With<Monster>, Without<FloorTile>)>;
+pub type VisibilityQuery<'w, 's, 't, 'v> =
+    Query<'w, 's, (&'t Transform, &'v mut Visibility), Without<FloorTile>>;
 
-/// Toggle the visibility of monsters based on the new position of the monster
-/// or player.
-pub struct MonsterVisibilityToggler {
+/// Toggle the visibility of entities based on their position in the player's FOV.
+pub struct VisibilityToggler {
     entity: Entity,
     entity_type: FovRecalculationEntityType,
 }
 
-impl MonsterVisibilityToggler {
+impl VisibilityToggler {
     pub fn new(event: &RecalculateFovEvent) -> Self {
         Self {
             entity: event.entity,
@@ -26,21 +25,24 @@ impl MonsterVisibilityToggler {
         }
     }
 
-    /// Toggle the visibility of monsters based on the new position of the monster
-    /// or player
+    /// Toggle the visibility of entities based on their position in the player's
+    /// FOV.
     pub fn toggle(
         &self,
-        monsters: &mut MonsterQuery,
+        entities: &mut VisibilityQuery,
         fov: &FovTileMap,
         fov_query: &FovQuery,
         local_players: &LocalPlayers,
     ) {
+        // TODO issue is the visibility is not updated for the remote player.
+        // If local player moves out of FOV, local does not see remote, but
+        // remote still sees local.
         match self.entity_type {
             FovRecalculationEntityType::Monster => {
-                self.due_to_monster_move(monsters, fov_query, local_players);
+                self.due_to_monster_move(entities, fov_query, local_players);
             }
             FovRecalculationEntityType::Player => {
-                self.due_to_player_move(monsters, fov.keys().copied().collect())
+                self.due_to_player_move(entities, fov.keys().copied().collect())
             }
         }
     }
@@ -50,7 +52,7 @@ impl MonsterVisibilityToggler {
     /// see whether it includes the monster's new position.
     fn due_to_monster_move(
         &self,
-        monsters: &mut MonsterQuery,
+        monsters: &mut VisibilityQuery,
         fov_query: &FovQuery,
         local_players: &LocalPlayers,
     ) {
@@ -65,11 +67,11 @@ impl MonsterVisibilityToggler {
         self.toggle_if_needed(&player_fov, transform, &mut visibility);
     }
 
-    /// Handle the case where the visibility of the monsters may have changed because
-    /// the player moved. In this case we need to check all the monsters to see
+    /// Handle the case where the visibility of the entities may have changed because
+    /// the player moved. In this case we need to check all entities to see
     /// whether they are in the player's FOV.
-    fn due_to_player_move(&self, monsters: &mut MonsterQuery, player_fov: HashSet<IVec2>) {
-        monsters.iter_mut().for_each(|(transform, mut visibility)| {
+    fn due_to_player_move(&self, entities: &mut VisibilityQuery, player_fov: HashSet<IVec2>) {
+        entities.iter_mut().for_each(|(transform, mut visibility)| {
             self.toggle_if_needed(&player_fov, transform, &mut visibility);
         });
     }
@@ -80,11 +82,11 @@ impl MonsterVisibilityToggler {
     fn toggle_if_needed(
         &self,
         player_fov: &HashSet<IVec2>,
-        monster_transform: &Transform,
+        entity_transform: &Transform,
         visibility: &mut Visibility,
     ) {
-        let monster_pos = monster_transform.translation.truncate().as_ivec2();
-        let expected_visibility = match player_fov.contains(&monster_pos) {
+        let entity_pos = entity_transform.translation.truncate().as_ivec2();
+        let expected_visibility = match player_fov.contains(&entity_pos) {
             false => Visibility::Hidden,
             true => Visibility::Visible,
         };
