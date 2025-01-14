@@ -87,6 +87,7 @@ fn main() {
         recalculate_fov,
         hud::health_bar,
         dungeon::reveal_cheat,
+        dungeon::zoom,
     )
         .chain()
         .run_if(in_state(GameState::InGame));

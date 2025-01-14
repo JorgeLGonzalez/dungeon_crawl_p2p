@@ -1,5 +1,5 @@
 use crate::{
-    components::{Health, HealthUnit, Player},
+    components::{Health, HealthUnit, Player, PlayerId},
     game_mode,
     resources::config::GameMode,
 };
@@ -29,6 +29,18 @@ impl LocalPlayer {
             local_players.0.contains(&player.id)
         } else {
             player.id == 0
+        }
+    }
+
+    pub fn is_local_player_id(id: PlayerId, local_players: &LocalPlayers) -> bool {
+        id == Self::local_player_id(local_players)
+    }
+
+    pub fn local_player_id(local_players: &LocalPlayers) -> PlayerId {
+        if game_mode(GameMode::MultiPlayer) {
+            local_players.0[0]
+        } else {
+            0
         }
     }
 }
