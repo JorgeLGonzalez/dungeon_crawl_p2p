@@ -6,7 +6,7 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] only show other player when in FOV
+- [x] only show other player when in FOV
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
   - [ ] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
 - [ ] healing potions
