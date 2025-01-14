@@ -1,6 +1,7 @@
 use crate::{
     components::{Healing, Health, Player},
     events::MonsterAttacksEvent,
+    resources::config,
     GameState,
 };
 use bevy::prelude::*;
@@ -17,8 +18,10 @@ pub fn attack_player(
         log(&health, event);
 
         if event.damage >= health.current {
-            health.current = 0;
-            next_state.set(GameState::GameOver);
+            if !config::PLAYER_IMMORTALITY_ENABLED {
+                health.current = 0;
+                next_state.set(GameState::GameOver);
+            }
         } else {
             health.current -= event.damage;
             commands.entity(event.player).insert(Healing::default());

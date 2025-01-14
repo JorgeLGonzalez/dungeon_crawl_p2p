@@ -38,7 +38,7 @@ impl LocalPlayer {
 
     pub fn local_player_id(local_players: &LocalPlayers) -> PlayerId {
         if game_mode(GameMode::MultiPlayer) {
-            local_players.0[0]
+            local_players.0.get(0).copied().unwrap_or_default()
         } else {
             0
         }
