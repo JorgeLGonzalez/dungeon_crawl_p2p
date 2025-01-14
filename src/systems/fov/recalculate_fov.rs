@@ -19,7 +19,7 @@ pub fn recalculate_fov(
     mut fov_query: FovQuery,
     mut recalculate_events: EventReader<RecalculateFovEvent>,
     mut floor: FloorQuery,
-    mut monsters: VisibilityQuery,
+    mut entities: VisibilityQuery,
     local_players: Res<LocalPlayers>,
     players: PlayerQuery,
     walls: WallQuery,
@@ -43,11 +43,7 @@ pub fn recalculate_fov(
 
         fov.visible_tiles = visible_tiles.clone();
 
-        VisibilityToggler::new(event).toggle(
-            &mut monsters,
-            &visible_tiles,
-            &fov_query,
-            &local_players,
-        );
+        VisibilityToggler::new(event, &visible_tiles, &fov_query, &local_players, &players)
+            .toggle(&mut entities);
     }
 }
