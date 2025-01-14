@@ -7,6 +7,7 @@ use crate::{
     components::FovTileMap,
     dungeon::{FloorQuery, Illuminator, PlayerQuery},
     events::RecalculateFovEvent,
+    player::LocalPlayer,
 };
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
@@ -37,13 +38,27 @@ pub fn recalculate_fov(
             .filter(|(floor_pos, _)| viewer.can_see(floor_pos))
             .collect();
 
-        Illuminator::if_local_player(event.entity, &local_players, &players)
-            .with_prior_fov(&fov.visible_tiles)
-            .illuminate(&mut floor, &visible_tiles);
+        let mover_is_local_player = is_local_player(event.entity, &local_players, &players);
+
+        if mover_is_local_player {
+            Illuminator::new(&fov.visible_tiles).illuminate(&mut floor, &visible_tiles);
+        }
 
         fov.visible_tiles = visible_tiles.clone();
 
-        VisibilityToggler::new(event, &visible_tiles, &fov_query, &local_players, &players)
-            .toggle(&mut entities);
+        VisibilityToggler::new(
+            event.entity,
+            mover_is_local_player,
+            &visible_tiles,
+            &fov_query,
+            &local_players,
+        )
+        .toggle(&mut entities);
     }
+}
+
+fn is_local_player(entity: Entity, local_players: &LocalPlayers, players: &PlayerQuery) -> bool {
+    players
+        .get(entity)
+        .is_ok_and(|player| LocalPlayer::is_local(player, &local_players))
 }
