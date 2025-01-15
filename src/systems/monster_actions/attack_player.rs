@@ -18,7 +18,7 @@ pub fn attack_player(
         log(&health, event);
 
         if event.damage >= health.current {
-            if !config::PLAYER_IMMORTALITY_ENABLED {
+            if !config::PLAYER_IMMORTAL {
                 health.current = 0;
                 next_state.set(GameState::GameOver);
             }
