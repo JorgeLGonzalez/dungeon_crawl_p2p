@@ -55,6 +55,8 @@ pub const PLAYER_FOV_RADIUS: FovRadius = 8;
 /// Amount of seconds between auto-health increments
 pub const PLAYER_HEALING_SECONDS: f32 = 10.0;
 pub const PLAYER_HEALTH_MAX: u8 = 10;
+/// Player is invincible for debugging purposes
+pub const PLAYER_IMMORTALITY_ENABLED: bool = true;
 pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 

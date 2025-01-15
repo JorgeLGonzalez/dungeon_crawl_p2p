@@ -6,7 +6,7 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] only show other player when in FOV
+- [x] only show other player when in FOV
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
   - [ ] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
 - [ ] healing potions
@@ -27,7 +27,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] improve lighting simulation
 - [ ] amulet. In original it is placed farthest from player. But we now have 2 randomly placed players.
   - [ ] Game won state and screen
-- [ ] monsters now move intentionally, but still not very smart. If they see any players, they will hone in on the closest one and take any valid step that brings them closer to that player, but it is a shortsighted strategy since the distance to the player does not account for any obstacles, so there's probably situations where going to a farther player would be better or where stepping further first is a better path. In other words, there's no path-finding like Dikjstra path. They also have no memory so they will stop chasing a player who escapes their FOV like just around a corner.
+- [ ] monsters now move intentionally, but still not very smart. If they see any players, they will hone in on the closest one and take any valid step that brings them closer to that player, but it is a shortsighted strategy since the distance to the player does not account for any obstacles, so there's probably situations where going to a farther player would be better or where stepping further first is a better path. In other words, there's no path-finding like Dikjstra path. They also have no memory so they will stop chasing a player who escapes their FOV like just around a corner. See [Dijkstra Maps](https://www.roguebasin.com/index.php/The_Incredible_Power_of_Dijkstra_Maps) for an implementation of the algorithm in the context of a rogue-like dungeon crawler. I think this is what the Hands-On Rust book used.
 - [ ] restart game on game over key press. And actual game over systems and display
 - [ ] dungeon themes
 - [ ] score points for defeating monsters, picking up coins ?
