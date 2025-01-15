@@ -36,6 +36,7 @@ fn main() {
                 // filter: "bevy_ggrs=trace,ggrs=trace,ggrs::network=info".to_string(),
                 ..default()
             }),
+        dungeon::DungeonPlugin,
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
     ))
     .init_state::<GameState>()
@@ -59,13 +60,9 @@ fn main() {
     )
     .add_systems(
         OnEnter(GameState::InGame),
-        (
-            dungeon::spawn_dungeon,
-            spawn_players,
-            hud::setup_health_bar,
-            spawn_monsters,
-        )
-            .chain(),
+        (spawn_players, hud::setup_health_bar, spawn_monsters)
+            .chain()
+            .after(dungeon::SpawnDungeonSet),
     )
     .add_systems(OnEnter(GameState::GameOver), game_over);
 
@@ -86,10 +83,9 @@ fn main() {
         update_last_action,
         recalculate_fov,
         hud::health_bar,
-        dungeon::reveal_cheat,
-        dungeon::zoom,
     )
         .chain()
+        .before(dungeon::DungeonCoreSet)
         .run_if(in_state(GameState::InGame));
 
     if game_mode(GameMode::SinglePlayer) {
@@ -128,8 +124,6 @@ fn add_events(app: &mut App) {
         .add_event::<events::RecalculateFovEvent>()
         .add_event::<events::SnapshotStateEvent>()
         .add_event::<events::StopMovingEvent>();
-
-    dungeon::add_events(app);
 }
 
 /// Register components and resources for GGRS snapshots and rollback
