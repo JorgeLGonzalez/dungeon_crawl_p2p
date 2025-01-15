@@ -1,4 +1,16 @@
-use bevy::{app::App, prelude::Event};
+use bevy::{
+    app::{App, Plugin},
+    prelude::Event,
+};
+
+pub struct DungeonEventsPlugin;
+
+impl Plugin for DungeonEventsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<RevealDungeonCheatEvent>()
+            .add_event::<ZoomEvent>();
+    }
+}
 
 #[derive(Event)]
 pub struct RevealDungeonCheatEvent {
@@ -38,9 +50,4 @@ impl ZoomEvent {
 pub enum ZoomDirection {
     In,
     Out,
-}
-
-pub fn add_events(app: &mut App) {
-    app.add_event::<RevealDungeonCheatEvent>()
-        .add_event::<ZoomEvent>();
 }
