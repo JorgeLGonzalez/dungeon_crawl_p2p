@@ -1,9 +1,6 @@
 use super::camera::{follow_with_camera, setup_camera};
 use super::events::*;
-use super::player_actions::{
-    attack_monster, do_player_action, handle_move_intent, move_player, read_player_inputs,
-    stop_moving, tick_move_throttle,
-};
+use super::player_actions::*;
 use super::spawn_players::spawn_players;
 use crate::dungeon::SpawnDungeonSet;
 use crate::{dungeon, game_mode, GameMode, GameState};
@@ -20,6 +17,7 @@ impl Plugin for PlayerPlugin {
         app.add_event::<PlayerAttacksEvent>()
             .add_event::<PlayerMovesEvent>()
             .add_event::<PlayerMoveIntentEvent>()
+            .add_event::<StopMovingEvent>()
             .add_systems(
                 OnEnter(GameState::InGame),
                 (spawn_players, setup_camera).after(SpawnDungeonSet),

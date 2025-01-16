@@ -64,7 +64,6 @@ impl MonsterMovesEvent {
     }
 }
 
-
 #[derive(Event)]
 pub struct RecalculateFovEvent {
     pub entity: Entity,
@@ -85,16 +84,5 @@ pub struct SnapshotStateEvent {
 impl SnapshotStateEvent {
     pub fn new(player_id: usize) -> Self {
         Self { player_id }
-    }
-}
-
-#[derive(Event)]
-pub struct StopMovingEvent {
-    pub player: Entity,
-}
-
-impl StopMovingEvent {
-    pub fn new(player: Entity) -> Self {
-        Self { player }
     }
 }

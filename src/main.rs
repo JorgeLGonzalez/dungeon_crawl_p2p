@@ -114,8 +114,7 @@ fn add_events(app: &mut App) {
         .add_event::<events::MonsterAttacksEvent>()
         .add_event::<events::MonsterMovesEvent>()
         .add_event::<events::RecalculateFovEvent>()
-        .add_event::<events::SnapshotStateEvent>()
-        .add_event::<events::StopMovingEvent>();
+        .add_event::<events::SnapshotStateEvent>();
 }
 
 /// Register components and resources for GGRS snapshots and rollback
