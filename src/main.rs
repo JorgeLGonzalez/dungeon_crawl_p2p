@@ -37,6 +37,7 @@ fn main() {
                 ..default()
             }),
         dungeon::DungeonPlugin,
+        hud::HudPlugin,
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
     ))
     .init_state::<GameState>()
@@ -51,16 +52,11 @@ fn main() {
 
     app.add_systems(
         OnEnter(GameState::Startup),
-        (
-            hud::setup_camera,
-            hud::spawn_tooltip,
-            player::setup_camera,
-            startup,
-        ),
+        (player::setup_camera.after(hud::HudStartupSet), startup),
     )
     .add_systems(
         OnEnter(GameState::InGame),
-        (spawn_players, hud::setup_health_bar, spawn_monsters)
+        (spawn_players, spawn_monsters)
             .chain()
             .after(dungeon::SpawnDungeonSet),
     )
@@ -68,7 +64,6 @@ fn main() {
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (
-        hud::tooltip,
         do_player_action,
         tick_move_throttle,
         healing,
@@ -82,10 +77,10 @@ fn main() {
         move_monster,
         update_last_action,
         recalculate_fov,
-        hud::health_bar,
     )
         .chain()
         .before(dungeon::DungeonCoreSet)
+        .before(hud::HudCoreSet)
         .run_if(in_state(GameState::InGame));
 
     if game_mode(GameMode::SinglePlayer) {
@@ -128,14 +123,9 @@ fn add_events(app: &mut App) {
 
 /// Register components and resources for GGRS snapshots and rollback
 fn ggrs_setup(app: &mut App) {
-    app
-        // .rollback_component_with_clone::<GlobalTransform>()
-        // .rollback_component_with_clone::<InheritedVisibility>()
-        .rollback_component_with_clone::<Healing>()
+    app.rollback_component_with_clone::<Healing>()
         .rollback_component_with_clone::<MoveThrottle>()
         .rollback_component_with_clone::<Transform>()
-        // .rollback_component_with_clone::<ViewVisibility>()
-        // .rollback_component_with_clone::<Visibility>()
         .rollback_component_with_copy::<Health>()
         .rollback_component_with_copy::<LastAction>()
         .rollback_component_with_copy::<Monster>()
