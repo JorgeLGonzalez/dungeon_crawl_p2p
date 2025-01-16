@@ -1,8 +1,5 @@
-use super::{
-    super::{LocalPlayer, PlayersQuery},
-    PlayerCamera,
-};
-use crate::components::Player;
+use super::super::{LocalPlayer, PlayersQuery};
+use crate::player::{Player, PlayerCamera};
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 

@@ -1,8 +1,5 @@
 use super::FloorTile;
-use crate::{
-    components::{FovTileMap, Player},
-    resources::config,
-};
+use crate::{components::FovTileMap, player::Player, resources::config};
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 
 pub type FloorQuery<'w, 's, 't, 'r, 'v> =
