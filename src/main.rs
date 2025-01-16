@@ -51,17 +51,14 @@ fn main() {
 
     add_events(&mut app);
 
-    app.add_systems(
-        OnEnter(GameState::Startup),
-        (player::setup_camera.after(hud::HudStartupSet), startup),
-    )
-    .add_systems(
-        OnEnter(GameState::InGame),
-        (spawn_players, spawn_monsters)
-            .chain()
-            .after(dungeon::SpawnDungeonSet),
-    )
-    .add_systems(OnEnter(GameState::GameOver), game_over);
+    app.add_systems(OnEnter(GameState::Startup), startup)
+        .add_systems(
+            OnEnter(GameState::InGame),
+            (spawn_players, spawn_monsters)
+                .chain()
+                .after(dungeon::SpawnDungeonSet),
+        )
+        .add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (
@@ -72,7 +69,6 @@ fn main() {
         handle_move_intent,
         attack_monster,
         move_player,
-        player::follow_with_camera,
         do_monsters_action,
         attack_player,
         move_monster,
@@ -82,6 +78,7 @@ fn main() {
         .chain()
         .before(dungeon::DungeonCoreSet)
         .before(hud::HudCoreSet)
+        .before(player::follow_with_camera)
         .run_if(in_state(GameState::InGame));
 
     if game_mode(GameMode::SinglePlayer) {

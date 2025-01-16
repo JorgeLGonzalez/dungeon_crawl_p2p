@@ -6,7 +6,7 @@ mod plugin;
 mod tooltips;
 
 pub use components::TooltipLabel;
-pub use plugin::{HudCoreSet, HudPlugin, HudStartupSet};
+pub use plugin::{HudCoreSet, HudPlugin};
 
 use camera_setup::setup_camera;
 use health_bar::health_bar;
