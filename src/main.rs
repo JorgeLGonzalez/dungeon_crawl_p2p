@@ -8,7 +8,7 @@ mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_asset_loader::prelude::*;
-use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule, ReadInputs};
+use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};
 use components::{checksum_transform, Healing, Health, LastAction, Monster, MoveThrottle};
 use resources::{
     assets::FontAssets,
@@ -54,21 +54,21 @@ fn main() {
     app.add_systems(OnEnter(GameState::Startup), startup)
         .add_systems(
             OnEnter(GameState::InGame),
-            (spawn_players, spawn_monsters)
-                .chain()
-                .after(dungeon::SpawnDungeonSet),
+            // (spawn_players, spawn_monsters)
+            // .chain()
+            spawn_monsters.after(dungeon::SpawnDungeonSet),
         )
         .add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (
-        do_player_action,
-        tick_move_throttle,
+        // do_player_action,
+        // tick_move_throttle,
         healing,
-        stop_moving,
-        handle_move_intent,
-        attack_monster,
-        move_player,
+        // stop_moving,
+        // handle_move_intent,
+        // attack_monster,
+        // move_player,
         do_monsters_action,
         attack_player,
         move_monster,
@@ -76,9 +76,10 @@ fn main() {
         recalculate_fov,
     )
         .chain()
+        .after(player::PlayerCoreSet)
         .before(dungeon::DungeonCoreSet)
         .before(hud::HudCoreSet)
-        .before(player::follow_with_camera)
+        // .before(player::follow_with_camera)
         .run_if(in_state(GameState::InGame));
 
     if game_mode(GameMode::SinglePlayer) {
@@ -89,7 +90,8 @@ fn main() {
     } else {
         ggrs_setup(&mut app);
 
-        app.add_systems(ReadInputs, read_player_inputs)
+        app
+            // .add_systems(ReadInputs, read_player_inputs)
             .add_systems(GgrsSchedule, core_systems)
             .add_systems(GgrsSchedule, persist_monster_moves.after(move_monster))
             .add_systems(
