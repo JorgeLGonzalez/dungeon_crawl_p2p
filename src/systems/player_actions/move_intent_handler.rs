@@ -1,6 +1,6 @@
 use crate::{
     components::*,
-    events::{PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent},
+    player::{PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent},
 };
 use bevy::prelude::*;
 

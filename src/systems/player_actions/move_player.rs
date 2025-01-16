@@ -1,6 +1,7 @@
 use crate::{
     components::{MoveThrottle, Player},
-    events::{PlayerMovesEvent, RecalculateFovEvent},
+    events::RecalculateFovEvent,
+    player::PlayerMovesEvent,
     resources::config::PLAYER_Z_LAYER,
 };
 use bevy::prelude::*;

@@ -1,6 +1,6 @@
 use crate::{
     components::{Healing, Health, HealthUnit, Monster},
-    events::PlayerAttacksEvent,
+    player::PlayerAttacksEvent,
 };
 use bevy::{log::info, prelude::*};
 

@@ -1,4 +1,4 @@
-use super::HudCamera;
+use super::components::HudCamera;
 use crate::resources::config;
 use bevy::{prelude::*, render::view::RenderLayers};
 

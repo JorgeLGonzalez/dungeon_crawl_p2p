@@ -2,7 +2,8 @@ use super::PlayerAction;
 use crate::{
     components::Player,
     dungeon::{RevealDungeonCheatEvent, ZoomEvent},
-    events::{PlayerMoveIntentEvent, SnapshotStateEvent, StopMovingEvent},
+    events::{SnapshotStateEvent, StopMovingEvent},
+    player::PlayerMoveIntentEvent,
     resources::config::{self, GameMode},
 };
 use bevy::prelude::*;

@@ -1,6 +1,6 @@
 use crate::{
     components::{FieldOfView, Player},
-    hud::{HudCamera, TooltipLabel, TooltipUI},
+    hud::components::{HudCamera, TooltipLabel, TooltipUI},
     player::PlayerCamera,
 };
 use bevy::{prelude::*, window::PrimaryWindow};

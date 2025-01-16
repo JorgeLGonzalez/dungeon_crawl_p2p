@@ -1,5 +1,5 @@
 use super::move_intent_handler::{MoveIntentHandler, ObstacleQuery, PlayerMove, PlayerQuery};
-use crate::events::{PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent};
+use crate::player::{PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent};
 use bevy::prelude::*;
 
 /// Dispatch an even based on the intended move (or possibly no event). An intended

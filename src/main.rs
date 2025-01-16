@@ -39,6 +39,7 @@ fn main() {
         dungeon::DungeonPlugin,
         hud::HudPlugin,
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
+        player::PlayerPlugin,
     ))
     .init_state::<GameState>()
     .add_loading_state(
@@ -113,9 +114,6 @@ fn add_events(app: &mut App) {
         .add_event::<events::MonsterActedEvent>()
         .add_event::<events::MonsterAttacksEvent>()
         .add_event::<events::MonsterMovesEvent>()
-        .add_event::<events::PlayerAttacksEvent>()
-        .add_event::<events::PlayerMovesEvent>()
-        .add_event::<events::PlayerMoveIntentEvent>()
         .add_event::<events::RecalculateFovEvent>()
         .add_event::<events::SnapshotStateEvent>()
         .add_event::<events::StopMovingEvent>();
