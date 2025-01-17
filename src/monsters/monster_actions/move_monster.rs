@@ -1,8 +1,6 @@
-use crate::{
-    components::Monster,
-    events::{MonsterMovesEvent, RecalculateFovEvent},
-    resources::{config, MonsterMoveTracker},
-};
+use super::MonsterMoveTracker;
+use super::MonsterMovesEvent;
+use crate::{components::Monster, events::RecalculateFovEvent, resources::config};
 use bevy::prelude::*;
 use bevy_ggrs::RollbackFrameCount;
 

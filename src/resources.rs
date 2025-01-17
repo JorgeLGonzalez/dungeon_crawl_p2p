@@ -1,11 +1,9 @@
 pub mod assets;
 pub mod config;
-mod monster_move_tracker;
 mod random_generator;
 
 use bevy::prelude::Event;
 use bevy_ggrs::ggrs::Frame;
-pub use monster_move_tracker::*;
 pub use random_generator::{RandomCounter, RandomGenerator};
 
 /// Used when an out-of-sync is detected by GGRS. Dispatched by [`crate::systems::handle_ggrs_events`]

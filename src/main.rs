@@ -2,6 +2,7 @@ mod components;
 mod dungeon;
 mod events;
 mod hud;
+mod monsters;
 mod player;
 mod resources;
 mod systems;
@@ -13,7 +14,7 @@ use components::{checksum_transform, Healing, Health, LastAction, Monster, MoveT
 use resources::{
     assets::FontAssets,
     config::{self, GameMode, GAME_MODE},
-    DesyncEvent, MonsterMoveTracker, RandomGenerator,
+    DesyncEvent, RandomGenerator,
 };
 use std::hash::Hash;
 use systems::*;
@@ -39,6 +40,7 @@ fn main() {
         dungeon::DungeonPlugin,
         hud::HudPlugin,
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
+        monsters::MonstersPlugin,
         player::PlayerPlugin,
     ))
     .init_state::<GameState>()
@@ -46,33 +48,24 @@ fn main() {
         LoadingState::new(GameState::Loading)
             .continue_to_state(GameState::Startup)
             .load_collection::<FontAssets>(),
-    )
-    .init_resource::<MonsterMoveTracker>();
+    );
 
     add_events(&mut app);
 
     app.add_systems(OnEnter(GameState::Startup), startup)
         .add_systems(
             OnEnter(GameState::InGame),
-            // (spawn_players, spawn_monsters)
-            // .chain()
             spawn_monsters.after(dungeon::SpawnDungeonSet),
         )
         .add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (
-        // do_player_action,
-        // tick_move_throttle,
         healing,
-        // stop_moving,
-        // handle_move_intent,
-        // attack_monster,
-        // move_player,
-        do_monsters_action,
-        attack_player,
-        move_monster,
-        update_last_action,
+        monsters::do_monsters_action,
+        monsters::attack_player,
+        monsters::move_monster,
+        monsters::update_last_action,
         recalculate_fov,
     )
         .chain()
@@ -93,7 +86,10 @@ fn main() {
         app
             // .add_systems(ReadInputs, read_player_inputs)
             .add_systems(GgrsSchedule, core_systems)
-            .add_systems(GgrsSchedule, persist_monster_moves.after(move_monster))
+            .add_systems(
+                GgrsSchedule,
+                persist_monster_moves.after(monsters::move_monster),
+            )
             .add_systems(
                 Update,
                 (
@@ -110,9 +106,6 @@ fn main() {
 
 fn add_events(app: &mut App) {
     app.add_event::<DesyncEvent>()
-        .add_event::<events::MonsterActedEvent>()
-        .add_event::<events::MonsterAttacksEvent>()
-        .add_event::<events::MonsterMovesEvent>()
         .add_event::<events::RecalculateFovEvent>()
         .add_event::<events::SnapshotStateEvent>();
 }
