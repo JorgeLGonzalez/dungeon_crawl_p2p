@@ -56,19 +56,12 @@ fn main() {
         .add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
-    let core_systems = (
-        healing,
-        monsters::do_monsters_action,
-        monsters::attack_player,
-        monsters::move_monster,
-        monsters::update_last_action,
-        recalculate_fov,
-    )
+    let core_systems = (healing, recalculate_fov)
         .chain()
         .after(player::PlayerCoreSet)
+        .after(monsters::MonstersCoreSet)
         .before(dungeon::DungeonCoreSet)
         .before(hud::HudCoreSet)
-        // .before(player::follow_with_camera)
         .run_if(in_state(GameState::InGame));
 
     if game_mode(GameMode::SinglePlayer) {
@@ -79,22 +72,14 @@ fn main() {
     } else {
         ggrs_setup(&mut app);
 
-        app
-            // .add_systems(ReadInputs, read_player_inputs)
-            .add_systems(GgrsSchedule, core_systems)
-            .add_systems(
-                GgrsSchedule,
-                persist_monster_moves.after(monsters::move_monster),
-            )
-            .add_systems(
-                Update,
-                (
-                    create_p2p_session.run_if(
-                        in_state(GameState::Startup).and(|| game_mode(GameMode::MultiPlayer)),
-                    ),
-                    handle_ggrs_events.run_if(in_state(GameState::InGame)),
-                ),
-            );
+        app.add_systems(GgrsSchedule, core_systems).add_systems(
+            Update,
+            (
+                create_p2p_session
+                    .run_if(in_state(GameState::Startup).and(|| game_mode(GameMode::MultiPlayer))),
+                handle_ggrs_events.run_if(in_state(GameState::InGame)),
+            ),
+        );
     }
 
     app.run();
