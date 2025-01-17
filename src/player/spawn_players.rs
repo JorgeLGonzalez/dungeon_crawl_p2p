@@ -1,8 +1,8 @@
+use super::{components::Player, local_player::LocalPlayer};
 use crate::{
-    components::{Damage, FieldOfView, Health, Obstacle, Player},
+    components::{Damage, FieldOfView, Health, Obstacle},
     dungeon::DungeonMap,
     hud::TooltipLabel,
-    player::LocalPlayer,
     resources::config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
 };
 use bevy::prelude::*;

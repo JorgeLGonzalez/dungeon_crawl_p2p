@@ -1,6 +1,7 @@
 use crate::{
-    components::{Healing, Health, Player},
+    components::{Healing, Health},
     events::MonsterAttacksEvent,
+    player::Player,
     resources::config,
     GameState,
 };

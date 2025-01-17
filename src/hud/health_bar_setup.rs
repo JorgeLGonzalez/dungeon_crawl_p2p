@@ -1,4 +1,4 @@
-use super::{HealthBar, HealthPointsText};
+use super::components::{HealthBar, HealthPointsText};
 use crate::resources::{
     assets::FontAssets,
     config::{self},

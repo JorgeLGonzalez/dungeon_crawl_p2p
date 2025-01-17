@@ -1,6 +1,7 @@
 use crate::{
-    components::{Damage, FieldOfView, LastAction, Monster, Player, PlayerId},
+    components::{Damage, FieldOfView, LastAction, Monster},
     dungeon::WallTile,
+    player::{Player, PlayerId},
 };
 use bevy::{
     prelude::*,

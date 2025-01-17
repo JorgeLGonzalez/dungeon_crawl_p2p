@@ -64,10 +64,3 @@ pub enum Obstacle {
     Player,
     Wall,
 }
-
-#[derive(Clone, Component, Copy, Debug)]
-pub struct Player {
-    pub id: PlayerId,
-}
-
-pub type PlayerId = usize;

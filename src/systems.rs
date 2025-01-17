@@ -5,9 +5,7 @@ mod handle_ggrs_events;
 mod healing;
 mod monster_actions;
 mod persist_monster_moves;
-mod player_actions;
 mod spawn_monsters;
-mod spawn_players;
 mod startup;
 
 pub use create_p2p_session::create_p2p_session;
@@ -17,7 +15,5 @@ pub use handle_ggrs_events::handle_ggrs_events;
 pub use healing::healing;
 pub use monster_actions::*;
 pub use persist_monster_moves::persist_monster_moves;
-pub use player_actions::*;
 pub use spawn_monsters::spawn_monsters;
-pub use spawn_players::spawn_players;
 pub use startup::startup;

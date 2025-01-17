@@ -1,7 +1,5 @@
-use crate::{
-    components::{Healing, Health, HealthUnit, Monster},
-    events::PlayerAttacksEvent,
-};
+use super::super::events::PlayerAttacksEvent;
+use crate::components::{Healing, Health, HealthUnit, Monster};
 use bevy::{log::info, prelude::*};
 
 pub fn attack_monster(
