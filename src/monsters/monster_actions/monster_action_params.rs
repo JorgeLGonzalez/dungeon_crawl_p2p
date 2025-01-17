@@ -1,5 +1,6 @@
+use super::{LastAction, Monster};
 use crate::{
-    components::{Damage, FieldOfView, LastAction, Monster},
+    components::{Damage, FieldOfView},
     dungeon::WallTile,
     player::{Player, PlayerId},
 };

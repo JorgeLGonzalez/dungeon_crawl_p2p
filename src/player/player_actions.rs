@@ -16,3 +16,5 @@ pub(super) use player_action::PlayerAction;
 pub(super) use read_player_inputs::read_player_inputs;
 pub(super) use stop_moving::stop_moving;
 pub(super) use tick_move_throttle::tick_move_throttle;
+
+use super::events::*;

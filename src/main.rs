@@ -10,7 +10,7 @@ mod systems;
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_asset_loader::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};
-use components::{checksum_transform, Healing, Health, LastAction, Monster, MoveThrottle};
+use components::{checksum_transform, Healing, Health, MoveThrottle};
 use resources::{
     assets::FontAssets,
     config::{self, GameMode, GAME_MODE},
@@ -97,8 +97,8 @@ fn ggrs_setup(app: &mut App) {
         .rollback_component_with_clone::<MoveThrottle>()
         .rollback_component_with_clone::<Transform>()
         .rollback_component_with_copy::<Health>()
-        .rollback_component_with_copy::<LastAction>()
-        .rollback_component_with_copy::<Monster>()
+        .rollback_component_with_copy::<monsters::LastAction>()
+        .rollback_component_with_copy::<monsters::Monster>()
         .rollback_component_with_copy::<player::Player>()
         .rollback_resource_with_clone::<RandomGenerator>()
         .checksum_component::<Transform>(checksum_transform)
