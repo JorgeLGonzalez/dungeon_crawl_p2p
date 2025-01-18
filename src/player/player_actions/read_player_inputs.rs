@@ -1,4 +1,4 @@
-use super::player_action::PlayerAction;
+use super::PlayerAction;
 use crate::config;
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 use bevy_ggrs::{LocalInputs, LocalPlayers};

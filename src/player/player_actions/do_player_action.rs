@@ -1,8 +1,4 @@
-use super::super::{
-    components::Player,
-    events::{PlayerMoveIntentEvent, StopMovingEvent},
-};
-use super::PlayerAction;
+use super::{Player, PlayerAction, PlayerMoveIntentEvent, StopMovingEvent};
 use crate::{
     common::SnapshotStateEvent,
     config::{self, GameMode},

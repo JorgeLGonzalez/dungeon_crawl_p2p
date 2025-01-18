@@ -1,4 +1,4 @@
-use super::super::PlayerCamera;
+use super::PlayerCamera;
 use crate::config;
 use bevy::{
     prelude::*,

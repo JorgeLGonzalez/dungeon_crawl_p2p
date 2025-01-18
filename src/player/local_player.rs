@@ -1,4 +1,4 @@
-use super::components::{Player, PlayerId};
+use super::{Player, PlayerId};
 use crate::{
     config::{game_mode, GameMode},
     health::{Health, HealthUnit},

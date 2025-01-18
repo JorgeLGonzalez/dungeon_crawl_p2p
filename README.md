@@ -8,6 +8,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] reorg cleanup
   - [ ] events plugin for all relevant modules in events mod
+  - [ ] system sets x-ref to each other
   - [ ] Helper for core_systems
 - [ ] healing potions
 - [ ] inventory and item usage
@@ -49,8 +50,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - `game_states`: The GameState enum and the game_over system
 - [HUD](./src/hud/README.md): Heads-up display, including health bar and tooltips
 - `monsters`: Monsters and their actions
+- [Player](./src/player/README.md).
 - [GGRS](./src/startup/ggrs/README.md)
-- [Player Actions](./src/player/player_actions/README.md).
 - [startup](./src/startup/README.md)
 
 ## Archived TODO
