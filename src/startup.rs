@@ -1,4 +1,3 @@
-mod events;
 mod plugin;
 mod startup;
 
@@ -12,5 +11,4 @@ mod ggrs {
     pub(super) use handle_ggrs_events::handle_ggrs_events;
 }
 
-pub use events::{DesyncEvent, SnapshotStateEvent};
 pub use plugin::StartupPlugin;

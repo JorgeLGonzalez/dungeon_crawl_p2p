@@ -1,6 +1,5 @@
-use super::super::DesyncEvent;
 use crate::{
-    common::RandomGenerator,
+    common::{DesyncEvent, RandomGenerator},
     config::GgrsSessionConfig,
     monsters::Monster,
     player::{MoveThrottle, Player},

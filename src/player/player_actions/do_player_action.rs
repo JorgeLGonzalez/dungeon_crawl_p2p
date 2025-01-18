@@ -3,10 +3,10 @@ use super::super::{
     events::{PlayerMoveIntentEvent, StopMovingEvent},
 };
 use super::PlayerAction;
-use crate::config::{self, GameMode};
 use crate::{
+    common::SnapshotStateEvent,
+    config::{self, GameMode},
     dungeon::{RevealDungeonCheatEvent, ZoomEvent},
-    startup::SnapshotStateEvent,
 };
 use bevy::prelude::*;
 use bevy_ggrs::PlayerInputs;
