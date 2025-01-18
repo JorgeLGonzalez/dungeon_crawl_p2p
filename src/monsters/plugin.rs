@@ -1,7 +1,12 @@
-use super::{events::*, monster_actions::*, spawn_monsters};
+use super::{
+    components::{LastAction, Monster},
+    events::*,
+    monster_actions::*,
+    spawn_monsters,
+};
 use crate::{dungeon, game_mode, player, GameMode, GameState};
 use bevy::prelude::*;
-use bevy_ggrs::GgrsSchedule;
+use bevy_ggrs::{GgrsApp, GgrsSchedule};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct MonstersCoreSet;
@@ -34,6 +39,9 @@ impl Plugin for MonstersPlugin {
         if game_mode(GameMode::SinglePlayer) {
             app.add_systems(Update, core_systems);
         } else {
+            app.rollback_component_with_copy::<LastAction>()
+                .rollback_component_with_copy::<Monster>();
+
             app.add_systems(GgrsSchedule, core_systems)
                 .add_systems(GgrsSchedule, persist_monster_moves.after(move_monster));
         }

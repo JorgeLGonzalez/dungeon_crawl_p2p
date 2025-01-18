@@ -1,6 +1,6 @@
 use super::{
     camera::{follow_with_camera, setup_camera},
-    components::MoveThrottle,
+    components::{MoveThrottle, Player},
     events::*,
     player_actions::*,
     spawn_players::spawn_players,
@@ -47,6 +47,7 @@ impl Plugin for PlayerPlugin {
             app.add_systems(Update, core_systems);
         } else {
             app.rollback_component_with_clone::<MoveThrottle>()
+                .rollback_component_with_copy::<Player>()
                 .checksum_component_with_hash::<MoveThrottle>();
 
             app.add_systems(ReadInputs, read_player_inputs)

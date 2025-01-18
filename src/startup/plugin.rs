@@ -28,6 +28,7 @@ impl Plugin for StartupPlugin {
             app.add_event::<DesyncEvent>();
 
             app.rollback_resource_with_clone::<RandomGenerator>()
+            .rollback_component_with_clone::<Transform>()
                 .checksum_resource_with_hash::<RandomGenerator>()
                 .checksum_component::<Transform>(checksum_transform);
 
