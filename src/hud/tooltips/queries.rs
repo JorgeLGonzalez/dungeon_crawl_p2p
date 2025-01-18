@@ -1,5 +1,5 @@
 use crate::{
-    components::FieldOfView,
+    fov::FieldOfView,
     hud::components::{HudCamera, TooltipLabel, TooltipUI},
     player::{Player, PlayerCamera},
 };

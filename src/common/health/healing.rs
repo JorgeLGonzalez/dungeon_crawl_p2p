@@ -1,4 +1,4 @@
-use crate::components::{Healing, Health};
+use super::{Healing, Health};
 use bevy::prelude::*;
 
 pub fn healing(

@@ -1,8 +1,10 @@
 use super::components::{LastAction, Monster, MonsterType};
-use crate::config::{self, TILE_HEIGHT, TILE_WIDTH};
 use crate::{
-    components::{Damage, FieldOfView, Health, Obstacle},
+    components::Obstacle,
+    config::{self, TILE_HEIGHT, TILE_WIDTH},
     dungeon::DungeonMap,
+    fov::FieldOfView,
+    health::{Damage, Health},
     hud::TooltipLabel,
     startup::RandomGenerator,
 };

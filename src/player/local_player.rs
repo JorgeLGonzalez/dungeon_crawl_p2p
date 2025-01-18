@@ -1,8 +1,8 @@
 use super::components::{Player, PlayerId};
 use crate::{
-    components::{Health, HealthUnit},
     config::GameMode,
     game_mode,
+    health::{Health, HealthUnit},
 };
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;

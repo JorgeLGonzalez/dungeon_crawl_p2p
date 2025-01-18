@@ -1,4 +1,4 @@
-use crate::components::FovRadius;
+use super::FovRadius;
 use crate::dungeon::WallTile;
 use bevy::prelude::*;
 use bevy::utils::hashbrown::HashSet;
