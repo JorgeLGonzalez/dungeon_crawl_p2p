@@ -1,12 +1,9 @@
 use crate::{
-    config::{self, GgrsSessionConfig},
     common::RandomGenerator,
+    config::{self, GgrsSessionConfig},
     GameState,
 };
-use bevy::{
-    log::info,
-    prelude::{Commands, NextState, ResMut},
-};
+use bevy::prelude::*;
 use bevy_ggrs::{
     ggrs::{self, DesyncDetection, PlayerType},
     Session,

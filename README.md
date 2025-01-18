@@ -51,8 +51,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [HUD](./src/hud/README.md): Heads-up display, including health bar and tooltips
 - `monsters`: Monsters and their actions
 - [Player](./src/player/README.md).
-- [GGRS](./src/startup/ggrs/README.md)
-- [startup](./src/startup/README.md)
+- [startup](./src/startup/README.md), including GGRS for multiplayer
 
 ## Archived TODO
 
