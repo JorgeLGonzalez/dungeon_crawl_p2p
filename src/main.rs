@@ -1,7 +1,6 @@
 mod common;
 mod components;
 mod dungeon;
-mod events;
 mod hud;
 mod monsters;
 mod player;
@@ -46,8 +45,6 @@ fn main() {
         startup::StartupPlugin,
     ));
 
-    add_events(&mut app);
-
     app.add_systems(OnEnter(GameState::GameOver), game_over);
 
     if !game_mode(GameMode::SinglePlayer) {
@@ -55,10 +52,6 @@ fn main() {
     }
 
     app.run();
-}
-
-fn add_events(app: &mut App) {
-    app.add_event::<events::RecalculateFovEvent>();
 }
 
 /// Register components and resources for GGRS snapshots and rollback

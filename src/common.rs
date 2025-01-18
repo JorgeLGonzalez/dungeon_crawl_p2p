@@ -1,5 +1,6 @@
 pub mod fov {
     mod components;
+    mod events;
     mod fov_queries;
     mod line_of_sight;
     mod plugin;
@@ -7,6 +8,7 @@ pub mod fov {
     mod visibility_toggler;
 
     pub use components::{FieldOfView, FovRadius, FovTileMap};
+    pub use events::RecalculateFovEvent;
     pub use plugin::FovPlugin;
 }
 

@@ -2,11 +2,10 @@ use super::{
     fov_queries::FovQuery,
     line_of_sight::{BresenhamLineOfSight, WallQuery},
     visibility_toggler::{VisibilityQuery, VisibilityToggler},
+    FovRadius, FovTileMap, RecalculateFovEvent,
 };
 use crate::{
     dungeon::{FloorQuery, Illuminator, PlayerQuery},
-    events::RecalculateFovEvent,
-    fov::{FovRadius, FovTileMap},
     player::LocalPlayer,
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};
