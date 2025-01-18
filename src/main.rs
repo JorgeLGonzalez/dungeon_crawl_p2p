@@ -5,6 +5,7 @@ mod hud;
 mod monsters;
 mod player;
 mod resources;
+mod startup;
 mod systems;
 
 use bevy::{log::LogPlugin, prelude::*};
@@ -14,7 +15,7 @@ use components::{checksum_transform, Healing, Health, MoveThrottle};
 use resources::{
     assets::FontAssets,
     config::{self, GameMode, GAME_MODE},
-    DesyncEvent, RandomGenerator,
+    RandomGenerator,
 };
 use std::hash::Hash;
 use systems::*;
@@ -42,6 +43,7 @@ fn main() {
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
         monsters::MonstersPlugin,
         player::PlayerPlugin,
+        startup::StartupPlugin,
     ))
     .init_state::<GameState>()
     .add_loading_state(
@@ -86,8 +88,7 @@ fn main() {
 }
 
 fn add_events(app: &mut App) {
-    app.add_event::<DesyncEvent>()
-        .add_event::<events::RecalculateFovEvent>()
+    app.add_event::<events::RecalculateFovEvent>()
         .add_event::<events::SnapshotStateEvent>();
 }
 

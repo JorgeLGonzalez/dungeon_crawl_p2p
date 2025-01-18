@@ -8,7 +8,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 - [x] only show other player when in FOV
 - [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
-  - [ ] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
+  - [x] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
 - [ ] healing potions
 - [ ] inventory and item usage
 - [ ] data driven dungeon monsters and items
@@ -40,9 +40,9 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 ## See Also
 
-- [GGRS](./src/ggrs/README.md)
+- [GGRS](./src/startup/ggrs/README.md)
 - [HUD](./src/hud/README.md)
-- [Player Actions](./src/systems/player_actions/README.md).
+- [Player Actions](./src/player/player_actions/README.md).
 - [resources](./src/resources/README.md)
 
 ## Archived TODO

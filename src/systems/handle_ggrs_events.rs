@@ -2,7 +2,8 @@ use crate::{
     components::MoveThrottle,
     monsters::Monster,
     player::Player,
-    resources::{config::GgrsSessionConfig, DesyncEvent, RandomGenerator},
+    resources::{config::GgrsSessionConfig, RandomGenerator},
+    startup::DesyncEvent,
     GameState,
 };
 use bevy::{
