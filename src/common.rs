@@ -1,5 +1,6 @@
 mod events;
 mod random_generator;
+mod plugin;
 
 pub mod fov {
     mod components;
@@ -24,5 +25,6 @@ pub mod health {
     pub use plugin::HealthPlugin;
 }
 
-pub use events::{DesyncEvent, SnapshotStateEvent};
+pub use events::{ DesyncEvent, SnapshotStateEvent};
 pub use random_generator::{RandomCounter, RandomGenerator};
+pub use plugin::CommonPlugin;

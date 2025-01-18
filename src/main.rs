@@ -42,6 +42,7 @@ fn main() {
                     // filter: "bevy_ggrs=trace,ggrs=trace,ggrs::network=info".to_string(),
                     ..default()
                 }),
+            common::CommonPlugin,
             dungeon::DungeonPlugin,
             fov::FovPlugin,
             health::HealthPlugin,

@@ -1,4 +1,4 @@
-use super::recalculate_fov::recalculate_fov;
+use super::{events::FovEventsPlugin, recalculate_fov::recalculate_fov};
 use crate::{dungeon, hud, monsters, player, prelude::*};
 use bevy_ggrs::GgrsSchedule;
 
@@ -21,5 +21,7 @@ impl Plugin for FovPlugin {
         } else {
             app.add_systems(GgrsSchedule, core_systems);
         }
+
+        app.add_plugins(FovEventsPlugin);
     }
 }

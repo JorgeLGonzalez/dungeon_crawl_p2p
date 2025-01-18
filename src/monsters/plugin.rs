@@ -1,5 +1,6 @@
 use super::{
     components::{LastAction, Monster},
+    events::MonstersEventsPlugin,
     monster_actions::*,
     spawn_monsters::spawn_monsters,
 };
@@ -43,5 +44,7 @@ impl Plugin for MonstersPlugin {
             app.add_systems(GgrsSchedule, core_systems)
                 .add_systems(GgrsSchedule, persist_monster_moves.after(move_monster));
         }
+
+        app.add_plugins(MonstersEventsPlugin);
     }
 }

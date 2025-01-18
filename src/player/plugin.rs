@@ -1,6 +1,7 @@
 use super::{
     camera::{follow_with_camera, setup_camera},
     components::{MoveThrottle, Player},
+    events::PlayerEventsPlugin,
     player_actions::*,
     spawn_players::spawn_players,
 };
@@ -49,5 +50,7 @@ impl Plugin for PlayerPlugin {
             app.add_systems(ReadInputs, read_player_inputs)
                 .add_systems(GgrsSchedule, core_systems);
         }
+
+        app.add_plugins(PlayerEventsPlugin);
     }
 }
