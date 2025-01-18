@@ -43,7 +43,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [GGRS](./src/startup/ggrs/README.md)
 - [HUD](./src/hud/README.md)
 - [Player Actions](./src/player/player_actions/README.md).
-- [resources](./src/resources/README.md)
+- [startup](./src/startup/README.md)
 
 ## Archived TODO
 

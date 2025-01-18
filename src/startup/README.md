@@ -1,4 +1,4 @@
-# Resources
+# Startup
 
 ## Assets
 

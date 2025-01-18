@@ -8,12 +8,12 @@ mod resources;
 mod startup;
 mod systems;
 
+pub use startup::assets;
+
 use bevy::{log::LogPlugin, prelude::*};
-use bevy_asset_loader::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};
 use components::{Healing, Health, MoveThrottle};
 use resources::{
-    assets::FontAssets,
     config::{self, GameMode, GAME_MODE},
     RandomGenerator,
 };
@@ -44,13 +44,7 @@ fn main() {
         monsters::MonstersPlugin,
         player::PlayerPlugin,
         startup::StartupPlugin,
-    ))
-    .init_state::<GameState>()
-    .add_loading_state(
-        LoadingState::new(GameState::Loading)
-            .continue_to_state(GameState::Startup)
-            .load_collection::<FontAssets>(),
-    );
+    ));
 
     add_events(&mut app);
 

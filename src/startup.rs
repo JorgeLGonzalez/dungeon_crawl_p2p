@@ -1,3 +1,4 @@
+pub mod assets;
 mod events;
 mod plugin;
 mod startup;
