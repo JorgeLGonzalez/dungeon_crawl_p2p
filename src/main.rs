@@ -8,7 +8,6 @@ mod player;
 mod startup;
 
 pub use common::{fov, health};
-pub use startup::assets;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::GgrsPlugin;

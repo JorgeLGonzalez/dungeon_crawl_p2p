@@ -1,5 +1,7 @@
-use super::components::{HealthBar, HealthPointsText};
-use crate::assets::FontAssets;
+use super::{
+    assets::FontAssets,
+    components::{HealthBar, HealthPointsText},
+};
 use crate::config;
 use bevy::{
     color::palettes::css::{GRAY, WHITE},

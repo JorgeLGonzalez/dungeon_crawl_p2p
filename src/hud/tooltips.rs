@@ -4,8 +4,7 @@ mod hider;
 mod queries;
 mod shower;
 
-use super::components::TooltipUI;
-use crate::assets::FontAssets;
+use super::{assets::FontAssets, components::TooltipUI};
 use crate::config;
 use bevy::{color::palettes::css::WHITE, prelude::*, render::view::RenderLayers};
 use bevy_ggrs::LocalPlayers;

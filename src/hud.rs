@@ -1,3 +1,4 @@
+mod assets;
 mod camera_setup;
 mod components;
 mod health_bar;
@@ -5,6 +6,7 @@ mod health_bar_setup;
 mod plugin;
 mod tooltips;
 
+pub use assets::FontAssets;
 pub use components::TooltipLabel;
 pub use plugin::{HudCoreSet, HudPlugin};
 

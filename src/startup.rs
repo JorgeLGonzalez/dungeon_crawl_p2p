@@ -1,5 +1,3 @@
-pub mod assets;
-
 mod events;
 mod plugin;
 mod random_generator;
