@@ -1,3 +1,4 @@
+mod common;
 mod components;
 mod dungeon;
 mod events;
@@ -7,12 +8,13 @@ mod player;
 mod startup;
 mod systems;
 
+pub use common::health;
 pub use startup::assets;
 pub use startup::config;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};
-use components::{Healing, Health, MoveThrottle};
+use components::MoveThrottle;
 use startup::config::{GameMode, GAME_MODE};
 use std::hash::Hash;
 use systems::*;
@@ -36,6 +38,7 @@ fn main() {
                 ..default()
             }),
         dungeon::DungeonPlugin,
+        health::HealthPlugin,
         hud::HudPlugin,
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
         monsters::MonstersPlugin,
@@ -76,14 +79,14 @@ fn add_events(app: &mut App) {
 
 /// Register components and resources for GGRS snapshots and rollback
 fn ggrs_setup(app: &mut App) {
-    app.rollback_component_with_clone::<Healing>()
-        .rollback_component_with_clone::<MoveThrottle>()
+    // app.rollback_component_with_clone::<Healing>()
+    app.rollback_component_with_clone::<MoveThrottle>()
         .rollback_component_with_clone::<Transform>()
-        .rollback_component_with_copy::<Health>()
+        // .rollback_component_with_copy::<Health>()
         .rollback_component_with_copy::<monsters::LastAction>()
         .rollback_component_with_copy::<monsters::Monster>()
         .rollback_component_with_copy::<player::Player>()
-        .checksum_component_with_hash::<Health>()
+        // .checksum_component_with_hash::<Health>()
         .checksum_component_with_hash::<MoveThrottle>();
 }
 

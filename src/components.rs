@@ -1,17 +1,8 @@
-mod healing;
-mod health;
 mod move_throttle;
 
-pub use healing::Healing;
-pub use health::{Health, HealthUnit};
 pub use move_throttle::MoveThrottle;
 
 use bevy::{prelude::*, utils::hashbrown::HashMap};
-
-#[derive(Component)]
-pub struct Damage(pub DamageUnit);
-
-pub type DamageUnit = u8;
 
 #[derive(Component)]
 pub struct FieldOfView {

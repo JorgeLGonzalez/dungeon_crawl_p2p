@@ -1,7 +1,8 @@
 use super::{LastAction, Monster};
 use crate::{
-    components::{Damage, FieldOfView},
+    components::FieldOfView,
     dungeon::WallTile,
+    health::Damage,
     player::{Player, PlayerId},
 };
 use bevy::{

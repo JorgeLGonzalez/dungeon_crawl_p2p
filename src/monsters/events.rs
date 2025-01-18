@@ -1,4 +1,4 @@
-use crate::components::DamageUnit;
+use crate::health::DamageUnit;
 use bevy::prelude::*;
 
 #[derive(Event)]

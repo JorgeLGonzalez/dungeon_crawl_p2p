@@ -1,6 +1,6 @@
 use super::PlayerAttacksEvent;
 use crate::{
-    components::{Healing, Health, HealthUnit},
+    health::{Healing, Health, HealthUnit},
     monsters::Monster,
 };
 use bevy::{log::info, prelude::*};

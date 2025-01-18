@@ -1,6 +1,12 @@
 use crate::config;
 use bevy::prelude::*;
+use std::hash::Hash;
 use std::time::Duration;
+
+#[derive(Component)]
+pub struct Damage(pub DamageUnit);
+
+pub type DamageUnit = u8;
 
 #[derive(Component, Clone)]
 pub struct Healing(Timer);
@@ -23,3 +29,17 @@ impl Default for Healing {
         ))
     }
 }
+
+#[derive(Component, Clone, Copy, Hash)]
+pub struct Health {
+    pub current: HealthUnit,
+    pub max: HealthUnit,
+}
+
+impl Health {
+    pub fn new(max: HealthUnit) -> Self {
+        Self { current: max, max }
+    }
+}
+
+pub type HealthUnit = u8;

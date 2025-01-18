@@ -2,7 +2,10 @@ use super::super::{
     components::Player,
     events::{PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent},
 };
-use crate::components::{Damage, DamageUnit, MoveThrottle, Obstacle};
+use crate::{
+    components::{MoveThrottle, Obstacle},
+    health::{Damage, DamageUnit},
+};
 use bevy::prelude::*;
 
 pub type ObstacleQuery<'w, 's, 't, 'o> = Query<'w, 's, (&'t Transform, &'o Obstacle, Entity)>;
