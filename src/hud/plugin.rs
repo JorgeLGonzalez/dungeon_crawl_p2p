@@ -1,9 +1,5 @@
 use super::{health_bar, setup_camera, setup_health_bar, spawn_tooltip, tooltip};
-use crate::{
-    config::{game_mode, GameMode},
-    GameState,
-};
-use bevy::prelude::*;
+use crate::prelude::*;
 use bevy_ggrs::GgrsSchedule;
 
 #[derive(SystemSet, Clone, Copy, Debug, Hash, PartialEq, Eq)]

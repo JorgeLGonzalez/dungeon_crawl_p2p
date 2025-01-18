@@ -1,9 +1,5 @@
 use super::{recalculate_fov::recalculate_fov, RecalculateFovEvent};
-use crate::{
-    config::{game_mode, GameMode},
-    dungeon, hud, monsters, player, GameState,
-};
-use bevy::prelude::*;
+use crate::{dungeon, hud, monsters, player, prelude::*};
 use bevy_ggrs::GgrsSchedule;
 
 pub struct FovPlugin;

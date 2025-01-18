@@ -1,11 +1,4 @@
-use crate::{
-    common::{DesyncEvent, RandomGenerator},
-    config::GgrsSessionConfig,
-    monsters::Monster,
-    player::{MoveThrottle, Player},
-    GameState,
-};
-use bevy::prelude::*;
+use crate::{common::DesyncEvent, monsters::Monster, player::MoveThrottle, prelude::*};
 use bevy_ggrs::{
     ggrs::GgrsEvent, GgrsComponentSnapshots, GgrsResourceSnapshots, GgrsSnapshots, LocalPlayers,
     Session,
@@ -16,7 +9,7 @@ use std::{fs::OpenOptions, io::Write};
 pub fn handle_ggrs_events(
     mut event_writer: EventWriter<DesyncEvent>,
     mut next_state: ResMut<NextState<GameState>>,
-    mut session: ResMut<Session<GgrsSessionConfig>>,
+    mut session: ResMut<Session<config::GgrsSessionConfig>>,
     local_players: Res<LocalPlayers>,
     monster_snapshots: Res<GgrsComponentSnapshots<Monster>>,
     player_movement_snapshots: Res<GgrsComponentSnapshots<MoveThrottle>>,

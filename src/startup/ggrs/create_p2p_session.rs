@@ -1,9 +1,4 @@
-use crate::{
-    common::RandomGenerator,
-    config::{self, GgrsSessionConfig},
-    GameState,
-};
-use bevy::prelude::*;
+use crate::prelude::*;
 use bevy_ggrs::{
     ggrs::{self, DesyncDetection, PlayerType},
     Session,
@@ -35,7 +30,7 @@ pub fn create_p2p_session(
 fn build_session(
     players: Vec<PlayerType<PeerId>>,
     socket: &mut MatchboxSocket,
-) -> Session<GgrsSessionConfig> {
+) -> Session<config::GgrsSessionConfig> {
     let mut session_builder = ggrs::SessionBuilder::<config::GgrsSessionConfig>::new()
         .with_num_players(config::NUM_PLAYERS)
         // .with_max_prediction_window(0) // lockstep mode

@@ -1,11 +1,5 @@
 use super::MonsterAttacksEvent;
-use crate::{
-    config,
-    health::{Healing, Health},
-    player::Player,
-    GameState,
-};
-use bevy::prelude::*;
+use crate::prelude::*;
 
 pub fn attack_player(
     mut attack_events: EventReader<MonsterAttacksEvent>,

@@ -1,9 +1,9 @@
 use crate::{
-    fov::FieldOfView,
     hud::components::{HudCamera, TooltipLabel, TooltipUI},
-    player::{Player, PlayerCamera},
+    player::PlayerCamera,
+    prelude::*,
 };
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::window::PrimaryWindow;
 
 pub type CameraQuery<'w, 's, 'c, 'g> =
     Query<'w, 's, (&'c Camera, &'g GlobalTransform), With<PlayerCamera>>;

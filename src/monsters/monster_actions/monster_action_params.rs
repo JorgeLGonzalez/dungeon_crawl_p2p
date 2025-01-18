@@ -1,14 +1,6 @@
 use super::{LastAction, Monster};
-use crate::{
-    dungeon::WallTile,
-    fov::FieldOfView,
-    health::Damage,
-    player::{Player, PlayerId},
-};
-use bevy::{
-    prelude::*,
-    utils::hashbrown::{HashMap, HashSet},
-};
+use crate::{dungeon::WallTile, player::PlayerId, prelude::*};
+use bevy::utils::hashbrown::{HashMap, HashSet};
 
 pub type MonsterQuery<'w, 's, 'd, 'f, 'a, 't> = Query<
     'w,
