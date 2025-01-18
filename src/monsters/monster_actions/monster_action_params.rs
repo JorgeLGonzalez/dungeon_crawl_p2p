@@ -1,7 +1,7 @@
 use super::{LastAction, Monster};
 use crate::{
-    components::FieldOfView,
     dungeon::WallTile,
+    fov::FieldOfView,
     health::Damage,
     player::{Player, PlayerId},
 };

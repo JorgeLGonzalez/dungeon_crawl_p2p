@@ -1,4 +1,4 @@
-use crate::components::FovRadius;
+use crate::fov::FovRadius;
 use bevy::{color::Color, render::view::Layer};
 use bevy_matchbox::prelude::PeerId;
 

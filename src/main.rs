@@ -8,9 +8,8 @@ mod player;
 mod startup;
 mod systems;
 
-pub use common::health;
-pub use startup::assets;
-pub use startup::config;
+pub use common::{fov, health};
+pub use startup::{assets, config};
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};

@@ -1,7 +1,7 @@
 use super::*;
 use crate::{
-    components::FieldOfView,
     config,
+    fov::FieldOfView,
     health::DamageUnit,
     startup::{RandomCounter, RandomGenerator},
 };

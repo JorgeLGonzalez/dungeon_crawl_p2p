@@ -4,9 +4,9 @@ use super::{
     visibility_toggler::{VisibilityQuery, VisibilityToggler},
 };
 use crate::{
-    components::{FovRadius, FovTileMap},
     dungeon::{FloorQuery, Illuminator, PlayerQuery},
     events::RecalculateFovEvent,
+    fov::{FovRadius, FovTileMap},
     player::LocalPlayer,
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};

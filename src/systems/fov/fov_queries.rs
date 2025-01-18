@@ -1,4 +1,4 @@
-use crate::{components::FieldOfView, player::Player};
+use crate::{fov::FieldOfView, player::Player};
 use bevy::prelude::{Query, With};
 
 pub type FovQuery<'w, 's, 'f, 'p> =
