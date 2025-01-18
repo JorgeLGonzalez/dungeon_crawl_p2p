@@ -1,4 +1,5 @@
 mod common;
+mod config;
 mod dungeon;
 mod game_states;
 mod hud;
@@ -7,12 +8,11 @@ mod player;
 mod startup;
 
 pub use common::{fov, health};
-pub use startup::{assets, config};
+pub use startup::assets;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::GgrsPlugin;
 use game_states::GameState;
-use startup::config::{game_mode, GameMode};
 
 fn main() {
     App::new()

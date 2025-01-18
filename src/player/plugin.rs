@@ -6,8 +6,9 @@ use super::{
     spawn_players::spawn_players,
 };
 use crate::{
+    config::{game_mode, GameMode},
     dungeon::{DungeonCoreSet, SpawnDungeonSet},
-    game_mode, GameMode, GameState,
+    GameState,
 };
 use bevy::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsSchedule, ReadInputs};

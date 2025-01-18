@@ -1,7 +1,6 @@
 use super::components::{Player, PlayerId};
 use crate::{
-    config::GameMode,
-    game_mode,
+    config::{game_mode, GameMode},
     health::{Health, HealthUnit},
 };
 use bevy::prelude::*;

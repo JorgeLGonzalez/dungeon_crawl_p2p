@@ -5,8 +5,8 @@ use super::{
     random_generator::RandomGenerator,
     startup::startup,
 };
-use crate::config::GameMode;
-use crate::{game_mode, GameState};
+use crate::config::{game_mode, GameMode};
+use crate::GameState;
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;
 use bevy_ggrs::GgrsApp;
@@ -28,7 +28,7 @@ impl Plugin for StartupPlugin {
             app.add_event::<DesyncEvent>();
 
             app.rollback_resource_with_clone::<RandomGenerator>()
-            .rollback_component_with_clone::<Transform>()
+                .rollback_component_with_clone::<Transform>()
                 .checksum_resource_with_hash::<RandomGenerator>()
                 .checksum_component::<Transform>(checksum_transform);
 

@@ -4,7 +4,10 @@ use super::{
     monster_actions::*,
     spawn_monsters,
 };
-use crate::{dungeon, game_mode, player, GameMode, GameState};
+use crate::{
+    config::{game_mode, GameMode},
+    dungeon, player, GameState,
+};
 use bevy::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsSchedule};
 

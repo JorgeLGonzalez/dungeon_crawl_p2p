@@ -2,7 +2,12 @@ use super::{
     components::{Healing, Health},
     healing::healing,
 };
-use crate::{game_mode, monsters::MonstersCoreSet, player::PlayerCoreSet, GameMode, GameState};
+use crate::{
+    config::{game_mode, GameMode},
+    monsters::MonstersCoreSet,
+    player::PlayerCoreSet,
+    GameState,
+};
 use bevy::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsSchedule};
 
