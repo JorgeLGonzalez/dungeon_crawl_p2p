@@ -54,8 +54,7 @@ fn main() {
 
     add_events(&mut app);
 
-    app.add_systems(OnEnter(GameState::Startup), startup)
-        .add_systems(OnEnter(GameState::GameOver), game_over);
+    app.add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (healing, recalculate_fov)
