@@ -73,14 +73,7 @@ fn main() {
     } else {
         ggrs_setup(&mut app);
 
-        app.add_systems(GgrsSchedule, core_systems).add_systems(
-            Update,
-            (
-                create_p2p_session
-                    .run_if(in_state(GameState::Startup).and(|| game_mode(GameMode::MultiPlayer))),
-                handle_ggrs_events.run_if(in_state(GameState::InGame)),
-            ),
-        );
+        app.add_systems(GgrsSchedule, core_systems);
     }
 
     app.run();
