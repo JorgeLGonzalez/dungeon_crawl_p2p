@@ -4,7 +4,7 @@ use super::{
     ggrs::{checksum_transform, create_p2p_session, handle_ggrs_events},
     startup::startup,
 };
-use crate::resources::config::GameMode;
+use crate::config::GameMode;
 use crate::{game_mode, GameState};
 use bevy::prelude::*;
 use bevy_asset_loader::prelude::*;

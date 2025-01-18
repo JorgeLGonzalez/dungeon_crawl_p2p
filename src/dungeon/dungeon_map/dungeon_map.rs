@@ -1,5 +1,5 @@
 use super::{dungeon_position::DungeonPosition, dungeon_tile::DungeonTile, TileType};
-use crate::resources::config::{self, MAP_HEIGHT, MAP_WIDTH};
+use crate::config::{self, MAP_HEIGHT, MAP_WIDTH};
 use bevy::prelude::Resource;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;

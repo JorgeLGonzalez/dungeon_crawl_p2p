@@ -1,9 +1,9 @@
 use super::{components::Player, local_player::LocalPlayer};
 use crate::{
     components::{Damage, FieldOfView, Health, Obstacle},
+    config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
     dungeon::DungeonMap,
     hud::TooltipLabel,
-    resources::config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
 };
 use bevy::prelude::*;
 use bevy_ggrs::{AddRollbackCommandExtension, LocalPlayers};

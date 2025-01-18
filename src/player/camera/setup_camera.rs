@@ -1,5 +1,5 @@
 use super::super::PlayerCamera;
-use crate::resources::config;
+use crate::config;
 use bevy::{
     prelude::*,
     render::{camera::ScalingMode, view::RenderLayers},

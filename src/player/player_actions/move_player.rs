@@ -1,7 +1,5 @@
 use super::super::{components::Player, events::PlayerMovesEvent};
-use crate::{
-    components::MoveThrottle, events::RecalculateFovEvent, resources::config::PLAYER_Z_LAYER,
-};
+use crate::{components::MoveThrottle, config::PLAYER_Z_LAYER, events::RecalculateFovEvent};
 use bevy::prelude::*;
 
 pub fn move_player(

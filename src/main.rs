@@ -9,14 +9,13 @@ mod startup;
 mod systems;
 
 pub use startup::assets;
+pub use startup::config;
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};
 use components::{Healing, Health, MoveThrottle};
-use resources::{
-    config::{self, GameMode, GAME_MODE},
-    RandomGenerator,
-};
+use resources::RandomGenerator;
+use startup::config::{GameMode, GAME_MODE};
 use std::hash::Hash;
 use systems::*;
 

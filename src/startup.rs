@@ -1,4 +1,6 @@
 pub mod assets;
+pub mod config;
+
 mod events;
 mod plugin;
 mod startup;

@@ -1,10 +1,6 @@
 use crate::{
-    components::MoveThrottle,
-    monsters::Monster,
-    player::Player,
-    resources::{config::GgrsSessionConfig, RandomGenerator},
-    startup::DesyncEvent,
-    GameState,
+    components::MoveThrottle, config::GgrsSessionConfig, monsters::Monster, player::Player,
+    resources::RandomGenerator, startup::DesyncEvent, GameState,
 };
 use bevy::{
     log::{error, info, warn},

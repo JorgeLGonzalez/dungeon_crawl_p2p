@@ -1,5 +1,5 @@
 use super::{Monster, MonsterMoveTracker, MonsterMovesEvent};
-use crate::{events::RecalculateFovEvent, resources::config};
+use crate::{config, events::RecalculateFovEvent};
 use bevy::prelude::*;
 use bevy_ggrs::RollbackFrameCount;
 
