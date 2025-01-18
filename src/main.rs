@@ -12,7 +12,7 @@ pub use common::{fov, health};
 pub use startup::{assets, config};
 
 use bevy::{log::LogPlugin, prelude::*};
-use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};
+use bevy_ggrs::{GgrsApp, GgrsPlugin};
 use components::MoveThrottle;
 use startup::config::{GameMode, GAME_MODE};
 use std::hash::Hash;
@@ -37,6 +37,7 @@ fn main() {
                 ..default()
             }),
         dungeon::DungeonPlugin,
+        fov::FovPlugin,
         health::HealthPlugin,
         hud::HudPlugin,
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
@@ -49,24 +50,8 @@ fn main() {
 
     app.add_systems(OnEnter(GameState::GameOver), game_over);
 
-    // systems used in both Single Player Update schedule and GgrsScheduled
-    let core_systems = recalculate_fov
-        .chain()
-        .after(player::PlayerCoreSet)
-        .after(monsters::MonstersCoreSet)
-        .before(dungeon::DungeonCoreSet)
-        .before(hud::HudCoreSet)
-        .run_if(in_state(GameState::InGame));
-
-    if game_mode(GameMode::SinglePlayer) {
-        app.add_systems(
-            Update,
-            core_systems.run_if(|| game_mode(GameMode::SinglePlayer)),
-        );
-    } else {
+    if !game_mode(GameMode::SinglePlayer) {
         ggrs_setup(&mut app);
-
-        app.add_systems(GgrsSchedule, core_systems);
     }
 
     app.run();
