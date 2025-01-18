@@ -6,7 +6,6 @@ mod hud;
 mod monsters;
 mod player;
 mod startup;
-mod systems;
 
 pub use common::{fov, health};
 pub use startup::{assets, config};
@@ -16,7 +15,6 @@ use bevy_ggrs::{GgrsApp, GgrsPlugin};
 use components::MoveThrottle;
 use game_states::GameState;
 use startup::config::{game_mode, GameMode};
-use systems::*;
 
 fn main() {
     let mut app = App::new();
@@ -46,8 +44,6 @@ fn main() {
         player::PlayerPlugin,
         startup::StartupPlugin,
     ));
-
-    app.add_systems(OnEnter(GameState::GameOver), game_over);
 
     if !game_mode(GameMode::SinglePlayer) {
         ggrs_setup(&mut app);

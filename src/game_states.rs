@@ -1,3 +1,4 @@
+mod game_over;
 mod plugin;
 
 pub use plugin::GameStatesPlugin;
