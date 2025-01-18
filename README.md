@@ -7,7 +7,7 @@ But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] reorg cleanup
-  - [ ] events plugin for all relevant modules in events mod
+  - [x] events plugin for all relevant modules in events mod
   - [ ] system sets x-ref to each other
   - [ ] Helper for core_systems
 - [ ] healing potions

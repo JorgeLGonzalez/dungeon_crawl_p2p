@@ -1,6 +1,17 @@
 use crate::health::DamageUnit;
 use bevy::prelude::*;
 
+pub struct PlayerEventsPlugin;
+
+impl Plugin for PlayerEventsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<PlayerAttacksEvent>()
+            .add_event::<PlayerMovesEvent>()
+            .add_event::<PlayerMoveIntentEvent>()
+            .add_event::<StopMovingEvent>();
+    }
+}
+
 /// Event: Player attacks monster
 #[derive(Event)]
 pub struct PlayerAttacksEvent {

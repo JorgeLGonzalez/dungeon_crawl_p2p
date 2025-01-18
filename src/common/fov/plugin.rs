@@ -1,4 +1,4 @@
-use super::{recalculate_fov::recalculate_fov, RecalculateFovEvent};
+use super::recalculate_fov::recalculate_fov;
 use crate::{dungeon, hud, monsters, player, prelude::*};
 use bevy_ggrs::GgrsSchedule;
 
@@ -6,8 +6,6 @@ pub struct FovPlugin;
 
 impl Plugin for FovPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<RecalculateFovEvent>();
-
         let core_systems = recalculate_fov
             .before(hud::HudCoreSet)
             .before(dungeon::DungeonCoreSet)

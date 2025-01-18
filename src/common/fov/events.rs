@@ -1,5 +1,13 @@
 use bevy::prelude::*;
 
+pub struct FovEventsPlugin;
+
+impl Plugin for FovEventsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<RecalculateFovEvent>();
+    }
+}
+
 #[derive(Event)]
 pub struct RecalculateFovEvent {
     pub entity: Entity,

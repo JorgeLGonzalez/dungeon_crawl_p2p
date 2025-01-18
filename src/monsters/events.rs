@@ -1,6 +1,16 @@
 use crate::health::DamageUnit;
 use bevy::prelude::*;
 
+pub struct MonstersEventsPlugin;
+
+impl Plugin for MonstersEventsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_event::<MonsterActedEvent>()
+            .add_event::<MonsterAttacksEvent>()
+            .add_event::<MonsterMovesEvent>();
+    }
+}
+
 #[derive(Event)]
 pub struct MonsterActedEvent {
     pub monster: Entity,

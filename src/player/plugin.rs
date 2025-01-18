@@ -1,7 +1,6 @@
 use super::{
     camera::{follow_with_camera, setup_camera},
     components::{MoveThrottle, Player},
-    events::*,
     player_actions::*,
     spawn_players::spawn_players,
 };
@@ -20,14 +19,10 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<PlayerAttacksEvent>()
-            .add_event::<PlayerMovesEvent>()
-            .add_event::<PlayerMoveIntentEvent>()
-            .add_event::<StopMovingEvent>()
-            .add_systems(
-                OnEnter(GameState::InGame),
-                (spawn_players, setup_camera).after(SpawnDungeonSet),
-            );
+        app.add_systems(
+            OnEnter(GameState::InGame),
+            (spawn_players, setup_camera).after(SpawnDungeonSet),
+        );
 
         let core_systems = (
             do_player_action,

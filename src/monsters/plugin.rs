@@ -1,6 +1,5 @@
 use super::{
     components::{LastAction, Monster},
-    events::*,
     monster_actions::*,
     spawn_monsters::spawn_monsters,
 };
@@ -18,14 +17,10 @@ pub struct MonstersPlugin;
 
 impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<MonsterActedEvent>()
-            .add_event::<MonsterAttacksEvent>()
-            .add_event::<MonsterMovesEvent>()
-            .init_resource::<MonsterMoveTracker>()
-            .add_systems(
-                OnEnter(GameState::InGame),
-                spawn_monsters.after(dungeon::SpawnDungeonSet),
-            );
+        app.init_resource::<MonsterMoveTracker>().add_systems(
+            OnEnter(GameState::InGame),
+            spawn_monsters.after(dungeon::SpawnDungeonSet),
+        );
 
         let core_systems = (
             do_monsters_action,
