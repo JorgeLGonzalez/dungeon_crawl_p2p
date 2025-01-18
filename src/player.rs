@@ -6,7 +6,6 @@ mod player_actions;
 mod plugin;
 mod spawn_players;
 
-pub use components::{Player, PlayerCamera, PlayerId};
+pub use components::{MoveThrottle, Obstacle, Player, PlayerCamera, PlayerId};
 pub use local_player::{LocalPlayer, PlayersQuery};
-
 pub use plugin::{PlayerCoreSet, PlayerPlugin};

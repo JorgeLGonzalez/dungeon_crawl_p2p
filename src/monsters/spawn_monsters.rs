@@ -1,11 +1,11 @@
 use super::components::{LastAction, Monster, MonsterType};
 use crate::{
-    components::Obstacle,
     config::{self, TILE_HEIGHT, TILE_WIDTH},
     dungeon::DungeonMap,
     fov::FieldOfView,
     health::{Damage, Health},
     hud::TooltipLabel,
+    player::Obstacle,
     startup::RandomGenerator,
 };
 use bevy::prelude::*;

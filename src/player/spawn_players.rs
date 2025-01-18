@@ -1,6 +1,8 @@
-use super::{components::Player, local_player::LocalPlayer};
+use super::{
+    components::{Obstacle, Player},
+    local_player::LocalPlayer,
+};
 use crate::{
-    components::Obstacle,
     config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
     dungeon::DungeonMap,
     fov::FieldOfView,

@@ -1,5 +1,4 @@
 mod common;
-mod components;
 mod dungeon;
 mod game_states;
 mod hud;
@@ -12,7 +11,6 @@ pub use startup::{assets, config};
 
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin};
-use components::MoveThrottle;
 use game_states::GameState;
 use startup::config::{game_mode, GameMode};
 
@@ -55,12 +53,8 @@ fn main() {
 /// Register components and resources for GGRS snapshots and rollback
 fn ggrs_setup(app: &mut App) {
     // app.rollback_component_with_clone::<Healing>()
-    app.rollback_component_with_clone::<MoveThrottle>()
-        .rollback_component_with_clone::<Transform>()
-        // .rollback_component_with_copy::<Health>()
+    app.rollback_component_with_clone::<Transform>()
         .rollback_component_with_copy::<monsters::LastAction>()
         .rollback_component_with_copy::<monsters::Monster>()
-        .rollback_component_with_copy::<player::Player>()
-        // .checksum_component_with_hash::<Health>()
-        .checksum_component_with_hash::<MoveThrottle>();
+        .rollback_component_with_copy::<player::Player>();
 }

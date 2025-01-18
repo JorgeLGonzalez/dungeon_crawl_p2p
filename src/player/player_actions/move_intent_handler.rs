@@ -1,9 +1,8 @@
 use super::super::{
-    components::Player,
-    events::{PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent},
+    components::{MoveThrottle, Obstacle, Player},
+    events::{ PlayerAttacksEvent, PlayerMoveIntentEvent, PlayerMovesEvent},
 };
 use crate::{
-    components::{MoveThrottle, Obstacle},
     health::{Damage, DamageUnit},
 };
 use bevy::prelude::*;
