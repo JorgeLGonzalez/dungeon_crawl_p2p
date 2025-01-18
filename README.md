@@ -48,6 +48,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - `dungeon`: Dungeon generation and map
 - `game_states`: The GameState enum and the game_over system
 - [HUD](./src/hud/README.md): Heads-up display, including health bar and tooltips
+- `monsters`: Monsters and their actions
 - [GGRS](./src/startup/ggrs/README.md)
 - [Player Actions](./src/player/player_actions/README.md).
 - [startup](./src/startup/README.md)

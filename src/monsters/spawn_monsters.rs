@@ -1,12 +1,12 @@
-use super::components::{LastAction, Monster, MonsterType};
+use super::{LastAction, Monster, MonsterType};
 use crate::{
+    common::RandomGenerator,
     config::{self, TILE_HEIGHT, TILE_WIDTH},
     dungeon::DungeonMap,
     fov::FieldOfView,
     health::{Damage, Health},
     hud::TooltipLabel,
     player::Obstacle,
-    common::RandomGenerator,
 };
 use bevy::prelude::*;
 use bevy_ggrs::AddRollbackCommandExtension;

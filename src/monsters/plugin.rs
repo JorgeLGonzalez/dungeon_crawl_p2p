@@ -2,7 +2,7 @@ use super::{
     components::{LastAction, Monster},
     events::*,
     monster_actions::*,
-    spawn_monsters,
+    spawn_monsters::spawn_monsters,
 };
 use crate::{
     config::{game_mode, GameMode},
