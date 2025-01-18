@@ -15,7 +15,7 @@ use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin};
 use components::MoveThrottle;
 use game_states::GameState;
-use startup::config::{GameMode, GAME_MODE};
+use startup::config::{game_mode, GameMode};
 use systems::*;
 
 fn main() {
@@ -67,8 +67,4 @@ fn ggrs_setup(app: &mut App) {
         .rollback_component_with_copy::<player::Player>()
         // .checksum_component_with_hash::<Health>()
         .checksum_component_with_hash::<MoveThrottle>();
-}
-
-fn game_mode(mode: GameMode) -> bool {
-    GAME_MODE == mode
 }

@@ -16,6 +16,10 @@ pub enum GameMode {
     SinglePlayer,
 }
 
+pub fn game_mode(mode: GameMode) -> bool {
+    GAME_MODE == mode
+}
+
 // Camera
 pub const CAMERA_RENDER_LAYER: Layer = 0;
 pub const CAMERA_SCALE: f32 = 2.;
