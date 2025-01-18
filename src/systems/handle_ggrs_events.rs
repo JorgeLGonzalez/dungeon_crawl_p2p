@@ -1,5 +1,6 @@
 use crate::{
-    components::{Monster, MoveThrottle},
+    components::MoveThrottle,
+    monsters::Monster,
     player::Player,
     resources::{config::GgrsSessionConfig, DesyncEvent, RandomGenerator},
     GameState,

@@ -1,11 +1,5 @@
-use super::{
-    monster_action_determiner::{MonsterAction, MonsterActionDeterminer},
-    monster_action_params::{MonsterActionParams, MonsterQuery, PlayersQuery, WallQuery},
-};
-use crate::{
-    events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
-    resources::RandomGenerator,
-};
+use super::*;
+use crate::resources::RandomGenerator;
 use bevy::prelude::*;
 
 pub fn do_monsters_action(

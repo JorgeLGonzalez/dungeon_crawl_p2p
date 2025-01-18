@@ -1,9 +1,6 @@
-use super::monster_action_params::{
-    MonsterActionParams, MonsterPositionSet, PlayerPositionMap, WallPositionSet,
-};
+use super::*;
 use crate::{
-    components::{DamageUnit, FieldOfView, LastAction},
-    events::{MonsterActedEvent, MonsterAttacksEvent, MonsterMovesEvent},
+    components::{DamageUnit, FieldOfView},
     resources::{config, RandomCounter, RandomGenerator},
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};

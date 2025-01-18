@@ -1,7 +1,4 @@
-use crate::{
-    components::{LastAction, Monster},
-    events::MonsterActedEvent,
-};
+use super::{LastAction, Monster, MonsterActedEvent};
 use bevy::prelude::*;
 
 pub fn update_last_action(

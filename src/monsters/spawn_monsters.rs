@@ -1,5 +1,6 @@
+use super::components::{LastAction, Monster, MonsterType};
 use crate::{
-    components::{Damage, FieldOfView, Health, LastAction, Monster, MonsterType, Obstacle},
+    components::{Damage, FieldOfView, Health, Obstacle},
     dungeon::DungeonMap,
     hud::TooltipLabel,
     resources::{

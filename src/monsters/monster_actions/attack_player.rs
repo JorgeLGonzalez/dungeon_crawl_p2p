@@ -1,6 +1,6 @@
+use super::MonsterAttacksEvent;
 use crate::{
     components::{Healing, Health},
-    events::MonsterAttacksEvent,
     player::Player,
     resources::config,
     GameState,
