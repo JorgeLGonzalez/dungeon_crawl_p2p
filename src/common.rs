@@ -20,3 +20,7 @@ pub mod health {
     pub use components::{Damage, DamageUnit, Healing, Health, HealthUnit};
     pub use plugin::HealthPlugin;
 }
+
+mod random_generator;
+
+pub use random_generator::{RandomCounter, RandomGenerator};

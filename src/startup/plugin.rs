@@ -1,10 +1,10 @@
 use super::{
     events::{DesyncEvent, SnapshotStateEvent},
     ggrs::{checksum_transform, create_p2p_session, handle_ggrs_events},
-    random_generator::RandomGenerator,
     startup::startup,
 };
 use crate::{
+    common::RandomGenerator,
     config::{game_mode, GameMode},
     hud, GameState,
 };

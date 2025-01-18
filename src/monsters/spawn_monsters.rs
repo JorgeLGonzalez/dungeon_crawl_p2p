@@ -6,7 +6,7 @@ use crate::{
     health::{Damage, Health},
     hud::TooltipLabel,
     player::Obstacle,
-    startup::RandomGenerator,
+    common::RandomGenerator,
 };
 use bevy::prelude::*;
 use bevy_ggrs::AddRollbackCommandExtension;

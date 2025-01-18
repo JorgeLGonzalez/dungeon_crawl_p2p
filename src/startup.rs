@@ -1,6 +1,5 @@
 mod events;
 mod plugin;
-mod random_generator;
 mod startup;
 
 mod ggrs {
@@ -15,4 +14,3 @@ mod ggrs {
 
 pub use events::{DesyncEvent, SnapshotStateEvent};
 pub use plugin::StartupPlugin;
-pub use random_generator::{RandomCounter, RandomGenerator};

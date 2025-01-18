@@ -1,8 +1,8 @@
 use super::{dungeon_map::RandomRoomsBuilder, ExitTile, FloorTile, TileType, WallTile};
 use crate::{
+    common::RandomGenerator,
     config::{self, TILE_HEIGHT, TILE_WIDTH},
     player::Obstacle,
-    startup::RandomGenerator,
 };
 use bevy::prelude::*;
 

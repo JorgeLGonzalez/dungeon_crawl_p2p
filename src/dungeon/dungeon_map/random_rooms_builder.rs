@@ -3,8 +3,7 @@ use super::{
     dungeon_map::DungeonMap,
     room::Room,
 };
-use crate::config::*;
-use crate::startup::RandomGenerator;
+use crate::{common::RandomGenerator, config::*};
 use bevy::log::info;
 use rand::prelude::*;
 

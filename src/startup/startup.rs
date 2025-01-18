@@ -1,5 +1,5 @@
-use super::RandomGenerator;
 use crate::{
+    common::RandomGenerator,
     config::{self, GameMode},
     GameState,
 };
