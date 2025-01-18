@@ -15,7 +15,7 @@ pub struct StartupPlugin;
 
 impl Plugin for StartupPlugin {
     fn build(&self, app: &mut App) {
-        app.init_state::<GameState>().add_loading_state(
+        app.add_loading_state(
             LoadingState::new(GameState::Loading)
                 .continue_to_state(GameState::Startup)
                 .load_collection::<FontAssets>(),

@@ -1,6 +1,7 @@
 mod common;
 mod components;
 mod dungeon;
+mod game_states;
 mod hud;
 mod monsters;
 mod player;
@@ -13,8 +14,8 @@ pub use startup::{assets, config};
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin};
 use components::MoveThrottle;
+use game_states::GameState;
 use startup::config::{GameMode, GAME_MODE};
-use std::hash::Hash;
 use systems::*;
 
 fn main() {
@@ -39,6 +40,7 @@ fn main() {
         fov::FovPlugin,
         health::HealthPlugin,
         hud::HudPlugin,
+        game_states::GameStatesPlugin,
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
         monsters::MonstersPlugin,
         player::PlayerPlugin,
@@ -65,16 +67,6 @@ fn ggrs_setup(app: &mut App) {
         .rollback_component_with_copy::<player::Player>()
         // .checksum_component_with_hash::<Health>()
         .checksum_component_with_hash::<MoveThrottle>();
-}
-
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]
-enum GameState {
-    GameOver,
-    InGame,
-    #[default]
-    Loading,
-    Paused,
-    Startup,
 }
 
 fn game_mode(mode: GameMode) -> bool {
