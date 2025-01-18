@@ -51,7 +51,7 @@ fn main() {
     app.add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
-    let core_systems = (healing, recalculate_fov)
+    let core_systems = recalculate_fov
         .chain()
         .after(player::PlayerCoreSet)
         .after(monsters::MonstersCoreSet)
