@@ -71,8 +71,7 @@ fn main() {
 }
 
 fn add_events(app: &mut App) {
-    app.add_event::<events::RecalculateFovEvent>()
-        .add_event::<events::SnapshotStateEvent>();
+    app.add_event::<events::RecalculateFovEvent>();
 }
 
 /// Register components and resources for GGRS snapshots and rollback

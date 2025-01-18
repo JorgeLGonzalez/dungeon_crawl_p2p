@@ -7,3 +7,14 @@ use bevy_ggrs::ggrs::Frame;
 pub struct DesyncEvent {
     pub frame: Frame,
 }
+
+#[derive(Event)]
+pub struct SnapshotStateEvent {
+    pub player_id: usize,
+}
+
+impl SnapshotStateEvent {
+    pub fn new(player_id: usize) -> Self {
+        Self { player_id }
+    }
+}

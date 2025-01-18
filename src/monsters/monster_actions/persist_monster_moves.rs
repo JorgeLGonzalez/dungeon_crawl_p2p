@@ -1,7 +1,6 @@
 use crate::{
-    events::SnapshotStateEvent,
     monsters::{MonsterMove, MonsterMoveTracker},
-    startup::DesyncEvent,
+    startup::{DesyncEvent, SnapshotStateEvent},
 };
 use bevy::{
     log::{error, info},
