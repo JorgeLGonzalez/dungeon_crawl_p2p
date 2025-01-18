@@ -1,8 +1,6 @@
+use super::super::{DesyncEvent, RandomGenerator};
 use crate::{
-    components::MoveThrottle,
-    monsters::Monster,
-    player::Player,
-    resources::{config::GgrsSessionConfig, DesyncEvent, RandomGenerator},
+    components::MoveThrottle, config::GgrsSessionConfig, monsters::Monster, player::Player,
     GameState,
 };
 use bevy::{

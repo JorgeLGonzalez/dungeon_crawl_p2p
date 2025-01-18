@@ -1,8 +1,6 @@
+use super::RandomGenerator;
 use crate::{
-    resources::{
-        config::{self, GameMode},
-        RandomGenerator,
-    },
+    config::{self, GameMode},
     GameState,
 };
 use bevy::{

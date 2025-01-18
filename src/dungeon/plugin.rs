@@ -1,5 +1,6 @@
 use super::{reveal_cheat, spawn_dungeon, zoom, DungeonEventsPlugin};
-use crate::{game_mode, resources::config::GameMode, GameState};
+use crate::config::GameMode;
+use crate::{game_mode, GameState};
 use bevy::prelude::*;
 use bevy_ggrs::GgrsSchedule;
 

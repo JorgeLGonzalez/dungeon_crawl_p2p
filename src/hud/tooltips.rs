@@ -5,7 +5,8 @@ mod queries;
 mod shower;
 
 use super::components::TooltipUI;
-use crate::resources::{assets::FontAssets, config};
+use crate::assets::FontAssets;
+use crate::config;
 use bevy::{color::palettes::css::WHITE, prelude::*, render::view::RenderLayers};
 use bevy_ggrs::LocalPlayers;
 use determiner::TooltipToggleAction;

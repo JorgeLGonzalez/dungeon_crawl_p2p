@@ -1,5 +1,5 @@
 use super::components::HudCamera;
-use crate::resources::config;
+use crate::config;
 use bevy::{prelude::*, render::view::RenderLayers};
 
 pub fn setup_camera(mut commands: Commands) {

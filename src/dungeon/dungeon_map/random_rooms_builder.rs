@@ -3,10 +3,8 @@ use super::{
     dungeon_map::DungeonMap,
     room::Room,
 };
-use crate::resources::{
-    config::{self, *},
-    RandomGenerator,
-};
+use crate::config::*;
+use crate::startup::RandomGenerator;
 use bevy::log::info;
 use rand::prelude::*;
 
@@ -34,14 +32,14 @@ impl RandomRoomsBuilder {
         self.map.monster_starting_positions = self
             .map
             .spawnable_positions()
-            .choose_multiple(rng, config::NUM_MONSTERS)
+            .choose_multiple(rng, NUM_MONSTERS)
     }
 
     fn add_player_starting_positions(&mut self) {
         self.map
             .player_starting_positions
             .push(self.rooms[0].center());
-        if config::GAME_MODE != GameMode::SinglePlayer {
+        if GAME_MODE != GameMode::SinglePlayer {
             self.map
                 .player_starting_positions
                 .push(self.rooms[1].center());

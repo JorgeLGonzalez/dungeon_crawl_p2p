@@ -1,4 +1,4 @@
-use crate::resources::config;
+use crate::config;
 use bevy::{
     prelude::Component,
     time::{Timer, TimerMode},

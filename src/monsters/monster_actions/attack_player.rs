@@ -1,8 +1,9 @@
 use super::MonsterAttacksEvent;
+use crate::config;
 use crate::{
     components::{Healing, Health},
     player::Player,
-    resources::config,
+
     GameState,
 };
 use bevy::prelude::*;

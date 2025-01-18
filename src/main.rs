@@ -4,18 +4,16 @@ mod events;
 mod hud;
 mod monsters;
 mod player;
-mod resources;
+mod startup;
 mod systems;
 
+pub use startup::assets;
+pub use startup::config;
+
 use bevy::{log::LogPlugin, prelude::*};
-use bevy_asset_loader::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};
-use components::{checksum_transform, Healing, Health, MoveThrottle};
-use resources::{
-    assets::FontAssets,
-    config::{self, GameMode, GAME_MODE},
-    DesyncEvent, RandomGenerator,
-};
+use components::{Healing, Health, MoveThrottle};
+use startup::config::{GameMode, GAME_MODE};
 use std::hash::Hash;
 use systems::*;
 
@@ -42,18 +40,12 @@ fn main() {
         GgrsPlugin::<config::GgrsSessionConfig>::default(),
         monsters::MonstersPlugin,
         player::PlayerPlugin,
-    ))
-    .init_state::<GameState>()
-    .add_loading_state(
-        LoadingState::new(GameState::Loading)
-            .continue_to_state(GameState::Startup)
-            .load_collection::<FontAssets>(),
-    );
+        startup::StartupPlugin,
+    ));
 
     add_events(&mut app);
 
-    app.add_systems(OnEnter(GameState::Startup), startup)
-        .add_systems(OnEnter(GameState::GameOver), game_over);
+    app.add_systems(OnEnter(GameState::GameOver), game_over);
 
     // systems used in both Single Player Update schedule and GgrsScheduled
     let core_systems = (healing, recalculate_fov)
@@ -72,23 +64,14 @@ fn main() {
     } else {
         ggrs_setup(&mut app);
 
-        app.add_systems(GgrsSchedule, core_systems).add_systems(
-            Update,
-            (
-                create_p2p_session
-                    .run_if(in_state(GameState::Startup).and(|| game_mode(GameMode::MultiPlayer))),
-                handle_ggrs_events.run_if(in_state(GameState::InGame)),
-            ),
-        );
+        app.add_systems(GgrsSchedule, core_systems);
     }
 
     app.run();
 }
 
 fn add_events(app: &mut App) {
-    app.add_event::<DesyncEvent>()
-        .add_event::<events::RecalculateFovEvent>()
-        .add_event::<events::SnapshotStateEvent>();
+    app.add_event::<events::RecalculateFovEvent>();
 }
 
 /// Register components and resources for GGRS snapshots and rollback
@@ -100,11 +83,8 @@ fn ggrs_setup(app: &mut App) {
         .rollback_component_with_copy::<monsters::LastAction>()
         .rollback_component_with_copy::<monsters::Monster>()
         .rollback_component_with_copy::<player::Player>()
-        .rollback_resource_with_clone::<RandomGenerator>()
-        .checksum_component::<Transform>(checksum_transform)
         .checksum_component_with_hash::<Health>()
-        .checksum_component_with_hash::<MoveThrottle>()
-        .checksum_resource_with_hash::<RandomGenerator>();
+        .checksum_component_with_hash::<MoveThrottle>();
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]

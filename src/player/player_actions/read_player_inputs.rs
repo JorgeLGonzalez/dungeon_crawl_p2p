@@ -1,5 +1,5 @@
 use super::player_action::PlayerAction;
-use crate::resources::config;
+use crate::config;
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 use bevy_ggrs::{LocalInputs, LocalPlayers};
 

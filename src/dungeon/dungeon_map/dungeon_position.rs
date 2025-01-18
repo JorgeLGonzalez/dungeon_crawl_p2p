@@ -1,4 +1,4 @@
-use crate::resources::config;
+use crate::config;
 use bevy::math::{Vec2, Vec3};
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]

@@ -1,5 +1,6 @@
 use super::MonsterMovesEvent;
-use crate::{dungeon::DungeonPosition, resources::config};
+use crate::config;
+use crate::dungeon::DungeonPosition;
 use bevy::prelude::*;
 use bevy_ggrs::ggrs::Frame;
 use std::collections::VecDeque;
