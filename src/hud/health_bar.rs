@@ -1,6 +1,8 @@
-use super::components::{HealthBar, HealthPointsText};
-use crate::config;
-use crate::player::{LocalPlayer, Player, PlayersQuery};
+use super::{HealthBar, HealthPointsText};
+use crate::{
+    config,
+    player::{LocalPlayer, Player, PlayersQuery},
+};
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 

@@ -46,8 +46,9 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - `random_generator`: Random number generation
   - `events`: Events not clearly associated with any other module (e.g. DesyncEvent, SnapshotStateEvent)
 - `dungeon`: Dungeon generation and map
+- `game_states`: The GameState enum and the game_over system
+- [HUD](./src/hud/README.md): Heads-up display, including health bar and tooltips
 - [GGRS](./src/startup/ggrs/README.md)
-- [HUD](./src/hud/README.md)
 - [Player Actions](./src/player/player_actions/README.md).
 - [startup](./src/startup/README.md)
 
