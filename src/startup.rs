@@ -3,6 +3,7 @@ pub mod config;
 
 mod events;
 mod plugin;
+mod random_generator;
 mod startup;
 
 mod ggrs {
@@ -17,3 +18,4 @@ mod ggrs {
 
 pub use events::DesyncEvent;
 pub use plugin::StartupPlugin;
+pub use random_generator::{RandomCounter, RandomGenerator};

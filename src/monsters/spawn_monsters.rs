@@ -4,7 +4,7 @@ use crate::{
     components::{Damage, FieldOfView, Health, Obstacle},
     dungeon::DungeonMap,
     hud::TooltipLabel,
-    resources::RandomGenerator,
+    startup::RandomGenerator,
 };
 use bevy::prelude::*;
 use bevy_ggrs::AddRollbackCommandExtension;

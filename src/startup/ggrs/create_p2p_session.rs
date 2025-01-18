@@ -1,6 +1,6 @@
 use crate::{
     config::{self, GgrsSessionConfig},
-    resources::RandomGenerator,
+    startup::RandomGenerator,
     GameState,
 };
 use bevy::{

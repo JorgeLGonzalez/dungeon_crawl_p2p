@@ -1,7 +1,7 @@
 use super::dungeon_map::RandomRoomsBuilder;
 use super::{ExitTile, FloorTile, TileType, WallTile};
 use crate::config::{self, TILE_HEIGHT, TILE_WIDTH};
-use crate::{components::Obstacle, resources::RandomGenerator};
+use crate::{components::Obstacle, startup::RandomGenerator};
 use bevy::prelude::*;
 
 pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {

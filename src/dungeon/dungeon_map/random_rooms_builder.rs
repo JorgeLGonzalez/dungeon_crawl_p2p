@@ -4,7 +4,7 @@ use super::{
     room::Room,
 };
 use crate::config::*;
-use crate::resources::RandomGenerator;
+use crate::startup::RandomGenerator;
 use bevy::log::info;
 use rand::prelude::*;
 

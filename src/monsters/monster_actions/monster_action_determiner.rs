@@ -2,7 +2,7 @@ use super::*;
 use crate::config;
 use crate::{
     components::{DamageUnit, FieldOfView},
-    resources::{RandomCounter, RandomGenerator},
+    startup::{RandomCounter, RandomGenerator},
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 

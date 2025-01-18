@@ -2,6 +2,7 @@ use super::{
     assets::FontAssets,
     events::DesyncEvent,
     ggrs::{checksum_transform, create_p2p_session, handle_ggrs_events},
+    random_generator::RandomGenerator,
     startup::startup,
 };
 use crate::config::GameMode;
@@ -20,11 +21,14 @@ impl Plugin for StartupPlugin {
                 .load_collection::<FontAssets>(),
         );
 
-        app.add_event::<DesyncEvent>()
-            .add_systems(OnEnter(GameState::Startup), startup);
+        app.add_systems(OnEnter(GameState::Startup), startup);
 
         if !game_mode(GameMode::SinglePlayer) {
-            app.checksum_component::<Transform>(checksum_transform);
+            app.add_event::<DesyncEvent>();
+
+            app.rollback_resource_with_clone::<RandomGenerator>()
+                .checksum_resource_with_hash::<RandomGenerator>()
+                .checksum_component::<Transform>(checksum_transform);
 
             app.add_systems(
                 Update,

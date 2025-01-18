@@ -4,7 +4,6 @@ mod events;
 mod hud;
 mod monsters;
 mod player;
-mod resources;
 mod startup;
 mod systems;
 
@@ -14,7 +13,6 @@ pub use startup::config;
 use bevy::{log::LogPlugin, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsPlugin, GgrsSchedule};
 use components::{Healing, Health, MoveThrottle};
-use resources::RandomGenerator;
 use startup::config::{GameMode, GAME_MODE};
 use std::hash::Hash;
 use systems::*;
@@ -86,10 +84,8 @@ fn ggrs_setup(app: &mut App) {
         .rollback_component_with_copy::<monsters::LastAction>()
         .rollback_component_with_copy::<monsters::Monster>()
         .rollback_component_with_copy::<player::Player>()
-        .rollback_resource_with_clone::<RandomGenerator>()
         .checksum_component_with_hash::<Health>()
-        .checksum_component_with_hash::<MoveThrottle>()
-        .checksum_resource_with_hash::<RandomGenerator>();
+        .checksum_component_with_hash::<MoveThrottle>();
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]
