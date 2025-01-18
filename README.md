@@ -6,9 +6,9 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [x] only show other player when in FOV
-- [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
-  - [x] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
+- [ ] reorg cleanup
+  - [ ] events plugin for all relevant modules in events mod
+  - [ ] Helper for core_systems
 - [ ] healing potions
 - [ ] inventory and item usage
 - [ ] data driven dungeon monsters and items
@@ -38,8 +38,14 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] Browser tab title
 
-## See Also
+## Main Modules
 
+- `common`: Functionality shared among multiple other modules:
+  - `fov`: Field of view calculations
+  - `health`: Health, healing, damage
+  - `random_generator`: Random number generation
+  - `events`: Events not clearly associated with any other module (e.g. DesyncEvent, SnapshotStateEvent)
+- `dungeon`: Dungeon generation and map
 - [GGRS](./src/startup/ggrs/README.md)
 - [HUD](./src/hud/README.md)
 - [Player Actions](./src/player/player_actions/README.md).
@@ -105,6 +111,9 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] map revealer debug key
 - [x] zoom in/out
   - [x] HUD should not change. Does this mean a different camera or?
+- [x] only show other player when in FOV
+- [x] reorg game project to be feature based. core, player, monster, dungeon, etc...
+  - [x] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
 
 ### Archived Issues
 

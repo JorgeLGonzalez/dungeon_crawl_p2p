@@ -1,8 +1,4 @@
-use super::{
-    super::{DungeonPosition, TileType},
-    dungeon_map::DungeonMap,
-    room::Room,
-};
+use super::{DungeonMap, DungeonPosition, Room, TileType};
 use crate::{common::RandomGenerator, config::*};
 use bevy::log::info;
 use rand::prelude::*;
