@@ -5,10 +5,23 @@ pub struct PlayerEventsPlugin;
 
 impl Plugin for PlayerEventsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<PlayerAttacksEvent>()
+        app.add_event::<GrabItemEvent>()
+            .add_event::<PlayerAttacksEvent>()
             .add_event::<PlayerMovesEvent>()
             .add_event::<PlayerMoveIntentEvent>()
             .add_event::<StopMovingEvent>();
+    }
+}
+
+#[derive(Event)]
+pub struct GrabItemEvent {
+    pub player: Entity,
+    pub player_id: usize,
+}
+
+impl GrabItemEvent {
+    pub fn new(player: Entity, player_id: usize) -> Self {
+        Self { player, player_id }
     }
 }
 

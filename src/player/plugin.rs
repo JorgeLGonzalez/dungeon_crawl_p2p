@@ -35,6 +35,7 @@ impl Plugin for PlayerPlugin {
             attack_monster,
             move_player,
             follow_with_camera,
+            grab_item,
         )
             .in_set(PlayerCoreSet)
             .chain()

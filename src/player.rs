@@ -14,6 +14,7 @@ mod local_player;
 mod player_actions {
     mod attack_monster;
     mod do_player_action;
+    mod grab_item;
     mod handle_move_intent;
     mod move_intent_handler;
     mod move_player;
@@ -24,6 +25,7 @@ mod player_actions {
 
     pub(super) use attack_monster::attack_monster;
     pub(super) use do_player_action::do_player_action;
+    pub(super) use grab_item::grab_item;
     pub(super) use handle_move_intent::handle_move_intent;
     pub(super) use move_player::move_player;
     pub(super) use player_action::PlayerAction;

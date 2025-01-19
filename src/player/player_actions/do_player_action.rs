@@ -1,4 +1,4 @@
-use super::{Player, PlayerAction, PlayerMoveIntentEvent, StopMovingEvent};
+use super::*;
 use crate::{
     common::SnapshotStateEvent,
     config::{self, GameMode},
@@ -13,6 +13,7 @@ use bevy_ggrs::PlayerInputs;
 /// In single-player mode, there's only one local player so inputs are read directly
 /// from the Bevy [`ButtonInput`] resources
 pub fn do_player_action(
+    mut grab_event: EventWriter<GrabItemEvent>,
     mut move_event: EventWriter<PlayerMoveIntentEvent>,
     mut snapshot_event: EventWriter<SnapshotStateEvent>,
     mut reveal_event: EventWriter<RevealDungeonCheatEvent>,
@@ -32,6 +33,9 @@ pub fn do_player_action(
         };
 
         match action {
+            PlayerAction::GrabItem => {
+                grab_event.send(GrabItemEvent::new(player_entity, player.id));
+            }
             PlayerAction::Move(dir) => {
                 move_event.send(PlayerMoveIntentEvent::new(
                     player_entity,

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum PlayerAction {
+    GrabItem,
     Move(MoveDirection),
     #[default]
     None,
@@ -22,6 +23,7 @@ impl From<u8> for PlayerAction {
             3 => PlayerAction::Move(MoveDirection::Left),
             4 => PlayerAction::Move(MoveDirection::Right),
             5 => PlayerAction::StopMoving,
+            6 => PlayerAction::GrabItem,
             50 => PlayerAction::ZoomIn,
             51 => PlayerAction::ZoomOut,
             100 => PlayerAction::Snapshot,
@@ -43,6 +45,10 @@ impl From<&ButtonInput<KeyCode>> for PlayerAction {
                     .iter()
                     .find(|(key, _)| keys.just_released(*key))
                     .map(|_| PlayerAction::StopMoving)
+            })
+            .or_else(|| {
+                keys.just_released(KeyCode::KeyG)
+                    .then_some(PlayerAction::GrabItem)
             })
             .or_else(|| {
                 keys.just_released(KeyCode::KeyM)
@@ -74,6 +80,7 @@ impl Into<u8> for PlayerAction {
             PlayerAction::Move(MoveDirection::Down) => 2,
             PlayerAction::Move(MoveDirection::Left) => 3,
             PlayerAction::Move(MoveDirection::Right) => 4,
+            PlayerAction::GrabItem => 6,
             PlayerAction::RevealDungeonCheat => 101,
             PlayerAction::StopMoving => 5,
             PlayerAction::Snapshot => 100,

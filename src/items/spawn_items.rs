@@ -17,7 +17,7 @@ pub fn spawn_items(
             },
             item.tooltip(),
             Transform::from_translation(pos.to_vec3(config::ITEM_Z_LAYER)),
-            // Visibility::Hidden,
+            Visibility::Hidden,
         ));
     }
 }
