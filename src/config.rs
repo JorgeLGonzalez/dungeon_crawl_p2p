@@ -39,6 +39,9 @@ pub const VIEWPORT_HEIGHT: f32 = 20.;
 // HUD
 pub const HUD_CAMERA_RENDER_LAYER: Layer = 1;
 
+// Items
+pub const ITEM_Z_LAYER: f32 = 80.;
+
 // Monsters
 pub const MONSTER_FOV_RADIUS: FovRadius = 6;
 pub const MONSTER_Z_LAYER: f32 = 90.;
@@ -65,6 +68,7 @@ pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 
 // RandomRoomsBuilder settings
+pub const NUM_ITEMS: usize = 20;
 pub const NUM_MONSTERS: usize = 30;
 pub const NUM_ROOMS: usize = 20;
 pub const ROOM_MAX_WIDTH: usize = 10;

@@ -3,6 +3,7 @@ pub mod config;
 mod dungeon;
 mod game_states;
 mod hud;
+mod items;
 mod monsters;
 mod player;
 mod startup;
@@ -47,6 +48,7 @@ fn main() {
             fov::FovPlugin,
             health::HealthPlugin,
             hud::HudPlugin,
+            items::ItemsPlugin,
             game_states::GameStatesPlugin,
             GgrsPlugin::<config::GgrsSessionConfig>::default(),
             monsters::MonstersPlugin,

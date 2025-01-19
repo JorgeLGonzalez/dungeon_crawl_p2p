@@ -6,6 +6,7 @@ const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
 
 #[derive(Resource)]
 pub struct DungeonMap {
+    pub item_positions: Vec<DungeonPosition>,
     pub monster_starting_positions: Vec<DungeonPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
     pub tiles: Vec<TileType>,
@@ -14,6 +15,7 @@ pub struct DungeonMap {
 impl DungeonMap {
     pub fn new() -> Self {
         Self {
+            item_positions: vec![],
             monster_starting_positions: vec![],
             player_starting_positions: vec![],
             tiles: vec![TileType::Wall; NUM_TILES],

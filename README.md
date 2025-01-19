@@ -11,7 +11,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] data driven dungeon monsters and items
 - [ ] weapons
 - [ ] deploy such that it can be used across devices (ideally over internet)
-- [ ] cellular automat dungeon generation
+- [ ] cellular automata dungeon generation
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
