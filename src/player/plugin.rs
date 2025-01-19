@@ -8,6 +8,7 @@ use super::{
 use crate::{
     config::{game_mode, GameMode},
     dungeon::{DungeonCoreSet, SpawnDungeonSet},
+    monsters::MonstersCoreSet,
     GameState,
 };
 use bevy::prelude::*;
@@ -36,9 +37,9 @@ impl Plugin for PlayerPlugin {
         )
             .in_set(PlayerCoreSet)
             .chain()
+            .run_if(in_state(GameState::InGame))
             .ambiguous_with(DungeonCoreSet)
-            .ambiguous_with(crate::hud::HudCoreSet)
-            .run_if(in_state(GameState::InGame));
+            .before(MonstersCoreSet);
 
         if game_mode(GameMode::SinglePlayer) {
             app.add_systems(Update, core_systems);

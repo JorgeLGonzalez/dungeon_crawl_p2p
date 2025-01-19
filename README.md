@@ -8,7 +8,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] reorg cleanup
   - [x] events plugin for all relevant modules in events mod
-  - [ ] system sets x-ref to each other
+  - [x] system sets x-ref to each other
   - [ ] Helper for core_systems
 - [ ] healing potions
 - [ ] inventory and item usage
@@ -52,6 +52,27 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - `monsters`: Monsters and their actions
 - [Player](./src/player/README.md).
 - [startup](./src/startup/README.md), including GGRS for multiplayer
+
+### System Sequencing
+
+The `GameState::InGame` is by far the most complex and is handled differently in `GameMode::SinglePlayer` vs `GameMode::P2P` (or `GameMode::SyncTest`). In single player mode, the systems run in the `Update` schedule while in P2P mode, they run in the `GgrsSchedule` schedule (plus a special ReadInputs schedule for handling inputs from both the local and remote players).
+
+The sequencing is also non-trivial and diagrammed below:
+
+```mermaid
+flowchart TD
+  Health-- before -->Player
+  Player-- before -->Monsters
+  Monsters-- before -->HUD
+  Monsters-- before -->FOV
+```
+
+- Health controls the healing of players and monsters so we calculate before any combat.
+- Player systems run before monsters to give them a theoretical advantage.
+- Monster systems run before HUD and FOV.
+- HUD and FOV run last can can run in parallel, but they must follow monster, player and health systems. FOV is affected by player and monster movements. HUD is affected by player health and actions.
+
+- Dungeon systems just control the dungeon reveal and map zoom level so they can run in parallel with everything else.
 
 ## Archived TODO
 

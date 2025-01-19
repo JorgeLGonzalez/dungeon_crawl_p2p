@@ -13,7 +13,7 @@ pub mod fov {
 
     pub use components::{FieldOfView, FovRadius, FovTileMap};
     pub use events::RecalculateFovEvent;
-    pub use plugin::FovPlugin;
+    pub use plugin::{FovCoreSet, FovPlugin};
 }
 
 pub mod health {

@@ -2,7 +2,7 @@ use super::{
     components::{Healing, Health},
     healing::healing,
 };
-use crate::{monsters::MonstersCoreSet, player::PlayerCoreSet, prelude::*};
+use crate::{player::PlayerCoreSet, prelude::*};
 use bevy_ggrs::{GgrsApp, GgrsSchedule};
 
 pub struct HealthPlugin;
@@ -11,8 +11,7 @@ impl Plugin for HealthPlugin {
     fn build(&self, app: &mut App) {
         let core_systems = healing
             .run_if(in_state(GameState::InGame))
-            .before(PlayerCoreSet)
-            .before(MonstersCoreSet);
+            .before(PlayerCoreSet);
 
         if game_mode(GameMode::SinglePlayer) {
             app.add_systems(Update, core_systems);

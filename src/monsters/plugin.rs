@@ -6,7 +6,10 @@ use super::{
 };
 use crate::{
     config::{game_mode, GameMode},
-    dungeon, player, GameState,
+    dungeon::{DungeonCoreSet, SpawnDungeonSet},
+    fov::FovCoreSet,
+    hud::HudCoreSet,
+    GameState,
 };
 use bevy::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsSchedule};
@@ -20,7 +23,7 @@ impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<MonsterMoveTracker>().add_systems(
             OnEnter(GameState::InGame),
-            spawn_monsters.after(dungeon::SpawnDungeonSet),
+            spawn_monsters.after(SpawnDungeonSet),
         );
 
         let core_systems = (
@@ -31,9 +34,10 @@ impl Plugin for MonstersPlugin {
         )
             .in_set(MonstersCoreSet)
             .chain()
-            .after(player::PlayerCoreSet)
-            .before(dungeon::DungeonCoreSet)
-            .run_if(in_state(GameState::InGame));
+            .run_if(in_state(GameState::InGame))
+            .ambiguous_with(DungeonCoreSet)
+            .before(FovCoreSet)
+            .before(HudCoreSet);
 
         if game_mode(GameMode::SinglePlayer) {
             app.add_systems(Update, core_systems);
