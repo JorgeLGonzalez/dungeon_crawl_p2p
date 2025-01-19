@@ -8,9 +8,9 @@ mod dungeon_map {
 
     pub use dungeon_map::DungeonMap;
     pub use dungeon_position::DungeonPosition;
-    pub use dungeon_tile::{DungeonTile, TileType};
-    pub use random_rooms_builder::RandomRoomsBuilder;
-    pub use room::Room;
+    pub(super) use dungeon_tile::{DungeonTile, TileType};
+    pub(super) use random_rooms_builder::RandomRoomsBuilder;
+    pub(super) use room::Room;
 }
 mod events;
 mod illuminator;

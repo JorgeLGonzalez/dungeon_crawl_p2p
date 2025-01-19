@@ -2,25 +2,19 @@ use super::{
     components::{Healing, Health},
     healing::healing,
 };
-use crate::{player::PlayerCoreSet, prelude::*};
-use bevy_ggrs::{GgrsApp, GgrsSchedule};
+use crate::{common, player::PlayerCoreSet, prelude::*};
+use bevy_ggrs::GgrsApp;
 
 pub struct HealthPlugin;
 
 impl Plugin for HealthPlugin {
     fn build(&self, app: &mut App) {
-        let core_systems = healing
-            .run_if(in_state(GameState::InGame))
-            .before(PlayerCoreSet);
+        common::add_core_systems(app, healing.before(PlayerCoreSet));
 
-        if game_mode(GameMode::SinglePlayer) {
-            app.add_systems(Update, core_systems);
-        } else {
+        if !game_mode(GameMode::SinglePlayer) {
             app.rollback_component_with_clone::<Healing>()
                 .rollback_component_with_copy::<Health>()
                 .checksum_component_with_hash::<Health>();
-
-            app.add_systems(GgrsSchedule, core_systems);
         }
     }
 }

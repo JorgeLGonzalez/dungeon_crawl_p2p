@@ -5,6 +5,7 @@ use super::{
     spawn_monsters::spawn_monsters,
 };
 use crate::{
+    common,
     config::{game_mode, GameMode},
     dungeon::{DungeonCoreSet, SpawnDungeonSet},
     fov::FovCoreSet,
@@ -39,14 +40,13 @@ impl Plugin for MonstersPlugin {
             .before(FovCoreSet)
             .before(HudCoreSet);
 
-        if game_mode(GameMode::SinglePlayer) {
-            app.add_systems(Update, core_systems);
-        } else {
+        common::add_core_systems(app, core_systems);
+
+        if !game_mode(GameMode::SinglePlayer) {
             app.rollback_component_with_copy::<LastAction>()
                 .rollback_component_with_copy::<Monster>();
 
-            app.add_systems(GgrsSchedule, core_systems)
-                .add_systems(GgrsSchedule, persist_monster_moves.after(move_monster));
+            app.add_systems(GgrsSchedule, persist_monster_moves.after(move_monster));
         }
 
         app.add_plugins(MonstersEventsPlugin);

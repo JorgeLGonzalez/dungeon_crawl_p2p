@@ -1,6 +1,5 @@
 use super::{events::FovEventsPlugin, recalculate_fov::recalculate_fov};
-use crate::{dungeon, hud, prelude::*};
-use bevy_ggrs::GgrsSchedule;
+use crate::{common, dungeon, hud, prelude::*};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct FovCoreSet;
@@ -15,14 +14,7 @@ impl Plugin for FovPlugin {
             .ambiguous_with(hud::HudCoreSet)
             .ambiguous_with(dungeon::DungeonCoreSet);
 
-        if game_mode(GameMode::SinglePlayer) {
-            app.add_systems(
-                Update,
-                core_systems.run_if(|| game_mode(GameMode::SinglePlayer)),
-            );
-        } else {
-            app.add_systems(GgrsSchedule, core_systems);
-        }
+        common::add_core_systems(app, core_systems);
 
         app.add_plugins(FovEventsPlugin);
     }

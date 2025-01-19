@@ -1,6 +1,5 @@
-use super::{health_bar, setup_camera, setup_health_bar, spawn_tooltip, tooltip};
-use crate::prelude::*;
-use bevy_ggrs::GgrsSchedule;
+use super::*;
+use crate::{common, prelude::*};
 
 #[derive(SystemSet, Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct HudStartupSet;
@@ -17,18 +16,6 @@ impl Plugin for HudPlugin {
             (setup_camera, setup_health_bar, spawn_tooltip).in_set(HudStartupSet),
         );
 
-        let core_systems = (health_bar, tooltip)
-            .chain()
-            .in_set(HudCoreSet)
-            .run_if(in_state(GameState::InGame));
-
-        if game_mode(GameMode::SinglePlayer) {
-            app.add_systems(
-                Update,
-                core_systems.run_if(|| game_mode(GameMode::SinglePlayer)),
-            );
-        } else {
-            app.add_systems(GgrsSchedule, core_systems);
-        }
+        common::add_core_systems(app, (health_bar, tooltip).chain().in_set(HudCoreSet));
     }
 }

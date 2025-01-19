@@ -1,6 +1,7 @@
+mod add_core_systems;
 mod events;
-mod random_generator;
 mod plugin;
+mod random_generator;
 
 pub mod fov {
     mod components;
@@ -25,6 +26,7 @@ pub mod health {
     pub use plugin::HealthPlugin;
 }
 
-pub use events::{ DesyncEvent, SnapshotStateEvent};
-pub use random_generator::{RandomCounter, RandomGenerator};
+pub use add_core_systems::add_core_systems;
+pub use events::{DesyncEvent, SnapshotStateEvent};
 pub use plugin::CommonPlugin;
+pub use random_generator::{RandomCounter, RandomGenerator};
