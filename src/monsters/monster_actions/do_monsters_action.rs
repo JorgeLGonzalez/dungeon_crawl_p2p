@@ -1,5 +1,5 @@
 use super::*;
-use crate::startup::RandomGenerator;
+use crate::common::RandomGenerator;
 use bevy::prelude::*;
 
 pub fn do_monsters_action(

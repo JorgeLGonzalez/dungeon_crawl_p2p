@@ -1,9 +1,9 @@
 use super::*;
 use crate::{
+    common::{RandomCounter, RandomGenerator},
     config,
     fov::FieldOfView,
     health::DamageUnit,
-    startup::{RandomCounter, RandomGenerator},
 };
 use bevy::{prelude::*, utils::hashbrown::HashSet};
 

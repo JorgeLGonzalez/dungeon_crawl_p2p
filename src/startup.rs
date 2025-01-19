@@ -1,9 +1,4 @@
-pub mod assets;
-pub mod config;
-
-mod events;
 mod plugin;
-mod random_generator;
 mod startup;
 
 mod ggrs {
@@ -16,6 +11,4 @@ mod ggrs {
     pub(super) use handle_ggrs_events::handle_ggrs_events;
 }
 
-pub use events::{DesyncEvent, SnapshotStateEvent};
 pub use plugin::StartupPlugin;
-pub use random_generator::{RandomCounter, RandomGenerator};

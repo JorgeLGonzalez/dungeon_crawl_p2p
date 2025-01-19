@@ -1,4 +1,4 @@
-use crate::components::MoveThrottle;
+use super::MoveThrottle;
 use bevy::prelude::*;
 
 /// Tick movement throttle (i.e. advance timer) and remove if timer has finished.

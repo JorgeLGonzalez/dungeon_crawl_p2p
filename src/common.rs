@@ -1,3 +1,6 @@
+mod events;
+mod random_generator;
+
 pub mod fov {
     mod components;
     mod events;
@@ -20,3 +23,6 @@ pub mod health {
     pub use components::{Damage, DamageUnit, Healing, Health, HealthUnit};
     pub use plugin::HealthPlugin;
 }
+
+pub use events::{DesyncEvent, SnapshotStateEvent};
+pub use random_generator::{RandomCounter, RandomGenerator};

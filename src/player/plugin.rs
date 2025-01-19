@@ -1,11 +1,17 @@
-use super::camera::{follow_with_camera, setup_camera};
-use super::events::*;
-use super::player_actions::*;
-use super::spawn_players::spawn_players;
-use crate::dungeon::SpawnDungeonSet;
-use crate::{dungeon, game_mode, GameMode, GameState};
+use super::{
+    camera::{follow_with_camera, setup_camera},
+    components::{MoveThrottle, Player},
+    events::*,
+    player_actions::*,
+    spawn_players::spawn_players,
+};
+use crate::{
+    config::{game_mode, GameMode},
+    dungeon::{DungeonCoreSet, SpawnDungeonSet},
+    GameState,
+};
 use bevy::prelude::*;
-use bevy_ggrs::{GgrsSchedule, ReadInputs};
+use bevy_ggrs::{GgrsApp, GgrsSchedule, ReadInputs};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct PlayerCoreSet;
@@ -34,13 +40,17 @@ impl Plugin for PlayerPlugin {
         )
             .in_set(PlayerCoreSet)
             .chain()
-            .ambiguous_with(dungeon::DungeonCoreSet)
+            .ambiguous_with(DungeonCoreSet)
             .ambiguous_with(crate::hud::HudCoreSet)
             .run_if(in_state(GameState::InGame));
 
         if game_mode(GameMode::SinglePlayer) {
             app.add_systems(Update, core_systems);
         } else {
+            app.rollback_component_with_clone::<MoveThrottle>()
+                .rollback_component_with_copy::<Player>()
+                .checksum_component_with_hash::<MoveThrottle>();
+
             app.add_systems(ReadInputs, read_player_inputs)
                 .add_systems(GgrsSchedule, core_systems);
         }
