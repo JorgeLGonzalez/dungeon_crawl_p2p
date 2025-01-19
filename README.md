@@ -7,6 +7,7 @@ But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] healing potions
+  - [ ] toggle visibility
 - [ ] inventory and item usage
 - [ ] data driven dungeon monsters and items
 - [ ] weapons

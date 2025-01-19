@@ -54,7 +54,7 @@ pub const MONSTER_TRACKER_AUTO_SAVE_ENABLED: bool = false;
 pub const MONSTER_TRACKER_AUTO_SAVE_THRESHOLD: usize = 100;
 
 // Player
-pub const PLAYER_0_COLOR: Color = Color::srgb(0., 0., 1.);
+pub const PLAYER_0_COLOR: Color = Color::srgb(1., 1., 1.);
 pub const PLAYER_1_COLOR: Color = Color::srgb(0., 1., 0.);
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
 pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;

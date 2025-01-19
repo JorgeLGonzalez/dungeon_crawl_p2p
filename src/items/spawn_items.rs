@@ -11,11 +11,11 @@ pub fn spawn_items(
         commands.spawn((
             item,
             Sprite {
-                color: Color::srgb(1., 1., 1.),
+                color: item.color(),
                 custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),
                 ..default()
             },
-            // tooltip
+            item.tooltip(),
             Transform::from_translation(pos.to_vec3(config::ITEM_Z_LAYER)),
             // Visibility::Hidden,
         ));
