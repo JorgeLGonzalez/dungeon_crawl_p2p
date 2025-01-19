@@ -1,4 +1,4 @@
-use super::MagicItem;
+use super::{Grabbable, MagicItem};
 use crate::prelude::*;
 
 pub fn spawn_items(
@@ -10,6 +10,7 @@ pub fn spawn_items(
         let item = random_item(&mut rng);
         commands.spawn((
             item,
+            Grabbable,
             Sprite {
                 color: item.color(),
                 custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),

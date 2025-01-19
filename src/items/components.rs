@@ -1,5 +1,8 @@
 use crate::{hud::TooltipLabel, prelude::*};
 
+#[derive(Component)]
+pub struct Grabbable;
+
 #[derive(Component, Clone, Copy)]
 pub enum MagicItem {
     HealingPotion,
