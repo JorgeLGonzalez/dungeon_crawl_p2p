@@ -1,6 +1,6 @@
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct FieldOfView {
     pub radius: FovRadius,
     pub visible_tiles: FovTileMap,

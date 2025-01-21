@@ -36,6 +36,29 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 ## Issues
 
+- [ ] If you move the mouse on mac app right when it is starting, it crashes.
+
+```
+thread 'Compute Task Pool (2)' panicked at src/player/player_actions/do_player_action.rs:73:5:
+assertion `left == right` failed: Unexpected player count!
+  left: 0
+ right: 2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+Encountered a panic in system `dungeon_crawl_p2p::player::player_actions::do_player_action::do_player_action`!
+thread 'Compute Task Pool (3)' panicked at src/player/local_player.rs:18:14:
+No local player to follow!
+Encountered a panic in system `dungeon_crawl_p2p::player::camera::follow_player::follow_with_camera`!
+thread 'Compute Task Pool (0)' panicked at src/player/local_player.rs:18:14:
+No local player to follow!
+Encountered a panic in system `dungeon_crawl_p2p::hud::health_bar::health_bar`!
+thread 'Compute Task Pool (2)' panicked at src/hud/tooltips/determiner_builder.rs:69:18:
+No local player to follow!
+Encountered a panic in system `dungeon_crawl_p2p::hud::tooltips::tooltip`!
+Encountered a panic in system `<bevy_ggrs::snapshot::set::SnapshotSetPlugin as bevy_app::plugin::Plugin>::build::{{closure}}`!
+Encountered a panic in system `bevy_ggrs::schedule_systems::run_ggrs_schedules<bevy_ggrs::GgrsConfig<u8, matchbox_protocol::PeerId>>`!
+Encountered a panic in system `bevy_app::main_schedule::Main::run_main`!
+```
+
 - [ ] Browser tab title
 
 ## Main Modules
