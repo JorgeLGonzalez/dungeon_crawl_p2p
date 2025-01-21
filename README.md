@@ -9,7 +9,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] healing potions
   - [x] toggle visibility. It just worked! Nice!
   - [x] grab item
-  - [ ] test with sync. Likely need rollback for this.
+  - [x] test with sync. Likely need rollback for this.
+  - [ ] Issue with G key detection. Seems like you have to hit it multiple times.
 - [ ] inventory and item usage
 - [ ] data driven dungeon monsters and items
 - [ ] weapons

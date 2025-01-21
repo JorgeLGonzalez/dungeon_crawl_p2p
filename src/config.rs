@@ -63,7 +63,7 @@ pub const PLAYER_FOV_RADIUS: FovRadius = 8;
 pub const PLAYER_HEALING_SECONDS: f32 = 10.0;
 pub const PLAYER_HEALTH_MAX: u8 = 10;
 /// Player is invincible for debugging purposes
-pub const PLAYER_IMMORTAL: bool = false;
+pub const PLAYER_IMMORTAL: bool = true;
 pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 
@@ -76,7 +76,7 @@ pub const ROOM_MAX_HEIGHT: usize = 10;
 
 // Matchbox and GGRS
 pub const GGRS_DEBUG: bool = false;
-pub const GGRS_INPUT_DELAY: usize = 2;
+pub const GGRS_INPUT_DELAY: usize = if GGRS_DEBUG { 0 } else { 2 };
 pub const MATCHBOX_ROOM_URL: &str = "ws://127.0.0.1:3536/dungeon_crawl?next=2";
 pub const NUM_PLAYERS: usize = 2;
 
