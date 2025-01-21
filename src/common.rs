@@ -1,4 +1,5 @@
 mod add_core_systems;
+mod debug_ggrs;
 mod events;
 mod plugin;
 mod random_generator;

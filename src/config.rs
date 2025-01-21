@@ -75,6 +75,7 @@ pub const ROOM_MAX_WIDTH: usize = 10;
 pub const ROOM_MAX_HEIGHT: usize = 10;
 
 // Matchbox and GGRS
+pub const GGRS_DEBUG: bool = false;
 pub const GGRS_INPUT_DELAY: usize = 2;
 pub const MATCHBOX_ROOM_URL: &str = "ws://127.0.0.1:3536/dungeon_crawl?next=2";
 pub const NUM_PLAYERS: usize = 2;
