@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use std::hash::Hash;
 use std::time::Duration;
 
-#[derive(Component)]
+#[derive(Component, Clone, Copy, Hash)]
 pub struct Damage(pub DamageUnit);
 
 pub type DamageUnit = u8;

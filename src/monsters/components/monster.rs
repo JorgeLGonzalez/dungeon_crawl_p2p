@@ -1,6 +1,6 @@
 use crate::{hud::TooltipLabel, prelude::*};
 
-#[derive(Component, Clone, Copy, Debug)]
+#[derive(Component, Clone, Copy, Debug, Hash)]
 pub enum Monster {
     Ettin,
     Goblin,
