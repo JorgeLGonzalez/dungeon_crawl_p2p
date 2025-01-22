@@ -1,3 +1,4 @@
+use super::{Inventory, PlayerId};
 use crate::health::DamageUnit;
 use bevy::prelude::*;
 
@@ -9,7 +10,8 @@ impl Plugin for PlayerEventsPlugin {
             .add_event::<PlayerAttacksEvent>()
             .add_event::<PlayerMovesEvent>()
             .add_event::<PlayerMoveIntentEvent>()
-            .add_event::<StopMovingEvent>();
+            .add_event::<StopMovingEvent>()
+            .add_event::<InventoryUpdatedEvent>();
     }
 }
 
@@ -87,5 +89,20 @@ pub struct StopMovingEvent {
 impl StopMovingEvent {
     pub fn new(player: Entity) -> Self {
         Self { player }
+    }
+}
+
+#[derive(Event)]
+pub struct InventoryUpdatedEvent {
+    pub inventory: Inventory,
+    pub player_id: PlayerId,
+}
+
+impl InventoryUpdatedEvent {
+    pub fn new(inventory: Inventory, player_id: PlayerId) -> Self {
+        Self {
+            inventory,
+            player_id,
+        }
     }
 }

@@ -1,6 +1,6 @@
 use super::{
     camera::{follow_with_camera, setup_camera},
-    components::{MoveThrottle, Obstacle, Player},
+    components::{Inventory, MoveThrottle, Obstacle, Player},
     events::PlayerEventsPlugin,
     player_actions::*,
     spawn_players::spawn_players,
@@ -45,7 +45,9 @@ impl Plugin for PlayerPlugin {
         common::add_core_systems(app, core_systems);
 
         if !game_mode(GameMode::SinglePlayer) {
-            app.rollback_component_with_clone::<MoveThrottle>()
+            app.rollback_component_with_clone::<Inventory>()
+                .checksum_component_with_hash::<Inventory>()
+                .rollback_component_with_clone::<MoveThrottle>()
                 .checksum_component_with_hash::<MoveThrottle>()
                 .rollback_component_with_copy::<Player>()
                 .checksum_component_with_hash::<Player>()

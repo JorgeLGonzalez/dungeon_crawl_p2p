@@ -10,7 +10,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] toggle visibility. It just worked! Nice!
   - [x] grab item
   - [x] test with sync. Likely need rollback for this.
-  - [x] Issue with G key detection. Seems like you have to hit it multiple times. This only seems to happen on multi-player wasm, but not on single player wasm nor on mac either single or multi player. It fails to register right at the just_released. Chaging from just_released to pressed does the trick.
+  - [x] Issue with G key detection. Seems like you have to hit it multiple times. This only seems to happen on multi-player wasm, but not on single player wasm nor on mac either single or multi player. It fails to register right at the just_released. Changing from just_released to pressed does the trick.
 - [ ] inventory and item usage
 - [ ] data driven dungeon monsters and items
 - [ ] weapons

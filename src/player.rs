@@ -40,7 +40,8 @@ mod player_actions {
 mod plugin;
 mod spawn_players;
 
-pub use components::{MoveThrottle, Obstacle, Player, PlayerCamera, PlayerId};
+pub use components::{Inventory, MoveThrottle, Obstacle, Player, PlayerCamera, PlayerId};
+pub use events::InventoryUpdatedEvent;
 pub use local_player::{LocalPlayer, PlayersQuery};
 pub use plugin::{PlayerCoreSet, PlayerPlugin};
 
