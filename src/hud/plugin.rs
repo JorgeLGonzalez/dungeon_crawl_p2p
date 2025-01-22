@@ -16,6 +16,14 @@ impl Plugin for HudPlugin {
             (setup_camera, setup_health_bar, spawn_tooltip).in_set(HudStartupSet),
         );
 
-        common::add_core_systems(app, (health_bar, tooltip).chain().in_set(HudCoreSet));
+        common::add_core_systems(
+            app,
+            (
+                health_bar,
+                update_inventory,
+                tooltip.ambiguous_with(health_bar),
+            )
+                .in_set(HudCoreSet),
+        );
     }
 }
