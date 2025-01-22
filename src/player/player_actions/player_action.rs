@@ -47,11 +47,11 @@ impl From<&ButtonInput<KeyCode>> for PlayerAction {
                     .map(|_| PlayerAction::StopMoving)
             })
             .or_else(|| {
-                keys.just_released(KeyCode::KeyG)
+                keys.pressed(KeyCode::KeyG)
                     .then_some(PlayerAction::GrabItem)
             })
             .or_else(|| {
-                keys.just_released(KeyCode::KeyM)
+                keys.pressed(KeyCode::KeyM)
                     .then_some(PlayerAction::RevealDungeonCheat)
             })
             .or_else(|| {
