@@ -1,6 +1,6 @@
 use super::FloorTile;
-use crate::{config, fov::FovTileMap, player::Player};
-use bevy::{prelude::*, utils::hashbrown::HashSet};
+use crate::{fov::FovTileMap, prelude::*};
+use bevy::utils::hashbrown::HashSet;
 
 pub type FloorQuery<'w, 's, 't, 'r, 'v> =
     Query<'w, 's, (&'t Transform, Entity, &'r mut Sprite, &'v mut Visibility), With<FloorTile>>;

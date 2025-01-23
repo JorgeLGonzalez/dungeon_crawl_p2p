@@ -1,4 +1,4 @@
-# Dungeon Crawl P2P
+# Dungeon Crawl **P2P**
 
 Goal is to recreate dungeon crawl in Bevy (using Bevy rendering etc) that works on web and Mac OS and that can be with 2 players. Unclear if it should still be turn-based.
 
@@ -6,9 +6,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [x] only show other player when in FOV
-- [ ] reorg game project to be feature based. core, player, monster, dungeon, etc...
-  - [x] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
 - [ ] healing potions
 - [ ] inventory and item usage
 - [ ] data driven dungeon monsters and items
@@ -38,12 +35,40 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] Browser tab title
 
-## See Also
+## Main Modules
 
-- [GGRS](./src/startup/ggrs/README.md)
-- [HUD](./src/hud/README.md)
-- [Player Actions](./src/player/player_actions/README.md).
-- [startup](./src/startup/README.md)
+- `common`: Functionality shared among multiple other modules:
+  - `fov`: Field of view calculations
+  - `health`: Health, healing, damage
+  - `random_generator`: Random number generation
+  - `events`: Events not clearly associated with any other module (e.g. DesyncEvent, SnapshotStateEvent)
+- `dungeon`: Dungeon generation and map
+- `game_states`: The GameState enum and the game_over system
+- [HUD](./src/hud/README.md): Heads-up display, including health bar and tooltips
+- `monsters`: Monsters and their actions
+- [Player](./src/player/README.md).
+- [startup](./src/startup/README.md), including GGRS for multiplayer
+
+### System Sequencing
+
+The `GameState::InGame` is by far the most complex and is handled differently in `GameMode::SinglePlayer` vs `GameMode::P2P` (or `GameMode::SyncTest`). In single player mode, the systems run in the `Update` schedule while in P2P mode, they run in the `GgrsSchedule` schedule (plus a special ReadInputs schedule for handling inputs from both the local and remote players).
+
+The sequencing is also non-trivial and diagrammed below:
+
+```mermaid
+flowchart TD
+  Health-- before -->Player
+  Player-- before -->Monsters
+  Monsters-- before -->HUD
+  Monsters-- before -->FOV
+```
+
+- Health controls the healing of players and monsters so we calculate before any combat.
+- Player systems run before monsters to give them a theoretical advantage.
+- Monster systems run before HUD and FOV.
+- HUD and FOV run last can can run in parallel, but they must follow monster, player and health systems. FOV is affected by player and monster movements. HUD is affected by player health and actions.
+
+- Dungeon systems just control the dungeon reveal and map zoom level so they can run in parallel with everything else.
 
 ## Archived TODO
 
@@ -105,6 +130,13 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [x] map revealer debug key
 - [x] zoom in/out
   - [x] HUD should not change. Does this mean a different camera or?
+- [x] only show other player when in FOV
+- [x] reorg game project to be feature based. core, player, monster, dungeon, etc...
+  - [x] Look into plugins. Probably each top module should be a plugin that adds systems, events etc
+- [x] reorg cleanup
+  - [x] events plugin for all relevant modules in events mod
+  - [x] system sets x-ref to each other
+  - [x] Helper for core_systems
 
 ### Archived Issues
 

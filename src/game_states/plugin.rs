@@ -1,5 +1,5 @@
-use super::{GameState, game_over::game_over};
-use bevy::prelude::*;
+use super::game_over::game_over;
+use crate::prelude::*;
 
 pub struct GameStatesPlugin;
 

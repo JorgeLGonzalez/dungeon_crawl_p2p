@@ -1,4 +1,6 @@
+mod add_core_systems;
 mod events;
+mod plugin;
 mod random_generator;
 
 pub mod fov {
@@ -12,7 +14,7 @@ pub mod fov {
 
     pub use components::{FieldOfView, FovRadius, FovTileMap};
     pub use events::RecalculateFovEvent;
-    pub use plugin::FovPlugin;
+    pub use plugin::{FovCoreSet, FovPlugin};
 }
 
 pub mod health {
@@ -24,5 +26,7 @@ pub mod health {
     pub use plugin::HealthPlugin;
 }
 
+pub use add_core_systems::add_core_systems;
 pub use events::{DesyncEvent, SnapshotStateEvent};
+pub use plugin::CommonPlugin;
 pub use random_generator::{RandomCounter, RandomGenerator};

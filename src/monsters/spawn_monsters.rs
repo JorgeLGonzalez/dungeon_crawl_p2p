@@ -1,14 +1,10 @@
-use super::components::{LastAction, Monster, MonsterType};
+use super::{LastAction, Monster, MonsterType};
 use crate::{
-    config::{self, TILE_HEIGHT, TILE_WIDTH},
-    dungeon::DungeonMap,
-    fov::FieldOfView,
-    health::{Damage, Health},
+    config::{TILE_HEIGHT, TILE_WIDTH},
     hud::TooltipLabel,
     player::Obstacle,
-    common::RandomGenerator,
+    prelude::*,
 };
-use bevy::prelude::*;
 use bevy_ggrs::AddRollbackCommandExtension;
 
 pub fn spawn_monsters(

@@ -1,4 +1,4 @@
-use super::{dungeon_position::DungeonPosition, dungeon_tile::DungeonTile, TileType};
+use super::{DungeonPosition, DungeonTile, TileType};
 use crate::config::{self, MAP_HEIGHT, MAP_WIDTH};
 use bevy::prelude::Resource;
 

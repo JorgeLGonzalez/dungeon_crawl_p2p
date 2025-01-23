@@ -1,12 +1,16 @@
 use super::{
     components::{LastAction, Monster},
-    events::*,
+    events::MonstersEventsPlugin,
     monster_actions::*,
-    spawn_monsters,
+    spawn_monsters::spawn_monsters,
 };
 use crate::{
+    common,
     config::{game_mode, GameMode},
-    dungeon, player, GameState,
+    dungeon::{DungeonCoreSet, SpawnDungeonSet},
+    fov::FovCoreSet,
+    hud::HudCoreSet,
+    GameState,
 };
 use bevy::prelude::*;
 use bevy_ggrs::{GgrsApp, GgrsSchedule};
@@ -18,14 +22,10 @@ pub struct MonstersPlugin;
 
 impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<MonsterActedEvent>()
-            .add_event::<MonsterAttacksEvent>()
-            .add_event::<MonsterMovesEvent>()
-            .init_resource::<MonsterMoveTracker>()
-            .add_systems(
-                OnEnter(GameState::InGame),
-                spawn_monsters.after(dungeon::SpawnDungeonSet),
-            );
+        app.init_resource::<MonsterMoveTracker>().add_systems(
+            OnEnter(GameState::InGame),
+            spawn_monsters.after(SpawnDungeonSet),
+        );
 
         let core_systems = (
             do_monsters_action,
@@ -35,18 +35,20 @@ impl Plugin for MonstersPlugin {
         )
             .in_set(MonstersCoreSet)
             .chain()
-            .after(player::PlayerCoreSet)
-            .before(dungeon::DungeonCoreSet)
-            .run_if(in_state(GameState::InGame));
+            .run_if(in_state(GameState::InGame))
+            .ambiguous_with(DungeonCoreSet)
+            .before(FovCoreSet)
+            .before(HudCoreSet);
 
-        if game_mode(GameMode::SinglePlayer) {
-            app.add_systems(Update, core_systems);
-        } else {
+        common::add_core_systems(app, core_systems);
+
+        if !game_mode(GameMode::SinglePlayer) {
             app.rollback_component_with_copy::<LastAction>()
                 .rollback_component_with_copy::<Monster>();
 
-            app.add_systems(GgrsSchedule, core_systems)
-                .add_systems(GgrsSchedule, persist_monster_moves.after(move_monster));
+            app.add_systems(GgrsSchedule, persist_monster_moves.after(move_monster));
         }
+
+        app.add_plugins(MonstersEventsPlugin);
     }
 }

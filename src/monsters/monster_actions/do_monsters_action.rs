@@ -1,6 +1,5 @@
 use super::*;
-use crate::common::RandomGenerator;
-use bevy::prelude::*;
+use crate::prelude::*;
 
 pub fn do_monsters_action(
     mut acted_events: EventWriter<MonsterActedEvent>,

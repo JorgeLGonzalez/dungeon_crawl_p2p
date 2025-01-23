@@ -1,17 +1,19 @@
 use super::{
     camera::{follow_with_camera, setup_camera},
     components::{MoveThrottle, Player},
-    events::*,
+    events::PlayerEventsPlugin,
     player_actions::*,
     spawn_players::spawn_players,
 };
 use crate::{
+    common,
     config::{game_mode, GameMode},
     dungeon::{DungeonCoreSet, SpawnDungeonSet},
+    monsters::MonstersCoreSet,
     GameState,
 };
 use bevy::prelude::*;
-use bevy_ggrs::{GgrsApp, GgrsSchedule, ReadInputs};
+use bevy_ggrs::{GgrsApp, ReadInputs};
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct PlayerCoreSet;
@@ -20,14 +22,10 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<PlayerAttacksEvent>()
-            .add_event::<PlayerMovesEvent>()
-            .add_event::<PlayerMoveIntentEvent>()
-            .add_event::<StopMovingEvent>()
-            .add_systems(
-                OnEnter(GameState::InGame),
-                (spawn_players, setup_camera).after(SpawnDungeonSet),
-            );
+        app.add_systems(
+            OnEnter(GameState::InGame),
+            (spawn_players, setup_camera).after(SpawnDungeonSet),
+        );
 
         let core_systems = (
             do_player_action,
@@ -41,18 +39,18 @@ impl Plugin for PlayerPlugin {
             .in_set(PlayerCoreSet)
             .chain()
             .ambiguous_with(DungeonCoreSet)
-            .ambiguous_with(crate::hud::HudCoreSet)
-            .run_if(in_state(GameState::InGame));
+            .before(MonstersCoreSet);
 
-        if game_mode(GameMode::SinglePlayer) {
-            app.add_systems(Update, core_systems);
-        } else {
+        common::add_core_systems(app, core_systems);
+
+        if !game_mode(GameMode::SinglePlayer) {
             app.rollback_component_with_clone::<MoveThrottle>()
                 .rollback_component_with_copy::<Player>()
                 .checksum_component_with_hash::<MoveThrottle>();
 
-            app.add_systems(ReadInputs, read_player_inputs)
-                .add_systems(GgrsSchedule, core_systems);
+            app.add_systems(ReadInputs, read_player_inputs);
         }
+
+        app.add_plugins(PlayerEventsPlugin);
     }
 }

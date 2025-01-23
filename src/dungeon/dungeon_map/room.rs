@@ -1,4 +1,4 @@
-use super::dungeon_position::DungeonPosition;
+use super::DungeonPosition;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Room {

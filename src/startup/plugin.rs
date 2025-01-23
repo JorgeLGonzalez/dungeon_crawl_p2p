@@ -2,13 +2,7 @@ use super::{
     ggrs::{checksum_transform, create_p2p_session, handle_ggrs_events},
     startup::startup,
 };
-use crate::{
-    common::{DesyncEvent, RandomGenerator, SnapshotStateEvent},
-    config::{game_mode, GameMode},
-    hud, GameState,
-};
-
-use bevy::prelude::*;
+use crate::{hud, prelude::*};
 use bevy_asset_loader::prelude::*;
 use bevy_ggrs::GgrsApp;
 
@@ -22,12 +16,9 @@ impl Plugin for StartupPlugin {
                 .load_collection::<hud::FontAssets>(),
         );
 
-        app.add_event::<SnapshotStateEvent>()
-            .add_systems(OnEnter(GameState::Startup), startup);
+        app.add_systems(OnEnter(GameState::Startup), startup);
 
         if !game_mode(GameMode::SinglePlayer) {
-            app.add_event::<DesyncEvent>();
-
             app.rollback_resource_with_clone::<RandomGenerator>()
                 .rollback_component_with_clone::<Transform>()
                 .checksum_resource_with_hash::<RandomGenerator>()

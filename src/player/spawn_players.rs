@@ -3,13 +3,10 @@ use super::{
     local_player::LocalPlayer,
 };
 use crate::{
-    config::{self, PLAYER_HEIGHT, PLAYER_WIDTH},
-    dungeon::DungeonMap,
-    fov::FieldOfView,
-    health::{Damage, Health},
+    config::{PLAYER_HEIGHT, PLAYER_WIDTH},
     hud::TooltipLabel,
+    prelude::*,
 };
-use bevy::prelude::*;
 use bevy_ggrs::{AddRollbackCommandExtension, LocalPlayers};
 
 pub fn spawn_players(

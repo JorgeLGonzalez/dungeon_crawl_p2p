@@ -1,9 +1,5 @@
-use super::components::{Player, PlayerId};
-use crate::{
-    config::{game_mode, GameMode},
-    health::{Health, HealthUnit},
-};
-use bevy::prelude::*;
+use super::PlayerId;
+use crate::prelude::*;
 use bevy_ggrs::LocalPlayers;
 
 pub type PlayersQuery<'w, 's, 'p, 't, 'h> = Query<'w, 's, (&'p Player, &'t Transform, &'h Health)>;

@@ -1,5 +1,5 @@
 mod common;
-mod config;
+pub mod config;
 mod dungeon;
 mod game_states;
 mod hud;
@@ -9,9 +9,20 @@ mod startup;
 
 pub use common::{fov, health};
 
-use bevy::{log::LogPlugin, prelude::*};
+pub mod prelude {
+    pub use crate::common::RandomGenerator;
+    pub use crate::config::{self, game_mode, GameMode};
+    pub use crate::dungeon::DungeonMap;
+    pub use crate::fov::FieldOfView;
+    pub use crate::game_states::GameState;
+    pub use crate::health::{Damage, DamageUnit, Healing, Health, HealthUnit};
+    pub use crate::player::Player;
+    pub use bevy::prelude::*;
+}
+
+use bevy::log::LogPlugin;
 use bevy_ggrs::GgrsPlugin;
-use game_states::GameState;
+use prelude::*;
 
 fn main() {
     App::new()
@@ -31,6 +42,7 @@ fn main() {
                     // filter: "bevy_ggrs=trace,ggrs=trace,ggrs::network=info".to_string(),
                     ..default()
                 }),
+            common::CommonPlugin,
             dungeon::DungeonPlugin,
             fov::FovPlugin,
             health::HealthPlugin,

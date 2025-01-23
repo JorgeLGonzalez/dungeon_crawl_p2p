@@ -1,11 +1,6 @@
 use super::*;
-use crate::{
-    common::{RandomCounter, RandomGenerator},
-    config,
-    fov::FieldOfView,
-    health::DamageUnit,
-};
-use bevy::{prelude::*, utils::hashbrown::HashSet};
+use crate::{common::RandomCounter, prelude::*};
+use bevy::utils::hashbrown::HashSet;
 
 pub enum MonsterAction {
     Attack(MonsterAttacksEvent),
