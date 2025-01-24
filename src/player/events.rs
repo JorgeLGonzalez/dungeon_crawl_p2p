@@ -7,11 +7,12 @@ pub struct PlayerEventsPlugin;
 impl Plugin for PlayerEventsPlugin {
     fn build(&self, app: &mut App) {
         app.add_event::<GrabItemEvent>()
+            .add_event::<InventoryUpdatedEvent>()
             .add_event::<PlayerAttacksEvent>()
             .add_event::<PlayerMovesEvent>()
             .add_event::<PlayerMoveIntentEvent>()
             .add_event::<StopMovingEvent>()
-            .add_event::<InventoryUpdatedEvent>();
+            .add_event::<UseItemEvent>();
     }
 }
 
@@ -24,6 +25,21 @@ pub struct GrabItemEvent {
 impl GrabItemEvent {
     pub fn new(player: Entity, player_id: usize) -> Self {
         Self { player, player_id }
+    }
+}
+
+#[derive(Event)]
+pub struct InventoryUpdatedEvent {
+    pub inventory: Inventory,
+    pub player_id: PlayerId,
+}
+
+impl InventoryUpdatedEvent {
+    pub fn new(inventory: Inventory, player_id: PlayerId) -> Self {
+        Self {
+            inventory,
+            player_id,
+        }
     }
 }
 
@@ -93,16 +109,18 @@ impl StopMovingEvent {
 }
 
 #[derive(Event)]
-pub struct InventoryUpdatedEvent {
-    pub inventory: Inventory,
+pub struct UseItemEvent {
+    pub player: Entity,
     pub player_id: PlayerId,
+    pub item_index: u8,
 }
 
-impl InventoryUpdatedEvent {
-    pub fn new(inventory: Inventory, player_id: PlayerId) -> Self {
+impl UseItemEvent {
+    pub fn new(player: Entity, player_id: PlayerId, item_index: u8) -> Self {
         Self {
-            inventory,
+            player,
             player_id,
+            item_index,
         }
     }
 }

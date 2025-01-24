@@ -11,6 +11,15 @@ pub enum PlayerAction {
     Snapshot,
     StopMoving,
     ZoomIn,
+    UseItem1,
+    UseItem2,
+    UseItem3,
+    UseItem4,
+    UseItem5,
+    UseItem6,
+    UseItem7,
+    UseItem8,
+    UseItem9,
     ZoomOut,
 }
 
@@ -24,6 +33,15 @@ impl From<u8> for PlayerAction {
             4 => PlayerAction::Move(MoveDirection::Right),
             5 => PlayerAction::StopMoving,
             6 => PlayerAction::GrabItem,
+            11 => PlayerAction::UseItem1,
+            12 => PlayerAction::UseItem2,
+            13 => PlayerAction::UseItem3,
+            14 => PlayerAction::UseItem4,
+            15 => PlayerAction::UseItem5,
+            16 => PlayerAction::UseItem6,
+            17 => PlayerAction::UseItem7,
+            18 => PlayerAction::UseItem8,
+            19 => PlayerAction::UseItem9,
             50 => PlayerAction::ZoomIn,
             51 => PlayerAction::ZoomOut,
             100 => PlayerAction::Snapshot,
@@ -36,6 +54,9 @@ impl From<u8> for PlayerAction {
 
 impl From<&ButtonInput<KeyCode>> for PlayerAction {
     fn from(keys: &ButtonInput<KeyCode>) -> Self {
+        use KeyCode::*;
+        use PlayerAction::*;
+
         MOVEMENT_KEYS
             .iter()
             .find(|(key, _)| keys.pressed(*key))
@@ -44,29 +65,27 @@ impl From<&ButtonInput<KeyCode>> for PlayerAction {
                 MOVEMENT_KEYS
                     .iter()
                     .find(|(key, _)| keys.just_released(*key))
-                    .map(|_| PlayerAction::StopMoving)
+                    .map(|_| StopMoving)
+            })
+            .or_else(|| keys.pressed(Digit1).then_some(UseItem1))
+            .or_else(|| keys.pressed(Digit2).then_some(UseItem2))
+            .or_else(|| keys.pressed(Digit3).then_some(UseItem3))
+            .or_else(|| keys.pressed(Digit4).then_some(UseItem4))
+            .or_else(|| keys.pressed(Digit5).then_some(UseItem5))
+            .or_else(|| keys.pressed(Digit6).then_some(UseItem6))
+            .or_else(|| keys.pressed(Digit7).then_some(UseItem7))
+            .or_else(|| keys.pressed(Digit8).then_some(UseItem8))
+            .or_else(|| keys.pressed(Digit9).then_some(UseItem9))
+            .or_else(|| keys.pressed(KeyG).then_some(GrabItem))
+            .or_else(|| keys.pressed(KeyM).then_some(RevealDungeonCheat))
+            .or_else(|| keys.just_released(KeyP).then_some(Snapshot))
+            .or_else(|| {
+                (keys.just_released(Equal) && keys.any_pressed([ShiftLeft, ShiftRight]))
+                    .then_some(ZoomIn)
             })
             .or_else(|| {
-                keys.pressed(KeyCode::KeyG)
-                    .then_some(PlayerAction::GrabItem)
-            })
-            .or_else(|| {
-                keys.pressed(KeyCode::KeyM)
-                    .then_some(PlayerAction::RevealDungeonCheat)
-            })
-            .or_else(|| {
-                keys.just_released(KeyCode::KeyP)
-                    .then_some(PlayerAction::Snapshot)
-            })
-            .or_else(|| {
-                (keys.just_released(KeyCode::Equal)
-                    && keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]))
-                .then_some(PlayerAction::ZoomIn)
-            })
-            .or_else(|| {
-                (keys.just_released(KeyCode::Minus)
-                    && keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]))
-                .then_some(PlayerAction::ZoomOut)
+                (keys.just_released(Minus) && keys.any_pressed([ShiftLeft, ShiftRight]))
+                    .then_some(ZoomOut)
             })
             .unwrap_or(PlayerAction::None)
     }
@@ -84,6 +103,15 @@ impl Into<u8> for PlayerAction {
             PlayerAction::RevealDungeonCheat => 101,
             PlayerAction::StopMoving => 5,
             PlayerAction::Snapshot => 100,
+            PlayerAction::UseItem1 => 11,
+            PlayerAction::UseItem2 => 12,
+            PlayerAction::UseItem3 => 13,
+            PlayerAction::UseItem4 => 14,
+            PlayerAction::UseItem5 => 15,
+            PlayerAction::UseItem6 => 16,
+            PlayerAction::UseItem7 => 17,
+            PlayerAction::UseItem8 => 18,
+            PlayerAction::UseItem9 => 19,
             PlayerAction::ZoomIn => 50,
             PlayerAction::ZoomOut => 51,
             PlayerAction::None => 0,
