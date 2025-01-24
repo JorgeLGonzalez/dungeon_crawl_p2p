@@ -24,14 +24,15 @@ impl MagicItem {
         }
     }
 
-    pub fn tooltip(&self) -> TooltipLabel {
+    pub fn label(&self) -> String {
+        let healing = self.healing_amount();
         match self {
-            MagicItem::HealingPotion => {
-                TooltipLabel(format!("Healing Potion: {} hp", self.healing_amount()))
-            }
-            MagicItem::HealingPotionWeak => {
-                TooltipLabel(format!("Weak Healing Potion: {} hp", self.healing_amount()))
-            }
+            MagicItem::HealingPotion => format!("Healing Potion ({healing} hp)"),
+            MagicItem::HealingPotionWeak => format!("Weak Healing Potion ({healing} hp)"),
         }
+    }
+
+    pub fn tooltip(&self) -> TooltipLabel {
+        TooltipLabel(self.label())
     }
 }

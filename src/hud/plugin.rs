@@ -19,6 +19,7 @@ impl Plugin for HudPlugin {
                 spawn_inventory_ui,
                 spawn_tooltip,
             )
+                .chain()
                 .in_set(HudStartupSet),
         );
 
