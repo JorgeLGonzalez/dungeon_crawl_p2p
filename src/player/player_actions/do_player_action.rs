@@ -20,8 +20,8 @@ pub fn do_player_action(
     mut stop_moving_event: EventWriter<StopMovingEvent>,
     mut use_item_event: EventWriter<UseItemEvent>,
     mut zoom_event: EventWriter<ZoomEvent>,
+    mut keys: ResMut<ButtonInput<KeyCode>>,
     ggrs_inputs: Option<Res<PlayerInputs<config::GgrsSessionConfig>>>,
-    keys: Res<ButtonInput<KeyCode>>,
     players: Query<(Entity, &Player)>,
 ) {
     assert_player_count(players.iter().count());
@@ -30,7 +30,7 @@ pub fn do_player_action(
         let action = if let Some(ggrs_inputs) = ggrs_inputs.as_ref() {
             PlayerAction::from(ggrs_inputs[player.id].0)
         } else {
-            PlayerAction::from(keys.as_ref())
+            PlayerAction::from(keys.as_mut())
         };
 
         match action {

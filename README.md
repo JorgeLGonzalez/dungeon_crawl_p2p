@@ -37,6 +37,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] score points for defeating monsters, picking up coins ?
 - [ ] monster patrol strategies (explore, guard, rest)
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
+  - [ ] The player movement throttling can probably be simplified by resetting the key press, or using logic like monster throttling, of perhaps Leafwing makes this simpler.
 
 ## Issues
 

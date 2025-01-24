@@ -52,10 +52,21 @@ impl From<u8> for PlayerAction {
     }
 }
 
-impl From<&ButtonInput<KeyCode>> for PlayerAction {
-    fn from(keys: &ButtonInput<KeyCode>) -> Self {
+impl From<&mut ButtonInput<KeyCode>> for PlayerAction {
+    fn from(keys: &mut ButtonInput<KeyCode>) -> Self {
         use KeyCode::*;
         use PlayerAction::*;
+
+        fn single_press(
+            keys: &mut ButtonInput<KeyCode>,
+            key: KeyCode,
+            item: PlayerAction,
+        ) -> Option<PlayerAction> {
+            keys.pressed(key).then(|| {
+                keys.reset(key);
+                item
+            })
+        }
 
         MOVEMENT_KEYS
             .iter()
@@ -67,18 +78,18 @@ impl From<&ButtonInput<KeyCode>> for PlayerAction {
                     .find(|(key, _)| keys.just_released(*key))
                     .map(|_| StopMoving)
             })
-            .or_else(|| keys.pressed(Digit1).then_some(UseItem1))
-            .or_else(|| keys.pressed(Digit2).then_some(UseItem2))
-            .or_else(|| keys.pressed(Digit3).then_some(UseItem3))
-            .or_else(|| keys.pressed(Digit4).then_some(UseItem4))
-            .or_else(|| keys.pressed(Digit5).then_some(UseItem5))
-            .or_else(|| keys.pressed(Digit6).then_some(UseItem6))
-            .or_else(|| keys.pressed(Digit7).then_some(UseItem7))
-            .or_else(|| keys.pressed(Digit8).then_some(UseItem8))
-            .or_else(|| keys.pressed(Digit9).then_some(UseItem9))
-            .or_else(|| keys.pressed(KeyG).then_some(GrabItem))
-            .or_else(|| keys.pressed(KeyM).then_some(RevealDungeonCheat))
-            .or_else(|| keys.just_released(KeyP).then_some(Snapshot))
+            .or_else(|| single_press(keys, Digit1, UseItem1))
+            .or_else(|| single_press(keys, Digit2, UseItem2))
+            .or_else(|| single_press(keys, Digit3, UseItem3))
+            .or_else(|| single_press(keys, Digit4, UseItem4))
+            .or_else(|| single_press(keys, Digit5, UseItem5))
+            .or_else(|| single_press(keys, Digit6, UseItem6))
+            .or_else(|| single_press(keys, Digit7, UseItem7))
+            .or_else(|| single_press(keys, Digit8, UseItem8))
+            .or_else(|| single_press(keys, Digit9, UseItem9))
+            .or_else(|| single_press(keys, KeyG, GrabItem))
+            .or_else(|| single_press(keys, KeyM, RevealDungeonCheat))
+            .or_else(|| single_press(keys, KeyP, Snapshot))
             .or_else(|| {
                 (keys.just_released(Equal) && keys.any_pressed([ShiftLeft, ShiftRight]))
                     .then_some(ZoomIn)
