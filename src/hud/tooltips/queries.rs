@@ -1,8 +1,5 @@
-use crate::{
-    hud::components::{HudCamera, TooltipLabel, TooltipUI},
-    player::PlayerCamera,
-    prelude::*,
-};
+use super::*;
+use crate::{hud::components::HudCamera, player::PlayerCamera, prelude::*};
 use bevy::window::PrimaryWindow;
 
 pub type CameraQuery<'w, 's, 'c, 'g> =

@@ -9,7 +9,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] inventory and item usage
   - [x] press 1-9 to use inventory item
   - [x] update system flow diagram as needed
-  - [ ] refactor inventory systems
+  - [x] refactor inventory systems
   - [ ] refactor grab_item system
   - [ ] document single_press stuff in player_action and refer to readme
   - [ ] refactor use_item system

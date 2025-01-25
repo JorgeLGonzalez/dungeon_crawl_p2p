@@ -14,10 +14,12 @@ mod inventory {
     pub use update_inventory::update_inventory;
 
     use super::*;
+    use components::*;
     use hud_inventory_sync::*;
 }
 mod plugin;
 mod tooltips {
+    mod components;
     mod determiner;
     mod determiner_builder;
     mod hider;
@@ -26,15 +28,17 @@ mod tooltips {
     mod spawn_tooltip;
     mod tooltip;
 
+    pub use components::TooltipLabel;
     pub use spawn_tooltip::spawn_tooltip;
     pub use tooltip::tooltip;
 
     use super::*;
+    use components::*;
 }
 
 pub use assets::FontAssets;
-pub use components::TooltipLabel;
 pub use plugin::{HudCoreSet, HudPlugin};
+pub use tooltips::TooltipLabel;
 
 use camera_setup::setup_camera;
 use components::*;

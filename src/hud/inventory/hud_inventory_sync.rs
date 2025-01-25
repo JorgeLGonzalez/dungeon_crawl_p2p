@@ -1,4 +1,4 @@
-use super::{components::InventoryItemBundle, FontAssets, InventoryItem, InventoryTitle};
+use super::*;
 use crate::{items::MagicItem, prelude::*};
 
 pub type InventoryLabelQuery<'w, 's, 't> =

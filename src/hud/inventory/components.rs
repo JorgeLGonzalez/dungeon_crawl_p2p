@@ -1,4 +1,3 @@
-use super::InventoryItem;
 use bevy::prelude::*;
 
 #[derive(Bundle)]
@@ -21,3 +20,11 @@ impl InventoryItemBundle {
         format!("{index}: {item_label}")
     }
 }
+
+#[derive(Component)]
+pub struct InventoryItem;
+#[derive(Component)]
+pub struct InventoryPanel;
+
+#[derive(Component)]
+pub struct InventoryTitle;
