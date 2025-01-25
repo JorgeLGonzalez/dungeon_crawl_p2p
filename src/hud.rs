@@ -5,6 +5,8 @@ mod config;
 mod health_bar;
 mod health_bar_setup;
 mod inventory {
+    mod components;
+    mod hud_inventory_sync;
     mod spawn_inventory_ui;
     mod update_inventory;
 
@@ -12,6 +14,7 @@ mod inventory {
     pub use update_inventory::update_inventory;
 
     use super::*;
+    use hud_inventory_sync::*;
 }
 mod plugin;
 mod tooltips {
