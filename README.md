@@ -10,10 +10,11 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] press 1-9 to use inventory item
   - [x] update system flow diagram as needed
   - [x] refactor inventory systems
-  - [ ] refactor grab_item system
+  - [x] refactor grab_item system
   - [ ] document single_press stuff in player_action and refer to readme
   - [ ] refactor use_item system
   - [ ] updating inventory does not work in sync test.
+  - [ ] we have sync issues again, but only in multi-player (not sync test)
   - [ ] press I to toggle inventory panel open/closed. Low priority. Defer.
   - [ ] respond to mouse click on inventory title to toggle too. Interesting to see how to handle mouse inputs. But may still defer.
 - [ ] data driven dungeon monsters and items

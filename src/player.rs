@@ -16,6 +16,7 @@ mod player_actions {
     mod do_player_action;
     mod grab_item;
     mod handle_move_intent;
+    mod item_grabber;
     mod move_intent_handler;
     mod move_player;
     mod player_action;
@@ -37,6 +38,7 @@ mod player_actions {
 
     use super::components::*;
     use super::events::*;
+    use item_grabber::*;
     use move_intent_handler::*;
 }
 mod plugin;
