@@ -17,9 +17,9 @@ impl MagicItem {
         }
     }
 
-    pub fn healing_amount(&self) -> u8 {
+    pub fn healing_amount(&self) -> HealthUnit {
         match self {
-            MagicItem::HealingPotion => 10,
+            MagicItem::HealingPotion => 6,
             MagicItem::HealingPotionWeak => 2,
         }
     }

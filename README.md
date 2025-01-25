@@ -12,8 +12,9 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] test with sync. Likely need rollback for this.
   - [x] Issue with G key detection. Seems like you have to hit it multiple times. This only seems to happen on multi-player wasm, but not on single player wasm nor on mac either single or multi player. It fails to register right at the just_released. Changing from just_released to pressed does the trick.
 - [ ] inventory and item usage
-  - [ ] press I to toggle inventory panel open/closed
   - [ ] press 1-9 to use inventory item
+  - [ ] update system flow diagram as needed
+  - [ ] press I to toggle inventory panel open/closed
   - [ ] respond to mouse click on inventory title to toggle too
 - [ ] data driven dungeon monsters and items
 - [ ] weapons
