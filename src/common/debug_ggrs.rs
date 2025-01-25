@@ -1,0 +1,30 @@
+use crate::{monsters::Monster, player::MoveThrottle, prelude::*};
+use bevy_ggrs::RollbackFrameCount;
+
+pub fn debug_ggrs(
+    monsters: Query<(Entity, &Health, &Monster, &Transform), With<Monster>>,
+    players: Query<(Entity, &Health, Option<&MoveThrottle>, &Player, &Transform), With<Player>>,
+    frame: Res<RollbackFrameCount>,
+) {
+    let frame = frame.0;
+
+    for (entity, health, move_throttle, player, transform) in &players {
+        let player_id = player.id;
+        let pos = transform.translation.truncate().as_ivec2();
+        let health = health.current;
+        let throttle = move_throttle.map(|t| t.elapsed_secs()).unwrap_or(0.0);
+
+        info!(
+            "Frame={frame}|Player={player_id}|Entity={entity}|Pos={pos}|\
+            Health={health}|Throttle={throttle}"
+        );
+    }
+
+    for (entity, health, monster, transform) in &monsters {
+        let monster = monster.name();
+        let pos = transform.translation.truncate().as_ivec2();
+        let health = health.current;
+
+        info!("Frame={frame}|Monster={monster}|Entity={entity}|Pos={pos}|Health={health}");
+    }
+}

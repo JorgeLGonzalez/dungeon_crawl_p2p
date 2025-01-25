@@ -12,7 +12,7 @@ pub fn healing(
         if healing.just_finished() {
             health.current += 1;
 
-            if health.current == health.max {
+            if health.current >= health.max {
                 commands
                     .get_entity(entity)
                     .expect("Inconceivable!")

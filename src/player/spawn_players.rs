@@ -1,5 +1,5 @@
 use super::{
-    components::{Obstacle, Player},
+    components::{Inventory, Obstacle, Player},
     local_player::LocalPlayer,
 };
 use crate::{
@@ -28,6 +28,7 @@ pub fn spawn_players(
                 Damage(1),
                 FieldOfView::new(config::PLAYER_FOV_RADIUS),
                 Health::new(config::PLAYER_HEALTH_MAX),
+                Inventory::new(),
                 Obstacle::Player,
                 Sprite {
                     color,

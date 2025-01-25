@@ -12,6 +12,10 @@ use std::{
 pub struct MoveThrottle(Timer);
 
 impl MoveThrottle {
+    pub fn elapsed_secs(&self) -> f32 {
+        self.0.elapsed_secs()
+    }
+
     pub fn just_finished(&self) -> bool {
         self.0.just_finished()
     }

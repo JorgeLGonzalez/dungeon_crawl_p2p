@@ -20,9 +20,10 @@ impl Plugin for StartupPlugin {
 
         if !game_mode(GameMode::SinglePlayer) {
             app.rollback_resource_with_clone::<RandomGenerator>()
-                .rollback_component_with_clone::<Transform>()
                 .checksum_resource_with_hash::<RandomGenerator>()
-                .checksum_component::<Transform>(checksum_transform);
+                .rollback_component_with_clone::<Transform>()
+                .checksum_component::<Transform>(checksum_transform)
+                .rollback_component_with_copy::<Visibility>();
 
             app.add_systems(
                 Update,

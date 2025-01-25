@@ -44,7 +44,8 @@ impl Plugin for MonstersPlugin {
 
         if !game_mode(GameMode::SinglePlayer) {
             app.rollback_component_with_copy::<LastAction>()
-                .rollback_component_with_copy::<Monster>();
+                .rollback_component_with_copy::<Monster>()
+                .checksum_component_with_hash::<Monster>();
 
             app.add_systems(GgrsSchedule, persist_monster_moves.after(move_monster));
         }

@@ -3,6 +3,7 @@ pub mod config;
 mod dungeon;
 mod game_states;
 mod hud;
+mod items;
 mod monsters;
 mod player;
 mod startup;
@@ -25,6 +26,12 @@ use bevy_ggrs::GgrsPlugin;
 use prelude::*;
 
 fn main() {
+    let logging_filter = if config::GGRS_DEBUG {
+        "dungeon_crawl_p2p=trace,bevy_ggrs=trace,ggrs=trace,ggrs::network=info".to_string()
+    } else {
+        "dungeon_crawl_p2p=debug".to_string()
+    };
+
     App::new()
         .add_plugins((
             DefaultPlugins
@@ -38,8 +45,7 @@ fn main() {
                     ..default()
                 })
                 .set(LogPlugin {
-                    filter: "dungeon_crawl_p2p=debug".to_string(),
-                    // filter: "bevy_ggrs=trace,ggrs=trace,ggrs::network=info".to_string(),
+                    filter: logging_filter,
                     ..default()
                 }),
             common::CommonPlugin,
@@ -47,6 +53,7 @@ fn main() {
             fov::FovPlugin,
             health::HealthPlugin,
             hud::HudPlugin,
+            items::ItemsPlugin,
             game_states::GameStatesPlugin,
             GgrsPlugin::<config::GgrsSessionConfig>::default(),
             monsters::MonstersPlugin,

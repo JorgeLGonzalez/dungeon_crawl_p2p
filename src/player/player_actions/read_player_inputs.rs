@@ -8,14 +8,14 @@ use bevy_ggrs::{LocalInputs, LocalPlayers};
 /// LocalPlayers has a single item in P2P mode (and 2 in SyncTest mode).
 pub fn read_player_inputs(
     mut commands: Commands,
-    keys: Res<ButtonInput<KeyCode>>,
+    mut keys: ResMut<ButtonInput<KeyCode>>,
     local_players: Res<LocalPlayers>,
 ) {
     let local_inputs = local_players
         .0
         .iter()
         .fold(HashMap::new(), |mut acc, &player_handle| {
-            let action = PlayerAction::from(keys.as_ref());
+            let action = PlayerAction::from(keys.as_mut());
             acc.insert(player_handle, action.into());
 
             acc

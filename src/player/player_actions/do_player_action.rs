@@ -1,4 +1,4 @@
-use super::{Player, PlayerAction, PlayerMoveIntentEvent, StopMovingEvent};
+use super::*;
 use crate::{
     common::SnapshotStateEvent,
     config::{self, GameMode},
@@ -13,13 +13,15 @@ use bevy_ggrs::PlayerInputs;
 /// In single-player mode, there's only one local player so inputs are read directly
 /// from the Bevy [`ButtonInput`] resources
 pub fn do_player_action(
+    mut grab_event: EventWriter<GrabItemEvent>,
     mut move_event: EventWriter<PlayerMoveIntentEvent>,
     mut snapshot_event: EventWriter<SnapshotStateEvent>,
     mut reveal_event: EventWriter<RevealDungeonCheatEvent>,
     mut stop_moving_event: EventWriter<StopMovingEvent>,
+    mut use_item_event: EventWriter<UseItemEvent>,
     mut zoom_event: EventWriter<ZoomEvent>,
+    mut keys: ResMut<ButtonInput<KeyCode>>,
     ggrs_inputs: Option<Res<PlayerInputs<config::GgrsSessionConfig>>>,
-    keys: Res<ButtonInput<KeyCode>>,
     players: Query<(Entity, &Player)>,
 ) {
     assert_player_count(players.iter().count());
@@ -28,10 +30,13 @@ pub fn do_player_action(
         let action = if let Some(ggrs_inputs) = ggrs_inputs.as_ref() {
             PlayerAction::from(ggrs_inputs[player.id].0)
         } else {
-            PlayerAction::from(keys.as_ref())
+            PlayerAction::from(keys.as_mut())
         };
 
         match action {
+            PlayerAction::GrabItem => {
+                grab_event.send(GrabItemEvent::new(player_entity, player.id));
+            }
             PlayerAction::Move(dir) => {
                 move_event.send(PlayerMoveIntentEvent::new(
                     player_entity,
@@ -48,6 +53,9 @@ pub fn do_player_action(
             }
             PlayerAction::StopMoving => {
                 stop_moving_event.send(StopMovingEvent::new(player_entity));
+            }
+            PlayerAction::UseItem(idx) => {
+                use_item_event.send(UseItemEvent::new(player_entity, player.id, idx));
             }
             PlayerAction::ZoomIn => {
                 zoom_event.send(ZoomEvent::zoom_in(player.id));

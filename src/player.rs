@@ -14,6 +14,7 @@ mod local_player;
 mod player_actions {
     mod attack_monster;
     mod do_player_action;
+    mod grab_item;
     mod handle_move_intent;
     mod move_intent_handler;
     mod move_player;
@@ -21,15 +22,18 @@ mod player_actions {
     mod read_player_inputs;
     mod stop_moving;
     mod tick_move_throttle;
+    mod use_item;
 
     pub(super) use attack_monster::attack_monster;
     pub(super) use do_player_action::do_player_action;
+    pub(super) use grab_item::grab_item;
     pub(super) use handle_move_intent::handle_move_intent;
     pub(super) use move_player::move_player;
     pub(super) use player_action::PlayerAction;
     pub(super) use read_player_inputs::read_player_inputs;
     pub(super) use stop_moving::stop_moving;
     pub(super) use tick_move_throttle::tick_move_throttle;
+    pub(super) use use_item::use_item;
 
     use super::components::*;
     use super::events::*;
@@ -38,7 +42,8 @@ mod player_actions {
 mod plugin;
 mod spawn_players;
 
-pub use components::{MoveThrottle, Obstacle, Player, PlayerCamera, PlayerId};
+pub use components::{Inventory, MoveThrottle, Obstacle, Player, PlayerCamera, PlayerId};
+pub use events::InventoryUpdatedEvent;
 pub use local_player::{LocalPlayer, PlayersQuery};
 pub use plugin::{PlayerCoreSet, PlayerPlugin};
 

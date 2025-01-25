@@ -9,27 +9,37 @@ pub struct RandomRoomsBuilder {
 
 impl RandomRoomsBuilder {
     pub fn build(rng: &mut RandomGenerator) -> DungeonMap {
-        let mut builder = Self {
+        Self {
             map: DungeonMap::new(),
             rooms: vec![],
-        };
-
-        builder.create_rooms(rng);
-        builder.build_corridors(rng);
-        builder.add_player_starting_positions();
-        builder.add_monster_starting_positions(rng);
-
-        builder.map
+        }
+        .create_rooms(rng)
+        .build_corridors(rng)
+        .add_player_starting_positions()
+        .add_items(rng)
+        .add_monster_starting_positions(rng)
+        .map
     }
 
-    fn add_monster_starting_positions(&mut self, rng: &mut RandomGenerator) {
+    fn add_items(mut self, rng: &mut RandomGenerator) -> Self {
+        self.map.item_positions = self
+            .map
+            .spawnable_positions()
+            .choose_multiple(rng, NUM_ITEMS);
+
+        self
+    }
+
+    fn add_monster_starting_positions(mut self, rng: &mut RandomGenerator) -> Self {
         self.map.monster_starting_positions = self
             .map
             .spawnable_positions()
-            .choose_multiple(rng, NUM_MONSTERS)
+            .choose_multiple(rng, NUM_MONSTERS);
+
+        self
     }
 
-    fn add_player_starting_positions(&mut self) {
+    fn add_player_starting_positions(mut self) -> Self {
         self.map
             .player_starting_positions
             .push(self.rooms[0].center());
@@ -38,9 +48,11 @@ impl RandomRoomsBuilder {
                 .player_starting_positions
                 .push(self.rooms[1].center());
         }
+
+        self
     }
 
-    fn build_corridors(&mut self, rng: &mut RandomGenerator) {
+    fn build_corridors(mut self, rng: &mut RandomGenerator) -> Self {
         let mut rooms = self.rooms.clone();
         rooms.sort_by(|a, b| a.center().x.cmp(&b.center().x));
 
@@ -56,9 +68,11 @@ impl RandomRoomsBuilder {
                 self.tunnel_horizontally(prev.x, new.x, new.y);
             }
         }
+
+        self
     }
 
-    fn create_rooms(&mut self, rng: &mut RandomGenerator) {
+    fn create_rooms(mut self, rng: &mut RandomGenerator) -> Self {
         while self.rooms.len() < NUM_ROOMS {
             let room = self.create_room(rng);
 
@@ -80,6 +94,8 @@ impl RandomRoomsBuilder {
                 info!("Throwing away overlapping room");
             }
         }
+
+        self
     }
 
     fn create_room(&self, rng: &mut RandomGenerator) -> Room {

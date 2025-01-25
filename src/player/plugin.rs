@@ -1,6 +1,6 @@
 use super::{
     camera::{follow_with_camera, setup_camera},
-    components::{MoveThrottle, Player},
+    components::{Inventory, MoveThrottle, Obstacle, Player},
     events::PlayerEventsPlugin,
     player_actions::*,
     spawn_players::spawn_players,
@@ -35,6 +35,8 @@ impl Plugin for PlayerPlugin {
             attack_monster,
             move_player,
             follow_with_camera,
+            grab_item,
+            use_item,
         )
             .in_set(PlayerCoreSet)
             .chain()
@@ -44,9 +46,14 @@ impl Plugin for PlayerPlugin {
         common::add_core_systems(app, core_systems);
 
         if !game_mode(GameMode::SinglePlayer) {
-            app.rollback_component_with_clone::<MoveThrottle>()
+            app.rollback_component_with_clone::<Inventory>()
+                .checksum_component_with_hash::<Inventory>()
+                .rollback_component_with_clone::<MoveThrottle>()
+                .checksum_component_with_hash::<MoveThrottle>()
                 .rollback_component_with_copy::<Player>()
-                .checksum_component_with_hash::<MoveThrottle>();
+                .checksum_component_with_hash::<Player>()
+                .rollback_component_with_copy::<Obstacle>()
+                .checksum_component_with_hash::<Obstacle>();
 
             app.add_systems(ReadInputs, read_player_inputs);
         }

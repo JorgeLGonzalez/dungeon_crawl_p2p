@@ -1,5 +1,8 @@
 # GGRS
 
+Remember to test with `GameMode::GgrsSyncTest` to see if things are still working.
+Last tested on 2025-01-21.
+
 ## Rollbacks
 
 GGRS depends on rollbacks. We need to do at least two things:
@@ -36,6 +39,12 @@ Some key notes:
 4. `bevy_ggrs` sits on top of `ggrs` and `ggrs` is an implementation of GGPO in Rust.
 
 ### Troubleshooting Desyncs
+
+Since the PRs etc have not gotten any attention, I have developed another way which is:
+
+1. Set `config::GGRS_DEBUG` to true.
+2. Run the app in `GameMode::GgrsSyncTest`.
+3. Capture the output logged into a file called `sync-test-log.txt` in the `ggrs-utils` project and run it. This will parse the log and generate useful output files around the mismatched frame.
 
 There are two ways to auto-detect desync events:
 

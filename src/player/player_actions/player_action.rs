@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum PlayerAction {
+    GrabItem,
     Move(MoveDirection),
     #[default]
     None,
@@ -10,6 +11,7 @@ pub enum PlayerAction {
     Snapshot,
     StopMoving,
     ZoomIn,
+    UseItem(u8),
     ZoomOut,
 }
 
@@ -22,6 +24,8 @@ impl From<u8> for PlayerAction {
             3 => PlayerAction::Move(MoveDirection::Left),
             4 => PlayerAction::Move(MoveDirection::Right),
             5 => PlayerAction::StopMoving,
+            6 => PlayerAction::GrabItem,
+            v if v >= 10 && v <= 18 => PlayerAction::UseItem(v - 10),
             50 => PlayerAction::ZoomIn,
             51 => PlayerAction::ZoomOut,
             100 => PlayerAction::Snapshot,
@@ -32,8 +36,22 @@ impl From<u8> for PlayerAction {
     }
 }
 
-impl From<&ButtonInput<KeyCode>> for PlayerAction {
-    fn from(keys: &ButtonInput<KeyCode>) -> Self {
+impl From<&mut ButtonInput<KeyCode>> for PlayerAction {
+    fn from(keys: &mut ButtonInput<KeyCode>) -> Self {
+        use KeyCode::*;
+        use PlayerAction::*;
+
+        fn single_press(
+            keys: &mut ButtonInput<KeyCode>,
+            key: KeyCode,
+            item: PlayerAction,
+        ) -> Option<PlayerAction> {
+            keys.pressed(key).then(|| {
+                keys.reset(key);
+                item
+            })
+        }
+
         MOVEMENT_KEYS
             .iter()
             .find(|(key, _)| keys.pressed(*key))
@@ -42,25 +60,27 @@ impl From<&ButtonInput<KeyCode>> for PlayerAction {
                 MOVEMENT_KEYS
                     .iter()
                     .find(|(key, _)| keys.just_released(*key))
-                    .map(|_| PlayerAction::StopMoving)
+                    .map(|_| StopMoving)
+            })
+            .or_else(|| single_press(keys, Digit1, UseItem(0)))
+            .or_else(|| single_press(keys, Digit2, UseItem(1)))
+            .or_else(|| single_press(keys, Digit3, UseItem(2)))
+            .or_else(|| single_press(keys, Digit4, UseItem(3)))
+            .or_else(|| single_press(keys, Digit5, UseItem(4)))
+            .or_else(|| single_press(keys, Digit6, UseItem(5)))
+            .or_else(|| single_press(keys, Digit7, UseItem(6)))
+            .or_else(|| single_press(keys, Digit8, UseItem(7)))
+            .or_else(|| single_press(keys, Digit9, UseItem(8)))
+            .or_else(|| single_press(keys, KeyG, GrabItem))
+            .or_else(|| single_press(keys, KeyM, RevealDungeonCheat))
+            .or_else(|| single_press(keys, KeyP, Snapshot))
+            .or_else(|| {
+                (keys.just_released(Equal) && keys.any_pressed([ShiftLeft, ShiftRight]))
+                    .then_some(ZoomIn)
             })
             .or_else(|| {
-                keys.just_released(KeyCode::KeyM)
-                    .then_some(PlayerAction::RevealDungeonCheat)
-            })
-            .or_else(|| {
-                keys.just_released(KeyCode::KeyP)
-                    .then_some(PlayerAction::Snapshot)
-            })
-            .or_else(|| {
-                (keys.just_released(KeyCode::Equal)
-                    && keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]))
-                .then_some(PlayerAction::ZoomIn)
-            })
-            .or_else(|| {
-                (keys.just_released(KeyCode::Minus)
-                    && keys.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]))
-                .then_some(PlayerAction::ZoomOut)
+                (keys.just_released(Minus) && keys.any_pressed([ShiftLeft, ShiftRight]))
+                    .then_some(ZoomOut)
             })
             .unwrap_or(PlayerAction::None)
     }
@@ -74,9 +94,11 @@ impl Into<u8> for PlayerAction {
             PlayerAction::Move(MoveDirection::Down) => 2,
             PlayerAction::Move(MoveDirection::Left) => 3,
             PlayerAction::Move(MoveDirection::Right) => 4,
+            PlayerAction::GrabItem => 6,
             PlayerAction::RevealDungeonCheat => 101,
             PlayerAction::StopMoving => 5,
             PlayerAction::Snapshot => 100,
+            PlayerAction::UseItem(v) => 10 + v,
             PlayerAction::ZoomIn => 50,
             PlayerAction::ZoomOut => 51,
             PlayerAction::None => 0,

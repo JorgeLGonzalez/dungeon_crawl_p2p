@@ -1,5 +1,10 @@
-use bevy::prelude::Component;
+mod monster;
 
+use bevy::prelude::Component;
+pub use monster::Monster;
+
+/// LastAction is used to track the time of the last action of a monster so as
+/// to throttle the rate at which monsters can act.
 #[derive(Component, Clone, Copy)]
 pub struct LastAction {
     pub time: f32,
@@ -11,15 +16,4 @@ impl LastAction {
         // the GgrsSchedule Time to synchronize among clients
         Self { time: 0. }
     }
-}
-
-#[derive(Clone, Component, Copy, Debug)]
-pub struct Monster;
-
-#[derive(Component)]
-pub enum MonsterType {
-    Ettin,
-    Goblin,
-    Ogre,
-    Orc,
 }

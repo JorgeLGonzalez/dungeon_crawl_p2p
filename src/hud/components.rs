@@ -9,6 +9,14 @@ pub struct HealthPointsText;
 #[derive(Component)]
 pub struct HudCamera;
 
+#[derive(Component)]
+pub struct InventoryItem;
+#[derive(Component)]
+pub struct InventoryPanel;
+
+#[derive(Component)]
+pub struct InventoryTitle;
+
 /// The text or label to use for an entity's (e.g. monster) tooltip
 #[derive(Component)]
 pub struct TooltipLabel(pub String);

@@ -1,5 +1,6 @@
 use super::{events::FovEventsPlugin, recalculate_fov::recalculate_fov};
 use crate::{common, dungeon, hud, prelude::*};
+use bevy_ggrs::GgrsApp;
 
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct FovCoreSet;
@@ -15,6 +16,10 @@ impl Plugin for FovPlugin {
             .ambiguous_with(dungeon::DungeonCoreSet);
 
         common::add_core_systems(app, core_systems);
+
+        if !game_mode(GameMode::SinglePlayer) {
+            app.rollback_component_with_clone::<FieldOfView>();
+        }
 
         app.add_plugins(FovEventsPlugin);
     }

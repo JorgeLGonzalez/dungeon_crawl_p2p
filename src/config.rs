@@ -39,6 +39,9 @@ pub const VIEWPORT_HEIGHT: f32 = 20.;
 // HUD
 pub const HUD_CAMERA_RENDER_LAYER: Layer = 1;
 
+// Items
+pub const ITEM_Z_LAYER: f32 = 80.;
+
 // Monsters
 pub const MONSTER_FOV_RADIUS: FovRadius = 6;
 pub const MONSTER_Z_LAYER: f32 = 90.;
@@ -51,7 +54,7 @@ pub const MONSTER_TRACKER_AUTO_SAVE_ENABLED: bool = false;
 pub const MONSTER_TRACKER_AUTO_SAVE_THRESHOLD: usize = 100;
 
 // Player
-pub const PLAYER_0_COLOR: Color = Color::srgb(0., 0., 1.);
+pub const PLAYER_0_COLOR: Color = Color::srgb(1., 1., 1.);
 pub const PLAYER_1_COLOR: Color = Color::srgb(0., 1., 0.);
 pub const PLAYER_WIDTH: f32 = TILE_WIDTH;
 pub const PLAYER_HEIGHT: f32 = TILE_HEIGHT;
@@ -60,18 +63,20 @@ pub const PLAYER_FOV_RADIUS: FovRadius = 8;
 pub const PLAYER_HEALING_SECONDS: f32 = 10.0;
 pub const PLAYER_HEALTH_MAX: u8 = 10;
 /// Player is invincible for debugging purposes
-pub const PLAYER_IMMORTAL: bool = false;
+pub const PLAYER_IMMORTAL: bool = true;
 pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 
 // RandomRoomsBuilder settings
+pub const NUM_ITEMS: usize = 20;
 pub const NUM_MONSTERS: usize = 30;
 pub const NUM_ROOMS: usize = 20;
 pub const ROOM_MAX_WIDTH: usize = 10;
 pub const ROOM_MAX_HEIGHT: usize = 10;
 
 // Matchbox and GGRS
-pub const GGRS_INPUT_DELAY: usize = 2;
+pub const GGRS_DEBUG: bool = false;
+pub const GGRS_INPUT_DELAY: usize = if GGRS_DEBUG { 0 } else { 2 };
 pub const MATCHBOX_ROOM_URL: &str = "ws://127.0.0.1:3536/dungeon_crawl?next=2";
 pub const NUM_PLAYERS: usize = 2;
 
