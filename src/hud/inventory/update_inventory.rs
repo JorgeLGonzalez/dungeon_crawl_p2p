@@ -3,39 +3,7 @@ use crate::{
     player::{InventoryUpdatedEvent, LocalPlayer},
     prelude::*,
 };
-use bevy::render::view::RenderLayers;
 use bevy_ggrs::LocalPlayers;
-
-pub fn spawn_inventory_ui(mut commands: Commands, font_assets: Res<FontAssets>) {
-    let heading_font = TextFont {
-        font: font_assets.fira_sans_bold.clone(),
-        font_size: 20.,
-        ..default()
-    };
-
-    commands
-        .spawn((
-            InventoryPanel,
-            BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
-            Node {
-                align_items: AlignItems::Stretch,
-                display: Display::Flex,
-                flex_direction: FlexDirection::Column,
-                margin: UiRect::all(Val::Px(10.)),
-                overflow: Overflow::scroll(),
-                position_type: PositionType::Absolute,
-                ..default()
-            },
-            RenderLayers::layer(config::HUD_CAMERA_RENDER_LAYER),
-        ))
-        .with_children(|parent| {
-            parent.spawn((
-                InventoryTitle,
-                Text::new("Inventory (0)"),
-                heading_font.clone(),
-            ));
-        });
-}
 
 pub fn update_inventory(
     mut commands: Commands,
@@ -47,7 +15,7 @@ pub fn update_inventory(
     local_players: Res<LocalPlayers>,
 ) {
     let item_font = TextFont {
-        font: font_assets.fira_sans_bold.clone(),
+        font: font_assets.hud_font.clone(),
         font_size: 16.,
         ..default()
     };

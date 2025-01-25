@@ -1,15 +1,14 @@
-use super::{FontAssets, TooltipUI};
-use crate::config;
-use bevy::{color::palettes::css::WHITE, prelude::*, render::view::RenderLayers};
+use super::{config, FontAssets, TooltipUI};
+use bevy::{prelude::*, render::view::RenderLayers};
 
 pub fn spawn_tooltip(mut commands: Commands, font_assets: Res<FontAssets>) {
     commands.spawn((
         TooltipUI::default(),
         Text::new(String::new()),
-        BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
-        TextColor(WHITE.into()),
+        BackgroundColor(config::BACKGROUND_COLOR.into()),
+        TextColor(config::TEXT_COLOR.into()),
         TextFont {
-            font: font_assets.fira_sans_bold.clone(),
+            font: font_assets.hud_font.clone(),
             font_size: 16.,
             ..default()
         },
@@ -18,6 +17,6 @@ pub fn spawn_tooltip(mut commands: Commands, font_assets: Res<FontAssets>) {
             position_type: PositionType::Absolute,
             ..default()
         },
-        RenderLayers::layer(config::HUD_CAMERA_RENDER_LAYER),
+        RenderLayers::layer(config::CAMERA_RENDER_LAYER),
     ));
 }

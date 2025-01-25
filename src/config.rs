@@ -36,9 +36,6 @@ pub const TILE_WIDTH: f32 = 1.;
 pub const TILE_HEIGHT: f32 = TILE_WIDTH;
 pub const VIEWPORT_HEIGHT: f32 = 20.;
 
-// HUD
-pub const HUD_CAMERA_RENDER_LAYER: Layer = 1;
-
 // Items
 pub const ITEM_Z_LAYER: f32 = 80.;
 

@@ -1,17 +1,13 @@
-use super::{FontAssets, HealthBar, HealthPointsText};
-use crate::config;
-use bevy::{
-    color::palettes::css::{GRAY, WHITE},
-    prelude::*,
-    render::view::RenderLayers,
-};
+use super::{config, FontAssets, HealthBar, HealthPointsText};
+use crate::config as player_config;
+use bevy::{color::palettes::css::GRAY, prelude::*, render::view::RenderLayers};
 
 pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
     let display = Display::Flex;
-    let text_color = TextColor(WHITE.into());
+    let text_color = TextColor(config::TEXT_COLOR.into());
     let text_font = TextFont {
-        font: font_assets.fira_sans_bold.clone(),
-        font_size: 20.,
+        font: font_assets.hud_font.clone(),
+        font_size: config::TEXT_SIZE,
         ..default()
     };
     let text_node = Node {
@@ -27,13 +23,13 @@ pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
                 position_type: PositionType::Absolute,
                 overflow: Overflow::clip(),
                 width: Val::Percent(100.),
-                height: Val::Px(40.),
+                height: Val::Px(config::TOP_BAR_HEIGHT),
                 justify_content: JustifyContent::Center,
                 align_items: AlignItems::Center,
                 ..default()
             },
-            BackgroundColor(Color::srgba(0.1, 0.1, 0.1, 0.5)),
-            RenderLayers::layer(config::HUD_CAMERA_RENDER_LAYER),
+            BackgroundColor(config::BACKGROUND_COLOR.into()),
+            RenderLayers::layer(config::CAMERA_RENDER_LAYER),
         ))
         .with_children(|parent| {
             parent.spawn((
@@ -70,8 +66,8 @@ pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
                 HealthPointsText,
                 Text::new(format!(
                     "{}/{}",
-                    config::PLAYER_HEALTH_MAX,
-                    config::PLAYER_HEALTH_MAX
+                    player_config::PLAYER_HEALTH_MAX,
+                    player_config::PLAYER_HEALTH_MAX
                 )),
                 text_color,
                 text_font,

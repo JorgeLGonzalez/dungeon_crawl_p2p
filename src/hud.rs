@@ -1,9 +1,18 @@
 mod assets;
 mod camera_setup;
 mod components;
+mod config;
 mod health_bar;
 mod health_bar_setup;
-mod inventory;
+mod inventory {
+    mod spawn_inventory_ui;
+    mod update_inventory;
+
+    pub use spawn_inventory_ui::spawn_inventory_ui;
+    pub use update_inventory::update_inventory;
+
+    use super::*;
+}
 mod plugin;
 mod tooltips {
     mod determiner;
