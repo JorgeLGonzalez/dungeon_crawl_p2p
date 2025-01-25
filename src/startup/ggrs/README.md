@@ -1,7 +1,7 @@
 # GGRS
 
 Remember to test with `GameMode::GgrsSyncTest` to see if things are still working.
-Last tested on 2025-01-21.
+Last tested on 2025-01-25.
 
 ## Rollbacks
 
@@ -11,7 +11,7 @@ GGRS depends on rollbacks. We need to do at least two things:
 2. Register specific components for rollback snapshots with a specific strategy (clone or copy) in `main` via the `rollback_component_with_clone` or `rollback_component_with_copy` methods. This tells Bevy GGRS to store a snapshot of these for every frame (discarding them as they lose utility).
 3. If the resource or component is critical to the state, add it to the frame checksum via the `checksum_component` or `checksum_resource` App method. This way it will be included in the frame checksum used to detect if clients fall out of sync.
 
-So for `Player` for example (in [spawn_players](./src/systems/spawn_players.rs)) we use `add_rollback` and in main we register `Player` and `Transform` for rollback. We probably will need to add other Components that are added to Player when we add Sprite etc, especially if a Player will be despawned.
+So for `Player` for example (in [spawn_players](../../player/spawn_players.rs)) we use `add_rollback` and in main we register `Player` and `Transform` for rollback. We probably will need to add other Components that are added to Player when we add Sprite etc, especially if a Player will be despawned.
 
 See [Extreme Bevy Detecting Desyncs tutorial](https://johanhelsing.studio/posts/extreme-bevy-desync-detection) for more info
 

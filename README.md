@@ -6,16 +6,16 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [x] healing potions
-  - [x] toggle visibility. It just worked! Nice!
-  - [x] grab item
-  - [x] test with sync. Likely need rollback for this.
-  - [x] Issue with G key detection. Seems like you have to hit it multiple times. This only seems to happen on multi-player wasm, but not on single player wasm nor on mac either single or multi player. It fails to register right at the just_released. Changing from just_released to pressed does the trick.
 - [ ] inventory and item usage
-  - [ ] press 1-9 to use inventory item
-  - [ ] update system flow diagram as needed
-  - [ ] press I to toggle inventory panel open/closed
-  - [ ] respond to mouse click on inventory title to toggle too
+  - [x] press 1-9 to use inventory item
+  - [x] update system flow diagram as needed
+  - [ ] refactor inventory systems
+  - [ ] refactor grab_item system
+  - [ ] document single_press stuff in player_action and refer to readme
+  - [ ] refactor use_item system
+  - [ ] updating inventory does not work in sync test.
+  - [ ] press I to toggle inventory panel open/closed. Low priority. Defer.
+  - [ ] respond to mouse click on inventory title to toggle too. Interesting to see how to handle mouse inputs. But may still defer.
 - [ ] data driven dungeon monsters and items
 - [ ] weapons
 - [ ] deploy such that it can be used across devices (ideally over internet)
@@ -77,6 +77,7 @@ Encountered a panic in system `bevy_app::main_schedule::Main::run_main`!
 - `dungeon`: Dungeon generation and map
 - `game_states`: The GameState enum and the game_over system
 - [HUD](./src/hud/README.md): Heads-up display, including health bar and tooltips
+- `items`: Items that the player can grab and add to their inventory and use later
 - `monsters`: Monsters and their actions
 - [Player](./src/player/README.md).
 - [startup](./src/startup/README.md), including GGRS for multiplayer
@@ -95,10 +96,10 @@ flowchart TD
   Monsters-- before -->FOV
 ```
 
-- Health controls the healing of players and monsters so we calculate before any combat.
+- Health controls the healing of players and monsters so we calculate before any combat. It also has the `drink_potion` system, which arguably should happen AFTER player actions and before monster, but we'll keep it simple for now.
 - Player systems run before monsters to give them a theoretical advantage.
 - Monster systems run before HUD and FOV.
-- HUD and FOV run last can can run in parallel, but they must follow monster, player and health systems. FOV is affected by player and monster movements. HUD is affected by player health and actions.
+- HUD and FOV run last can can run in parallel, but they must follow monster, player and health systems. FOV is affected by player and monster movements. HUD is affected by player health and actions (including updates to the player's inventory).
 
 - Dungeon systems just control the dungeon reveal and map zoom level so they can run in parallel with everything else.
 
@@ -169,6 +170,11 @@ flowchart TD
   - [x] events plugin for all relevant modules in events mod
   - [x] system sets x-ref to each other
   - [x] Helper for core_systems
+- [x] healing potions
+  - [x] toggle visibility. It just worked! Nice!
+  - [x] grab item
+  - [x] test with sync. Likely need rollback for this.
+  - [x] Issue with G key detection. Seems like you have to hit it multiple times. This only seems to happen on multi-player wasm, but not on single player wasm nor on mac either single or multi player. It fails to register right at the just_released. Changing from just_released to pressed does the trick.
 
 ### Archived Issues
 
