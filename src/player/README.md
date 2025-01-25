@@ -2,11 +2,6 @@
 
 ## Player Actions
 
-- [x] Move up,down,left,right
-- [x] Commands like save state snapshot
-- [ ] Grab item
-- [ ] Use item (keys 1-0)
-
 ## MultiPlayer (and SyncTest)
 
 ```mermaid
@@ -55,6 +50,8 @@ end
 
 ### Key Input Throttling
 
+#### Move Throttle
+
 When moving, we want the player to move in discrete units corresponding to dungeon positions (tiles) so it is easy to align with corridors, items etc. We want to allow fast movement, but also fine movement. So we start moving on key press (rather than release), BUT we need to throttle the key press since a short press tends to result in multiple move events.
 
 ```mermaid
@@ -88,3 +85,10 @@ handle_move_intent-->>move_player: PlayerMoveEvent
 8. In this second case, the `stop_moving` system will remove `MoveThrottle`.
 9. Whether the throttle finished and the player is still pressing the key, or the player released the key and pressed it (or another move key), the next `PlayerMoveIntentEvent` will be sent.
 10. And in this case `handle_move_intent` will turn it into a `PlayerMoveEvent` (or an attack etc)
+
+#### Other Key Inputs
+
+For other key inputs, we mainly want to register a single keystroke, which would normally work by checking `just_released`. However, in multi-player WebAssembly, this does not work very well, with keystrokes often going undetected. So we use a `single_press` function that resets they key state when it is pressed.
+
+This strategy may actually be a better and simpler method for movement too.
+It is not applied for zooming in/out just because I'm lazy.

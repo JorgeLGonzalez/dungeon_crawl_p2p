@@ -41,6 +41,7 @@ impl From<&mut ButtonInput<KeyCode>> for PlayerAction {
         use KeyCode::*;
         use PlayerAction::*;
 
+        /// See "Other Key Inputs" in README for rationale.
         fn single_press(
             keys: &mut ButtonInput<KeyCode>,
             key: KeyCode,
