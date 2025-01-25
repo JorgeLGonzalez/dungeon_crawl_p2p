@@ -54,32 +54,8 @@ pub fn do_player_action(
             PlayerAction::StopMoving => {
                 stop_moving_event.send(StopMovingEvent::new(player_entity));
             }
-            PlayerAction::UseItem1 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 1));
-            }
-            PlayerAction::UseItem2 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 2));
-            }
-            PlayerAction::UseItem3 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 3));
-            }
-            PlayerAction::UseItem4 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 4));
-            }
-            PlayerAction::UseItem5 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 5));
-            }
-            PlayerAction::UseItem6 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 6));
-            }
-            PlayerAction::UseItem7 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 7));
-            }
-            PlayerAction::UseItem8 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 8));
-            }
-            PlayerAction::UseItem9 => {
-                use_item_event.send(UseItemEvent::new(player_entity, player.id, 9));
+            PlayerAction::UseItem(idx) => {
+                use_item_event.send(UseItemEvent::new(player_entity, player.id, idx));
             }
             PlayerAction::ZoomIn => {
                 zoom_event.send(ZoomEvent::zoom_in(player.id));

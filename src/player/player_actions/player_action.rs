@@ -11,15 +11,7 @@ pub enum PlayerAction {
     Snapshot,
     StopMoving,
     ZoomIn,
-    UseItem1,
-    UseItem2,
-    UseItem3,
-    UseItem4,
-    UseItem5,
-    UseItem6,
-    UseItem7,
-    UseItem8,
-    UseItem9,
+    UseItem(u8),
     ZoomOut,
 }
 
@@ -33,15 +25,7 @@ impl From<u8> for PlayerAction {
             4 => PlayerAction::Move(MoveDirection::Right),
             5 => PlayerAction::StopMoving,
             6 => PlayerAction::GrabItem,
-            11 => PlayerAction::UseItem1,
-            12 => PlayerAction::UseItem2,
-            13 => PlayerAction::UseItem3,
-            14 => PlayerAction::UseItem4,
-            15 => PlayerAction::UseItem5,
-            16 => PlayerAction::UseItem6,
-            17 => PlayerAction::UseItem7,
-            18 => PlayerAction::UseItem8,
-            19 => PlayerAction::UseItem9,
+            v if v >= 10 && v <= 18 => PlayerAction::UseItem(v - 10),
             50 => PlayerAction::ZoomIn,
             51 => PlayerAction::ZoomOut,
             100 => PlayerAction::Snapshot,
@@ -78,15 +62,15 @@ impl From<&mut ButtonInput<KeyCode>> for PlayerAction {
                     .find(|(key, _)| keys.just_released(*key))
                     .map(|_| StopMoving)
             })
-            .or_else(|| single_press(keys, Digit1, UseItem1))
-            .or_else(|| single_press(keys, Digit2, UseItem2))
-            .or_else(|| single_press(keys, Digit3, UseItem3))
-            .or_else(|| single_press(keys, Digit4, UseItem4))
-            .or_else(|| single_press(keys, Digit5, UseItem5))
-            .or_else(|| single_press(keys, Digit6, UseItem6))
-            .or_else(|| single_press(keys, Digit7, UseItem7))
-            .or_else(|| single_press(keys, Digit8, UseItem8))
-            .or_else(|| single_press(keys, Digit9, UseItem9))
+            .or_else(|| single_press(keys, Digit1, UseItem(0)))
+            .or_else(|| single_press(keys, Digit2, UseItem(1)))
+            .or_else(|| single_press(keys, Digit3, UseItem(2)))
+            .or_else(|| single_press(keys, Digit4, UseItem(3)))
+            .or_else(|| single_press(keys, Digit5, UseItem(4)))
+            .or_else(|| single_press(keys, Digit6, UseItem(5)))
+            .or_else(|| single_press(keys, Digit7, UseItem(6)))
+            .or_else(|| single_press(keys, Digit8, UseItem(7)))
+            .or_else(|| single_press(keys, Digit9, UseItem(8)))
             .or_else(|| single_press(keys, KeyG, GrabItem))
             .or_else(|| single_press(keys, KeyM, RevealDungeonCheat))
             .or_else(|| single_press(keys, KeyP, Snapshot))
@@ -114,15 +98,7 @@ impl Into<u8> for PlayerAction {
             PlayerAction::RevealDungeonCheat => 101,
             PlayerAction::StopMoving => 5,
             PlayerAction::Snapshot => 100,
-            PlayerAction::UseItem1 => 11,
-            PlayerAction::UseItem2 => 12,
-            PlayerAction::UseItem3 => 13,
-            PlayerAction::UseItem4 => 14,
-            PlayerAction::UseItem5 => 15,
-            PlayerAction::UseItem6 => 16,
-            PlayerAction::UseItem7 => 17,
-            PlayerAction::UseItem8 => 18,
-            PlayerAction::UseItem9 => 19,
+            PlayerAction::UseItem(v) => 10 + v,
             PlayerAction::ZoomIn => 50,
             PlayerAction::ZoomOut => 51,
             PlayerAction::None => 0,
