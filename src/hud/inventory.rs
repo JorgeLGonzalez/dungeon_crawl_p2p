@@ -41,7 +41,7 @@ pub fn update_inventory(
     mut commands: Commands,
     mut events: EventReader<InventoryUpdatedEvent>,
     mut inventory_title: Query<&mut Text, With<InventoryTitle>>,
-    mut labels: Query<&mut Text, (With<InventoryItem>, Without<InventoryTitle>)>,
+    mut labels: Query<(Entity, &mut Text), (With<InventoryItem>, Without<InventoryTitle>)>,
     font_assets: Res<FontAssets>,
     inventory_panel: Query<Entity, With<InventoryPanel>>,
     local_players: Res<LocalPlayers>,
@@ -64,9 +64,9 @@ pub fn update_inventory(
             labels
                 .iter_mut()
                 .zip(event.inventory.items.iter().map(|item| item.label()))
-                .for_each(|(mut label_entity, label)| {
+                .for_each(|((_, mut label_text), label)| {
                     item_count += 1;
-                    label_entity.0 = format!("{item_count}: {label}");
+                    label_text.0 = format!("{item_count}: {label}");
                 });
 
             // add any items missing from the UI
@@ -87,6 +87,8 @@ pub fn update_inventory(
                     commands.entity(panel).add_child(item_entity);
                 });
 
-            // TODO remove extra UI items
+            labels.iter().skip(item_count).for_each(|(label, _)| {
+                commands.entity(label).despawn_recursive();
+            });
         });
 }
