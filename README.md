@@ -16,8 +16,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] we have sync issues again, but only in multi-player (not sync test)
   - [ ] updating inventory does not work in sync test.
   - [ ] Why is player 0 always visible to player 1 now?!?
-  - [ ] press I to toggle inventory panel open/closed. Low priority. Defer.
   - [ ] respond to mouse click on inventory title to toggle too. Interesting to see how to handle mouse inputs. But may still defer.
+  - [ ] press I to toggle inventory panel open/closed. Low priority. Defer.
 - [ ] data driven dungeon monsters and items
 - [ ] weapons
 - [ ] deploy such that it can be used across devices (ideally over internet)
