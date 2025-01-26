@@ -1,6 +1,6 @@
 use crate::{hud::TooltipLabel, prelude::*};
 
-#[derive(Component)]
+#[derive(Component, Clone, Copy, Hash)]
 pub struct Grabbable;
 
 #[derive(Component, Clone, Copy, Hash)]

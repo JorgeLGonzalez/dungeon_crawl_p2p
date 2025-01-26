@@ -19,13 +19,18 @@ use bevy_ggrs::{GgrsApp, GgrsSchedule};
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct MonstersCoreSet;
 
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub struct SpawnMonstersSet;
+
 pub struct MonstersPlugin;
 
 impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<MonsterMoveTracker>().add_systems(
             OnEnter(GameState::InGame),
-            spawn_monsters.after(SpawnPlayersSet),
+            spawn_monsters
+                .in_set(SpawnMonstersSet)
+                .after(SpawnPlayersSet),
         );
 
         let core_systems = (

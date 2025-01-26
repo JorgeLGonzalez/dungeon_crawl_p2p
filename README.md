@@ -86,7 +86,24 @@ Encountered a panic in system `bevy_app::main_schedule::Main::run_main`!
 
 ### System Sequencing
 
-The `GameState::InGame` is by far the most complex and is handled differently in `GameMode::SinglePlayer` vs `GameMode::P2P` (or `GameMode::SyncTest`). In single player mode, the systems run in the `Update` schedule while in P2P mode, they run in the `GgrsSchedule` schedule (plus a special ReadInputs schedule for handling inputs from both the local and remote players).
+The `GameState::InGame` state is by far the most complex.
+
+#### OnEnter(GameState::InGame)
+
+It is helpful to be deterministic in the order of entity spawning when debugging GGRS. Below is the sequence of system sets that run when entering the `GameState::InGame` state:
+
+```mermaid
+flowchart TD
+  SpawnDungeonSet-- before -->SpawnPlayersSet
+  SpawnPlayersSet-- before -->SpawnMonstersSet
+  SpawnMonstersSet-- before -->SpawnItemsSet
+```
+
+Note that HUD elements spawn in `GameState::Startup`, well before `GameState::InGame`.
+
+#### GameState::InGame Main Loop
+
+The `GameState::InGame` is handled differently in `GameMode::SinglePlayer` vs `GameMode::P2P` (or `GameMode::SyncTest`). In single player mode, the systems run in the `Update` schedule while in P2P mode, they run in the `GgrsSchedule` schedule (plus a special ReadInputs schedule for handling inputs from both the local and remote players).
 
 The sequencing is also non-trivial and diagrammed below:
 
