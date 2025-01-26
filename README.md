@@ -13,9 +13,9 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] refactor grab_item system
   - [x] document single_press stuff in player_action and refer to readme
   - [x] refactor use_item system
+  - [x] we have sync issues again, but only in multi-player (not sync test)
   - [ ] updating inventory does not work in sync test.
   - [ ] Why is player 0 always visible to player 1 now?!?
-  - [ ] we have sync issues again, but only in multi-player (not sync test)
   - [ ] press I to toggle inventory panel open/closed. Low priority. Defer.
   - [ ] respond to mouse click on inventory title to toggle too. Interesting to see how to handle mouse inputs. But may still defer.
 - [ ] data driven dungeon monsters and items
@@ -109,13 +109,13 @@ The sequencing is also non-trivial and diagrammed below:
 
 ```mermaid
 flowchart TD
-  Health-- before -->Player
-  Player-- before -->Monsters
+  Player-- before -->Health
+  Health-- before -->Monsters
   Monsters-- before -->HUD
   Monsters-- before -->FOV
 ```
 
-- Health controls the healing of players and monsters so we calculate before any combat. It also has the `drink_potion` system, which arguably should happen AFTER player actions and before monster, but we'll keep it simple for now.
+- Health controls both time-based healing as well as healing from drinking a potion. For simplicity, we run them in the same set after the player actions (e.g. use healing potion) and before monster actions. This is mainly to ensure all healing happens in the same frame. (There's probably a better way to do this.)
 - Player systems run before monsters to give them a theoretical advantage.
 - Monster systems run before HUD and FOV.
 - HUD and FOV run last can can run in parallel, but they must follow monster, player and health systems. FOV is affected by player and monster movements. HUD is affected by player health and actions (including updates to the player's inventory).

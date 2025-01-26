@@ -43,8 +43,8 @@ Some key notes:
 Since the PRs etc have not gotten any attention, I have developed another way which is:
 
 1. Set `config::GGRS_DEBUG` to true.
-2. Run the app in `GameMode::GgrsSyncTest`.
-3. Capture the output logged into a file called `sync-test-log.txt` in the `ggrs-utils` project and run it. This will parse the log and generate useful output files around the mismatched frame.
+2. Capture the output logged into a file called `p0.log` in the `ggrs-utils` project. When debugging MultiPlayer mode, save the second player's log as `p1.log`.
+3. Run it ggrs-utils. This will parse the log(s) and generate useful output files around the mismatched frame.
 
 There are two ways to auto-detect desync events:
 
@@ -58,3 +58,18 @@ Despite the above, it took me over a week to figure out why the monster position
 ## References
 
 The P2P stuff (among other things) is based on the [Extreme Bevy tutorial](https://johanhelsing.studio/posts/extreme-bevy)
+
+## Debugging Notes
+
+### January 26, 2025
+
+The issue this time was that using a healing potion occured in one frame, but drinking it occured in the next frame. This is because the `drink_potion` system is part of the `health` module which was set to run BEFORE the player systems. So the relevant sequence was:
+
+1. Frame F: Player uses a healing potion. Drink event is sent, but not processed yet.
+2. Frame F + 1: Drink event is processed so player heals.
+3. GGRS detects a prediction failure and rolls back to frame F.
+4. Frame F + 1 is run again, but there is no use item so therefore no drink event so therefore no healing.
+
+The solution is to move the `drink_potion` system to run AFTER the player systems and BEFORE the monsters, to ensure a deterministic sequence.
+
+ASIDE: Also found that the spawning of player, monster and item entities was non-deterministic. This meant that entity IDs were inconsistent between clients. Fixed this by adding criteria to when these entities are spawned.
