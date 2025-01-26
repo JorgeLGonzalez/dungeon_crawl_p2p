@@ -7,9 +7,10 @@ use super::{
 use crate::{
     common,
     config::{game_mode, GameMode},
-    dungeon::{DungeonCoreSet, SpawnDungeonSet},
+    dungeon::DungeonCoreSet,
     fov::FovCoreSet,
     hud::HudCoreSet,
+    player::SpawnPlayersSet,
     GameState,
 };
 use bevy::prelude::*;
@@ -24,7 +25,7 @@ impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<MonsterMoveTracker>().add_systems(
             OnEnter(GameState::InGame),
-            spawn_monsters.after(SpawnDungeonSet),
+            spawn_monsters.after(SpawnPlayersSet),
         );
 
         let core_systems = (

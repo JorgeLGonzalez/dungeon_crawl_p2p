@@ -18,13 +18,18 @@ use bevy_ggrs::{GgrsApp, ReadInputs};
 #[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
 pub struct PlayerCoreSet;
 
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub struct SpawnPlayersSet;
+
 pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(GameState::InGame),
-            (spawn_players, setup_camera).after(SpawnDungeonSet),
+            (spawn_players, setup_camera)
+                .in_set(SpawnPlayersSet)
+                .after(SpawnDungeonSet),
         );
 
         let core_systems = (
