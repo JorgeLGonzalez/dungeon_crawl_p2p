@@ -1,5 +1,6 @@
 use super::{Grabbable, MagicItem};
 use crate::prelude::*;
+use bevy_ggrs::AddRollbackCommandExtension;
 
 pub fn spawn_items(
     dungeon: Res<DungeonMap>,
@@ -8,18 +9,20 @@ pub fn spawn_items(
 ) {
     for pos in &dungeon.item_positions {
         let item = random_item(&mut rng);
-        commands.spawn((
-            item,
-            Grabbable,
-            Sprite {
-                color: item.color(),
-                custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),
-                ..default()
-            },
-            item.tooltip(),
-            Transform::from_translation(pos.to_vec3(config::ITEM_Z_LAYER)),
-            Visibility::Hidden,
-        ));
+        commands
+            .spawn((
+                item,
+                Grabbable,
+                Sprite {
+                    color: item.color(),
+                    custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),
+                    ..default()
+                },
+                item.tooltip(),
+                Transform::from_translation(pos.to_vec3(config::ITEM_Z_LAYER)),
+                Visibility::Hidden,
+            ))
+            .add_rollback();
     }
 }
 

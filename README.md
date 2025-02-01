@@ -27,7 +27,7 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] inventory and item usage
+- [x] inventory and item usage
   - [x] press 1-9 to use inventory item
   - [x] update system flow diagram as needed
   - [x] refactor inventory systems
@@ -35,7 +35,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] document single_press stuff in player_action and refer to readme
   - [x] refactor use_item system
   - [x] we have sync issues again, but only in multi-player (not sync test)
-  - [ ] updating inventory does not work in sync test.
+  - [x] updating inventory does not work in sync test. It only keeps one item in inventory and it cannot be selected via mouse nor key. Issue was that I forgot to add the Rollback component to items!
   - [x] Why is player 0 always visible to player 1 now?!?
   - [x] respond to mouse click on inventory title to toggle too. Interesting to see how to handle mouse inputs. But may still defer.
 - [ ] data driven dungeon monsters and items
