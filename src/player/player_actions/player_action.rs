@@ -1,4 +1,4 @@
-use crate::hud::InventoryItem;
+use crate::hud::{InventoryItem, InventoryItemBundle};
 use bevy::prelude::*;
 
 pub type PickedItemQuery<'w, 's, 'i, 't> =
@@ -25,17 +25,8 @@ impl PlayerAction {
     pub fn new(keys: &mut ButtonInput<KeyCode>, picked_items: &PickedItemQuery) -> Self {
         picked_items
             .iter()
-            .filter(|(interaction, _)| matches!(interaction, Interaction::Pressed))
-            .find_map(|(_, text)| {
-                text.0
-                    .split(":")
-                    .next()
-                    .and_then(|s| s.parse::<u8>().ok())
-                    .map(|idx| idx - 1)
-                    .or_else(|| {
-                        panic!("No item found");
-                    })
-            })
+            .find(|(interaction, _)| matches!(interaction, Interaction::Pressed))
+            .map(|(_, text)| InventoryItemBundle::index_from_text(text))
             .map(|idx| PlayerAction::UseItem(idx))
             .unwrap_or_else(|| PlayerAction::from(keys))
     }
