@@ -16,6 +16,7 @@ impl Plugin for PlayerEventsPlugin {
     }
 }
 
+/// A player has requested to grab an item (that may or may not be under them).
 #[derive(Event)]
 pub struct GrabItemEvent {
     pub player: Entity,
@@ -28,6 +29,8 @@ impl GrabItemEvent {
     }
 }
 
+/// The player has added or removed an item from their inventory.
+/// This is used to update the HUD.
 #[derive(Event)]
 pub struct InventoryUpdatedEvent {
     pub inventory: Inventory,
@@ -108,6 +111,9 @@ impl StopMovingEvent {
     }
 }
 
+/// A player has requested to use an item from their inventory.
+/// An item is requested by its index in the inventory.
+/// It may not exist.
 #[derive(Event)]
 pub struct UseItemEvent {
     pub player: Entity,

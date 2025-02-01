@@ -1,5 +1,4 @@
-use super::HudCamera;
-use crate::config;
+use super::{config, HudCamera};
 use bevy::{prelude::*, render::view::RenderLayers};
 
 pub fn setup_camera(mut commands: Commands) {
@@ -14,6 +13,6 @@ pub fn setup_camera(mut commands: Commands) {
             viewport_origin: Vec2::new(0., 0.),
             ..OrthographicProjection::default_2d()
         },
-        RenderLayers::layer(config::HUD_CAMERA_RENDER_LAYER),
+        RenderLayers::layer(config::CAMERA_RENDER_LAYER),
     ));
 }

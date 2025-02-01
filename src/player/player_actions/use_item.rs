@@ -1,30 +1,20 @@
-use super::{Inventory, InventoryUpdatedEvent, UseItemEvent};
+use super::{InventoryUpdatedEvent, InventoryUsageQuery, ItemUser, UseItemEvent};
 use crate::{health::DrinkPotionEvent, prelude::*};
 
 pub fn use_item(
     mut drink_potion_event: EventWriter<DrinkPotionEvent>,
     mut inventory_updated_event: EventWriter<InventoryUpdatedEvent>,
-    mut players: Query<&mut Inventory, With<Player>>,
+    mut players: InventoryUsageQuery,
     mut use_item_event: EventReader<UseItemEvent>,
 ) {
-    use_item_event.read().for_each(
-        |UseItemEvent {
-             player,
-             player_id,
-             item_index,
-         }| {
-            let mut inventory = players.get_mut(*player).expect("Player not found");
-            if inventory.items.len() > *item_index as usize {
-                let item = inventory.items.remove(*item_index as usize);
-                drink_potion_event.send(DrinkPotionEvent::new(
-                    *player,
-                    *player_id,
-                    item.healing_amount(),
-                ));
-                inventory_updated_event
-                    .send(InventoryUpdatedEvent::new(inventory.clone(), *player_id));
-                info!("Use item event: {:?}", item.label());
-            }
-        },
-    );
+    use_item_event.read().for_each(|event| {
+        let Some(mut item_user) = ItemUser::try_new(&event, &mut players) else {
+            return;
+        };
+
+        let drink_potion = item_user.use_item();
+        drink_potion_event.send(drink_potion);
+
+        inventory_updated_event.send(item_user.create_inventory_updated_event());
+    });
 }

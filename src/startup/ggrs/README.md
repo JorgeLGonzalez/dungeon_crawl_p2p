@@ -1,7 +1,7 @@
 # GGRS
 
 Remember to test with `GameMode::GgrsSyncTest` to see if things are still working.
-Last tested on 2025-01-21.
+Last tested on 2025-01-25.
 
 ## Rollbacks
 
@@ -11,7 +11,7 @@ GGRS depends on rollbacks. We need to do at least two things:
 2. Register specific components for rollback snapshots with a specific strategy (clone or copy) in `main` via the `rollback_component_with_clone` or `rollback_component_with_copy` methods. This tells Bevy GGRS to store a snapshot of these for every frame (discarding them as they lose utility).
 3. If the resource or component is critical to the state, add it to the frame checksum via the `checksum_component` or `checksum_resource` App method. This way it will be included in the frame checksum used to detect if clients fall out of sync.
 
-So for `Player` for example (in [spawn_players](./src/systems/spawn_players.rs)) we use `add_rollback` and in main we register `Player` and `Transform` for rollback. We probably will need to add other Components that are added to Player when we add Sprite etc, especially if a Player will be despawned.
+So for `Player` for example (in [spawn_players](../../player/spawn_players.rs)) we use `add_rollback` and in main we register `Player` and `Transform` for rollback. We probably will need to add other Components that are added to Player when we add Sprite etc, especially if a Player will be despawned.
 
 See [Extreme Bevy Detecting Desyncs tutorial](https://johanhelsing.studio/posts/extreme-bevy-desync-detection) for more info
 
@@ -43,8 +43,8 @@ Some key notes:
 Since the PRs etc have not gotten any attention, I have developed another way which is:
 
 1. Set `config::GGRS_DEBUG` to true.
-2. Run the app in `GameMode::GgrsSyncTest`.
-3. Capture the output logged into a file called `sync-test-log.txt` in the `ggrs-utils` project and run it. This will parse the log and generate useful output files around the mismatched frame.
+2. Capture the output logged into a file called `p0.log` in the `ggrs-utils` project. When debugging MultiPlayer mode, save the second player's log as `p1.log`.
+3. Run it ggrs-utils. This will parse the log(s) and generate useful output files around the mismatched frame.
 
 There are two ways to auto-detect desync events:
 
@@ -58,3 +58,18 @@ Despite the above, it took me over a week to figure out why the monster position
 ## References
 
 The P2P stuff (among other things) is based on the [Extreme Bevy tutorial](https://johanhelsing.studio/posts/extreme-bevy)
+
+## Debugging Notes
+
+### January 26, 2025
+
+The issue this time was that using a healing potion occured in one frame, but drinking it occured in the next frame. This is because the `drink_potion` system is part of the `health` module which was set to run BEFORE the player systems. So the relevant sequence was:
+
+1. Frame F: Player uses a healing potion. Drink event is sent, but not processed yet.
+2. Frame F + 1: Drink event is processed so player heals.
+3. GGRS detects a prediction failure and rolls back to frame F.
+4. Frame F + 1 is run again, but there is no use item so therefore no drink event so therefore no healing.
+
+The solution is to move the `drink_potion` system to run AFTER the player systems and BEFORE the monsters, to ensure a deterministic sequence.
+
+ASIDE: Also found that the spawning of player, monster and item entities was non-deterministic. This meant that entity IDs were inconsistent between clients. Fixed this by adding criteria to when these entities are spawned.

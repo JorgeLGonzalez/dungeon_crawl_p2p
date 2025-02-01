@@ -1,15 +1,44 @@
 mod assets;
 mod camera_setup;
 mod components;
+mod config;
 mod health_bar;
 mod health_bar_setup;
-mod inventory;
+mod inventory {
+    mod components;
+    mod hud_inventory_sync;
+    mod spawn_inventory_ui;
+    mod update_inventory;
+
+    pub use spawn_inventory_ui::spawn_inventory_ui;
+    pub use update_inventory::update_inventory;
+
+    use super::*;
+    use components::*;
+    use hud_inventory_sync::*;
+}
 mod plugin;
-mod tooltips;
+mod tooltips {
+    mod components;
+    mod determiner;
+    mod determiner_builder;
+    mod hider;
+    mod queries;
+    mod shower;
+    mod spawn_tooltip;
+    mod tooltip;
+
+    pub use components::TooltipLabel;
+    pub use spawn_tooltip::spawn_tooltip;
+    pub use tooltip::tooltip;
+
+    use super::*;
+    use components::*;
+}
 
 pub use assets::FontAssets;
-pub use components::TooltipLabel;
 pub use plugin::{HudCoreSet, HudPlugin};
+pub use tooltips::TooltipLabel;
 
 use camera_setup::setup_camera;
 use components::*;
