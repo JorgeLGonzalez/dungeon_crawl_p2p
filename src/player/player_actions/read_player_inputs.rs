@@ -1,4 +1,4 @@
-use super::PlayerAction;
+use super::{player_action::PickedItemQuery, PlayerAction};
 use crate::config;
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 use bevy_ggrs::{LocalInputs, LocalPlayers};
@@ -10,12 +10,13 @@ pub fn read_player_inputs(
     mut commands: Commands,
     mut keys: ResMut<ButtonInput<KeyCode>>,
     local_players: Res<LocalPlayers>,
+    picked_items: PickedItemQuery,
 ) {
     let local_inputs = local_players
         .0
         .iter()
         .fold(HashMap::new(), |mut acc, &player_handle| {
-            let action = PlayerAction::from(keys.as_mut());
+            let action = PlayerAction::new(keys.as_mut(), &picked_items);
             acc.insert(player_handle, action.into());
 
             acc

@@ -2,6 +2,7 @@ use bevy::prelude::*;
 
 #[derive(Bundle)]
 pub struct InventoryItemBundle {
+    pub interaction: Interaction,
     pub inventory_item: InventoryItem,
     pub text: Text,
     pub text_font: TextFont,
@@ -10,6 +11,7 @@ pub struct InventoryItemBundle {
 impl InventoryItemBundle {
     pub fn new(label: &str, index: usize, font: &TextFont) -> Self {
         Self {
+            interaction: Interaction::None,
             inventory_item: InventoryItem,
             text: Text(Self::ui_label(index, label)),
             text_font: font.clone(),

@@ -10,8 +10,9 @@ mod inventory {
     mod spawn_inventory_ui;
     mod update_inventory;
 
-    pub use spawn_inventory_ui::spawn_inventory_ui;
-    pub use update_inventory::update_inventory;
+    pub use components::InventoryItem;
+    pub(super) use spawn_inventory_ui::spawn_inventory_ui;
+    pub(super) use update_inventory::update_inventory;
 
     use super::*;
     use components::*;
@@ -37,6 +38,7 @@ mod tooltips {
 }
 
 pub use assets::FontAssets;
+pub use inventory::InventoryItem;
 pub use plugin::{HudCoreSet, HudPlugin};
 pub use tooltips::TooltipLabel;
 

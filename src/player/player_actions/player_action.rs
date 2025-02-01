@@ -1,4 +1,8 @@
+use crate::hud::InventoryItem;
 use bevy::prelude::*;
+
+pub type PickedItemQuery<'w, 's, 'i, 't> =
+    Query<'w, 's, (&'i Interaction, &'t Text), (With<InventoryItem>, Changed<Interaction>)>;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum PlayerAction {
@@ -13,6 +17,28 @@ pub enum PlayerAction {
     ZoomIn,
     UseItem(u8),
     ZoomOut,
+}
+
+impl PlayerAction {
+    /// Determine [`PlayerAction`] based on keyboard or mouse click input. The
+    /// [`PickedItemQuery`] detects mouse clicks on a HUD UI [`InventoryItem`].
+    pub fn new(keys: &mut ButtonInput<KeyCode>, picked_items: &PickedItemQuery) -> Self {
+        picked_items
+            .iter()
+            .filter(|(interaction, _)| matches!(interaction, Interaction::Pressed))
+            .find_map(|(_, text)| {
+                text.0
+                    .split(":")
+                    .next()
+                    .and_then(|s| s.parse::<u8>().ok())
+                    .map(|idx| idx - 1)
+                    .or_else(|| {
+                        panic!("No item found");
+                    })
+            })
+            .map(|idx| PlayerAction::UseItem(idx))
+            .unwrap_or_else(|| PlayerAction::from(keys))
+    }
 }
 
 /// Convert from u8 which is how the action is encoded for sharing via GGRS
