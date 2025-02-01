@@ -1,12 +1,25 @@
-use crate::{monsters::Monster, player::MoveThrottle, prelude::*};
+use crate::{
+    items::{Grabbable, MagicItem},
+    monsters::Monster,
+    player::MoveThrottle,
+    prelude::*,
+};
 use bevy_ggrs::RollbackFrameCount;
 
 pub fn debug_ggrs(
+    items: Query<(Entity, &MagicItem, &Transform, &Grabbable), With<MagicItem>>,
     monsters: Query<(Entity, &Health, &Monster, &Transform), With<Monster>>,
     players: Query<(Entity, &Health, Option<&MoveThrottle>, &Player, &Transform), With<Player>>,
     frame: Res<RollbackFrameCount>,
 ) {
     let frame = frame.0;
+
+    for (entity, item, transform, _) in &items {
+        let item = item.label();
+        let pos = transform.translation.truncate().as_ivec2();
+        info!("Frame={frame}|Item={item}|Entity={entity}|Pos={pos}");
+    }
+    info!("Frame={frame} total items={}", items.iter().count());
 
     for (entity, health, move_throttle, player, transform) in &players {
         let player_id = player.id;
@@ -19,6 +32,7 @@ pub fn debug_ggrs(
             Health={health}|Throttle={throttle}"
         );
     }
+    info!("Frame={frame} total players={}", players.iter().count());
 
     for (entity, health, monster, transform) in &monsters {
         let monster = monster.name();
@@ -27,4 +41,5 @@ pub fn debug_ggrs(
 
         info!("Frame={frame}|Monster={monster}|Entity={entity}|Pos={pos}|Health={health}");
     }
+    info!("Frame={frame} total monsters={}", monsters.iter().count());
 }

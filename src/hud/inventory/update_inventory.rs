@@ -23,9 +23,11 @@ pub fn update_inventory(
                 .remove_excess_ui_items(&mut labels, &mut commands);
 
             let ui_items_to_append = sync.spawn_ui_items(&mut commands, labels.iter().count());
-            commands
-                .entity(inventory_panel.single())
-                .add_children(&ui_items_to_append);
+            if !ui_items_to_append.is_empty() {
+                commands
+                    .entity(inventory_panel.single())
+                    .add_children(&ui_items_to_append);
+            }
 
             inventory_title.single_mut().0 = sync.inventory_title();
         });

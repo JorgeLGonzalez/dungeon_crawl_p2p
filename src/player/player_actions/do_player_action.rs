@@ -6,6 +6,7 @@ use crate::{
 };
 use bevy::prelude::*;
 use bevy_ggrs::PlayerInputs;
+use player_action::PickedItemQuery;
 
 /// Determines the [`PlayerAction`] based on keyboard inputs and dispatches the
 /// relevant event (e.g. [`PlayerMoveIntentEvent`]).
@@ -22,6 +23,7 @@ pub fn do_player_action(
     mut zoom_event: EventWriter<ZoomEvent>,
     mut keys: ResMut<ButtonInput<KeyCode>>,
     ggrs_inputs: Option<Res<PlayerInputs<config::GgrsSessionConfig>>>,
+    picked_items: PickedItemQuery,
     players: Query<(Entity, &Player)>,
 ) {
     assert_player_count(players.iter().count());
@@ -30,7 +32,7 @@ pub fn do_player_action(
         let action = if let Some(ggrs_inputs) = ggrs_inputs.as_ref() {
             PlayerAction::from(ggrs_inputs[player.id].0)
         } else {
-            PlayerAction::from(keys.as_mut())
+            PlayerAction::new(keys.as_mut(), &picked_items)
         };
 
         match action {
