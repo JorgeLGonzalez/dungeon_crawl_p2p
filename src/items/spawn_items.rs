@@ -15,13 +15,7 @@ pub fn spawn_items(
     mut commands: Commands,
     mut rng: ResMut<RandomGenerator>,
 ) {
-    let item_distribution: Vec<&MagicItemTemplate> = dungeon_data_assets
-        .get(&dungeon_assets.data)
-        .expect("Failed to load dungeon data")
-        .items
-        .iter()
-        .flat_map(|item_template| repeat(item_template).take(item_template.frequency))
-        .collect();
+    let item_distribution = create_distribution(dungeon_data_assets.get(&dungeon_assets.data));
 
     let mut stats: HashMap<String, usize> = HashMap::new();
 
@@ -50,4 +44,15 @@ pub fn spawn_items(
     }
 
     info!("Spawned items: {stats:?}");
+}
+
+/// Create a distribution of item templates based on their frequency so that
+/// those with a higher frequency are more likely to be randomly selected.
+fn create_distribution(dungeon_data: Option<&DungeonData>) -> Vec<&MagicItemTemplate> {
+    dungeon_data
+        .expect("Failed to load dungeon data")
+        .items
+        .iter()
+        .flat_map(|template| repeat(template).take(template.frequency))
+        .collect()
 }
