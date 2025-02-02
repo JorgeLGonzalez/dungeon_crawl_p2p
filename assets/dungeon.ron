@@ -1,0 +1,14 @@
+(
+  items: [
+    (
+      color: (red: 0.0, green: 0.0, blue: 1.0, alpha: 1.0),
+      frequency: 1,
+      item_type: HealingPotion(6),
+    ),
+    (
+      color: (red: 0.5, green:0.5, blue:0.9, alpha:1.0),
+      frequency: 3,
+      item_type: HealingPotion(2)
+    ),
+  ]
+)

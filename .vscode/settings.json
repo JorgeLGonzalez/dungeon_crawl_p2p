@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "autonumber",
+    "bindgen",
     "bresenham",
     "despawn",
     "despawned",
@@ -16,11 +17,13 @@
     "Grabbable",
     "hashbrown",
     "Respawn",
+    "serde",
     "spawnable",
     "srgb",
     "srgba",
     "synctest",
-    "tooltipped"
+    "tooltipped",
+    "xoshiro"
   ],
   "editor.inlayHints.enabled": "offUnlessPressed"
 }

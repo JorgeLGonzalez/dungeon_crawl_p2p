@@ -6,14 +6,18 @@ edition = "2021"
 [dependencies]
 bevy = { version = "0.15", features = ["bevy_window"] }
 bevy_asset_loader = "0.22"
+bevy_common_assets = { version = "0.12.0", features = ["ron"] }
 bevy_ggrs = { version = "0.17", features = ["wasm-bindgen"] }
 # bevy_ggrs = { path = "../bevy_ggrs", features = ["wasm-bindgen"] }
 bevy_matchbox = { version = "0.11", features = ["ggrs"] }
 # bevy_matchbox = { path = "../matchbox/bevy_matchbox", features = ["ggrs"] }
-rand = "0.8"
+# rand 0.9 has breaking changes
+rand = "0.8.0"
+# 0.7 has breaking changes
 rand_xoshiro = "0.6.0"
+serde = { version = "1.0", features = ["derive"] }
 # locked to 0.2.97 to be compatible w/ wasm-server-runner
-wasm-bindgen = "=0.2.97"
+wasm-bindgen = "=0.2.100"
 
 [profile.dev.package."*"]
 opt-level = 2

@@ -1,5 +1,6 @@
 mod add_core_systems;
 mod debug_ggrs;
+mod dungeon_data;
 mod events;
 mod plugin;
 mod random_generator;
@@ -31,6 +32,7 @@ pub mod health {
 }
 
 pub use add_core_systems::add_core_systems;
+pub use dungeon_data::{DungeonAssets, DungeonData};
 pub use events::{DesyncEvent, SnapshotStateEvent};
 pub use plugin::CommonPlugin;
 pub use random_generator::{RandomCounter, RandomGenerator};
