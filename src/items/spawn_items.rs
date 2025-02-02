@@ -1,7 +1,6 @@
-use super::{Grabbable, MagicItemTemplate};
+use super::MagicItemTemplate;
 use crate::{
     common::{DungeonAssets, DungeonData},
-    hud::TooltipLabel,
     items::components::MagicItemBundle,
     prelude::*,
 };
@@ -18,9 +17,7 @@ pub fn spawn_items(
 ) {
     let item_distribution = create_distribution(dungeon_data_assets.get(&dungeon_assets.data));
 
-    let mut stats: HashMap<String, usize> = HashMap::new();
-
-    for item_bundle in dungeon
+    let stats = dungeon
         .item_positions
         .iter()
         .map(|pos| {
@@ -30,14 +27,15 @@ pub fn spawn_items(
             )
         })
         .map(|(template, pos)| MagicItemBundle::new(template, pos))
-    {
-        stats
-            .entry(item_bundle.item.label())
-            .and_modify(|count| *count += 1)
-            .or_insert(1);
+        .fold(HashMap::new(), |mut acc, item_bundle| {
+            acc.entry(item_bundle.item.label())
+                .and_modify(|count| *count += 1)
+                .or_insert(1);
 
-        commands.spawn(item_bundle).add_rollback();
-    }
+            commands.spawn(item_bundle).add_rollback();
+
+            acc
+        });
 
     info!("Spawned items: {stats:?}");
 }
