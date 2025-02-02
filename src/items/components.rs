@@ -1,5 +1,34 @@
-use crate::prelude::*;
+use crate::{hud::TooltipLabel, prelude::*};
 use serde::Deserialize;
+
+#[derive(Bundle)]
+pub struct MagicItemBundle {
+    pub item: MagicItem,
+    pub grabbable: Grabbable,
+    pub sprite: Sprite,
+    pub tooltip_label: TooltipLabel,
+    pub transform: Transform,
+    pub visibility: Visibility,
+}
+
+impl MagicItemBundle {
+    pub fn new(template: &MagicItemTemplate, pos: Vec2) -> Self {
+        let item = template.to_magic_item();
+
+        Self {
+            item,
+            grabbable: Grabbable,
+            sprite: Sprite {
+                color: template.color(),
+                custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),
+                ..default()
+            },
+            tooltip_label: TooltipLabel(item.label()),
+            transform: Transform::from_translation(pos.extend(config::ITEM_Z_LAYER)),
+            visibility: Visibility::Hidden,
+        }
+    }
+}
 
 #[derive(Component, Clone, Copy, Hash)]
 pub struct Grabbable;

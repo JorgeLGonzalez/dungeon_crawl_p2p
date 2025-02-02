@@ -2,6 +2,7 @@ use super::{Grabbable, MagicItemTemplate};
 use crate::{
     common::{DungeonAssets, DungeonData},
     hud::TooltipLabel,
+    items::components::MagicItemBundle,
     prelude::*,
 };
 use bevy::utils::hashbrown::HashMap;
@@ -19,28 +20,23 @@ pub fn spawn_items(
 
     let mut stats: HashMap<String, usize> = HashMap::new();
 
-    for pos in &dungeon.item_positions {
-        let template = item_distribution[rng.gen_range(0..item_distribution.len())];
-        let item = template.to_magic_item();
-        commands
-            .spawn((
-                item,
-                Grabbable,
-                Sprite {
-                    color: template.color(),
-                    custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),
-                    ..default()
-                },
-                TooltipLabel(item.label()),
-                Transform::from_translation(pos.to_vec3(config::ITEM_Z_LAYER)),
-                Visibility::Hidden,
-            ))
-            .add_rollback();
-
+    for item_bundle in dungeon
+        .item_positions
+        .iter()
+        .map(|pos| {
+            (
+                item_distribution[rng.gen_range(0..item_distribution.len())],
+                pos.to_vec2(),
+            )
+        })
+        .map(|(template, pos)| MagicItemBundle::new(template, pos))
+    {
         stats
-            .entry(item.label())
+            .entry(item_bundle.item.label())
             .and_modify(|count| *count += 1)
             .or_insert(1);
+
+        commands.spawn(item_bundle).add_rollback();
     }
 
     info!("Spawned items: {stats:?}");
