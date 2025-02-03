@@ -27,9 +27,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] data driven dungeon monsters and items
-  - [x] items
-  - [ ] monsters
 - [ ] weapons
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
@@ -149,7 +146,7 @@ flowchart TD
   - [x] synctest.
 - [x] health bar
 - [x] player FOV
-- [ ] monster follows player
+- [x] monster follows player
   - [x] FOV contains hash set of positions (or hashmap of position to tile entity)
   - [x] monster FOV
   - [x] MonsterActionDeterminer.plan_move. move towards any player it can see, otherwise move randomly
@@ -217,6 +214,9 @@ flowchart TD
   - [x] updating inventory does not work in sync test. It only keeps one item in inventory and it cannot be selected via mouse nor key. Issue was that I forgot to add the Rollback component to items!
   - [x] Why is player 0 always visible to player 1 now?!?
   - [x] respond to mouse click on inventory title to toggle too. Interesting to see how to handle mouse inputs. But may still defer.
+- [x] data driven dungeon monsters and items
+  - [x] items
+  - [x] monsters
 
 ### Archived Issues
 

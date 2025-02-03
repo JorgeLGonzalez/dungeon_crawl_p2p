@@ -1,7 +1,7 @@
 # GGRS
 
 Remember to test with `GameMode::GgrsSyncTest` to see if things are still working.
-Last tested on 2025-01-25.
+Last tested on 2025-02-03.
 
 ## Rollbacks
 
