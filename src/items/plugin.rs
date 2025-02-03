@@ -12,10 +12,10 @@ impl Plugin for ItemsPlugin {
             spawn_items.after(SpawnMonstersSet),
         );
 
-        if !game_mode(GameMode::GgrsSyncTest) {
+        if !game_mode(GameMode::SinglePlayer) {
             app.rollback_component_with_copy::<Grabbable>()
                 .checksum_component_with_hash::<Grabbable>()
-                .rollback_component_with_clone::<MagicItem>()
+                .rollback_component_with_copy::<MagicItem>()
                 .checksum_component_with_hash::<MagicItem>();
         }
     }
