@@ -1,6 +1,66 @@
-use crate::{hud::TooltipLabel, prelude::*};
+use super::LastAction;
+use crate::{hud::TooltipLabel, player::Obstacle, prelude::*};
+use serde::Deserialize;
 
-#[derive(Component, Clone, Copy, Debug, Hash)]
+#[derive(Bundle)]
+pub struct MonsterBundle {
+    pub monster: Monster,
+    pub damage: Damage,
+    pub fov: FieldOfView,
+    pub health: Health,
+    pub last_action: LastAction,
+    pub obstacle: Obstacle,
+    pub sprite: Sprite,
+    pub tooltip_label: TooltipLabel,
+    pub transform: Transform,
+    pub visibility: Visibility,
+}
+
+impl MonsterBundle {
+    pub fn new(template: &MonsterTemplate, pos: Vec2) -> Self {
+        let monster = template.monster;
+
+        Self {
+            monster,
+            damage: Damage(template.damage),
+            fov: FieldOfView::new(config::MONSTER_FOV_RADIUS),
+            health: Health::new(template.health),
+            last_action: LastAction::new(),
+            obstacle: Obstacle::Monster,
+            sprite: Sprite {
+                color: template.color(),
+                custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),
+                ..default()
+            },
+            tooltip_label: TooltipLabel(template.label()),
+            transform: Transform::from_translation(pos.extend(config::MONSTER_Z_LAYER)),
+            visibility: Visibility::Hidden,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MonsterTemplate {
+    pub damage: DamageUnit,
+    pub frequency: usize,
+    pub health: HealthUnit,
+    pub monster: Monster,
+    color: Srgba,
+}
+
+impl MonsterTemplate {
+    pub fn color(&self) -> Color {
+        self.color.into()
+    }
+
+    pub fn label(&self) -> String {
+        let (name, health) = (self.monster.name(), self.health);
+
+        format!("{name}: {health} hp")
+    }
+}
+
+#[derive(Component, Clone, Copy, Debug, Deserialize, Hash)]
 pub enum Monster {
     Ettin,
     Goblin,
@@ -9,33 +69,6 @@ pub enum Monster {
 }
 
 impl Monster {
-    pub fn color(&self) -> Color {
-        match self {
-            Monster::Ettin => Color::srgb(0.9, 0.1, 0.1),
-            Monster::Ogre => Color::srgb(0.8, 0.2, 0.2),
-            Monster::Orc => Color::srgb(0.7, 0.3, 0.3),
-            Monster::Goblin => Color::srgb(0.6, 0.4, 0.4),
-        }
-    }
-
-    pub fn damage(&self) -> Damage {
-        match self {
-            Monster::Ettin => Damage(3),
-            Monster::Goblin => Damage(1),
-            Monster::Ogre => Damage(2),
-            Monster::Orc => Damage(1),
-        }
-    }
-
-    pub fn health(&self) -> Health {
-        match self {
-            Monster::Ettin => Health::new(10),
-            Monster::Goblin => Health::new(1),
-            Monster::Ogre => Health::new(2),
-            Monster::Orc => Health::new(2),
-        }
-    }
-
     pub fn name(&self) -> &str {
         match self {
             Monster::Ettin => "Ettin",
@@ -43,11 +76,5 @@ impl Monster {
             Monster::Ogre => "Ogre",
             Monster::Orc => "Orc",
         }
-    }
-
-    pub fn tooltip(&self) -> TooltipLabel {
-        let (name, health) = (self.name(), self.health().max);
-
-        TooltipLabel(format!("{name}: {health} hp"))
     }
 }

@@ -1,7 +1,7 @@
 mod monster;
 
 use bevy::prelude::Component;
-pub use monster::Monster;
+pub use monster::{Monster, MonsterBundle, MonsterTemplate};
 
 /// LastAction is used to track the time of the last action of a monster so as
 /// to throttle the rate at which monsters can act.

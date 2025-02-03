@@ -13,7 +13,7 @@ pub struct MagicItemBundle {
 
 impl MagicItemBundle {
     pub fn new(template: &MagicItemTemplate, pos: Vec2) -> Self {
-        let item = template.to_magic_item();
+        let item = template.item;
 
         Self {
             item,
@@ -36,17 +36,13 @@ pub struct Grabbable;
 #[derive(Debug, Deserialize)]
 pub struct MagicItemTemplate {
     pub frequency: usize,
+    pub item: MagicItem,
     color: Srgba,
-    item_type: MagicItem,
 }
 
 impl MagicItemTemplate {
     pub fn color(&self) -> Color {
         self.color.into()
-    }
-
-    pub fn to_magic_item(&self) -> MagicItem {
-        self.item_type
     }
 }
 
