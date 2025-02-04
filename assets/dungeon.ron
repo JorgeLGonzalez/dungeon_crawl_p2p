@@ -2,13 +2,28 @@
   items: [
     (
       color: (red: 0.0, green: 0.0, blue: 1.0, alpha: 1.0),
-      frequency: 1,
+      frequency: 6,
       item: HealingPotion(6),
     ),
     (
       color: (red: 0.5, green:0.5, blue:0.9, alpha:1.0),
-      frequency: 3,
+      frequency: 10,
       item: HealingPotion(2)
+    ),
+    (
+      color: (red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0),
+      frequency: 1,
+      item: Weapon (damage: 3, kind: Huge)
+    ),
+    (
+      color: (red: 0.8, green: 0.6, blue: 0.0, alpha: 1.0),
+      frequency: 4,
+      item: Weapon (damage: 1, kind: Rusty)
+    ),
+    (
+      color: (red: 0.8, green: 0.8, blue: 0.0, alpha: 1.0),
+      frequency: 3,
+      item: Weapon (damage: 2, kind: Shiny)
     ),
   ],
   monsters: [

@@ -49,18 +49,28 @@ impl MagicItemTemplate {
 #[derive(Component, Clone, Debug, Deserialize, Copy, Hash)]
 pub enum MagicItem {
     HealingPotion(HealthUnit),
+    Weapon { damage: DamageUnit, kind: Sword },
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Hash)]
+pub enum Sword {
+    Huge,
+    Rusty,
+    Shiny,
 }
 
 impl MagicItem {
     pub fn healing_amount(&self) -> HealthUnit {
         match self {
             MagicItem::HealingPotion(amount) => *amount,
+            _ => 0,
         }
     }
 
     pub fn label(&self) -> String {
         match self {
             MagicItem::HealingPotion(hp) => format!("Healing Potion ({hp} hp)"),
+            MagicItem::Weapon { damage, kind } => format!("{kind:?} Sword ({damage} hp)"),
         }
     }
 }
