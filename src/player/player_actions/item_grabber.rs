@@ -1,14 +1,14 @@
 use super::{GrabItemEvent, Inventory};
 use crate::{
-    items::{Grabbable, MagicItem},
-    player::{InventoryUpdatedEvent, PlayerId},
+    items::{Grabbable, MagicItem, Weapon},
+    player::{InventoryUpdatedEvent, PlayerId, WeaponWieldedEvent},
     prelude::*,
 };
 
 pub(super) type ItemQuery<'w, 's, 'i, 't> =
     Query<'w, 's, (Entity, &'i MagicItem, &'t Transform), With<Grabbable>>;
-pub(super) type PlayerInventoryQuery<'w, 's, 'i, 't> =
-    Query<'w, 's, (&'i mut Inventory, &'t Transform), With<Player>>;
+pub(super) type PlayerInventoryQuery<'w, 's, 'i, 't, 'p> =
+    Query<'w, 's, (&'i mut Inventory, &'t Transform, Option<&'p Weapon>), With<Player>>;
 
 pub(super) struct ItemGrabber {
     item: Option<MagicItem>,
@@ -34,7 +34,7 @@ impl ItemGrabber {
     ) -> Option<Self> {
         let player_pos = players
             .get(self.player)
-            .map(|(_, t)| t.translation.truncate().as_ivec2())
+            .map(|(_, t, _)| t.translation.truncate().as_ivec2())
             .expect("Player not found");
 
         items
@@ -51,18 +51,37 @@ impl ItemGrabber {
         &self,
         commands: &mut Commands,
         players: &mut PlayerInventoryQuery,
-    ) -> InventoryUpdatedEvent {
+    ) -> EquipEvent {
         let item_entity = self.item_entity.unwrap();
         let item = self.item.unwrap();
-        let mut inventory = players
-            .get_mut(self.player)
-            .map(|(inventory, _)| inventory)
-            .expect("Player not found");
 
         info!("Player {} grabs item {item_entity}", self.player_id);
         commands.entity(item_entity).despawn_recursive();
-        inventory.items.push(item);
 
-        InventoryUpdatedEvent::new(inventory.clone(), self.player_id)
+        match item {
+            MagicItem::HealingPotion(_) => {
+                let mut inventory = players
+                    .get_mut(self.player)
+                    .map(|(inventory, ..)| inventory)
+                    .expect("Player not found");
+
+                inventory.items.push(item);
+
+                EquipEvent::InventoryUpdate(InventoryUpdatedEvent::new(
+                    inventory.clone(),
+                    self.player_id,
+                ))
+            }
+            MagicItem::Weapon(weapon) => {
+                commands.entity(self.player).insert(weapon);
+
+                EquipEvent::Wield(WeaponWieldedEvent::new(self.player_id, item))
+            }
+        }
     }
+}
+
+pub enum EquipEvent {
+    InventoryUpdate(InventoryUpdatedEvent),
+    Wield(WeaponWieldedEvent),
 }
