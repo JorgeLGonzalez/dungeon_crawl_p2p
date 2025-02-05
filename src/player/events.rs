@@ -134,8 +134,8 @@ impl UseItemEvent {
 
 #[derive(Event)]
 pub struct WeaponWieldedEvent {
-    player_id: PlayerId,
-    weapon: MagicItem
+    pub player_id: PlayerId,
+    pub weapon: MagicItem,
 }
 
 impl WeaponWieldedEvent {

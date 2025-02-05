@@ -30,7 +30,6 @@ pub fn grab_item(
                     inventory_event.send(event);
                 }
                 EquipEvent::Wield(event) => {
-                    info!("Wielding weapon");
                     wield_event.send(event);
                 }
             }

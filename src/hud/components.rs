@@ -8,3 +8,6 @@ pub struct HealthPointsText;
 
 #[derive(Component)]
 pub struct HudCamera;
+
+#[derive(Component)]
+pub struct WeaponText;

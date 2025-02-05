@@ -36,6 +36,7 @@ mod tooltips {
     use super::*;
     use components::*;
 }
+mod wield_weapon;
 
 pub use assets::FontAssets;
 pub use inventory::{InventoryItem, InventoryItemBundle};
@@ -48,3 +49,4 @@ use health_bar::health_bar;
 use health_bar_setup::setup_health_bar;
 use inventory::{spawn_inventory_ui, update_inventory};
 use tooltips::{spawn_tooltip, tooltip};
+use wield_weapon::{spawn_weapon_ui, wield_weapon};
