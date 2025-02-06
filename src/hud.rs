@@ -2,8 +2,16 @@ mod assets;
 mod camera_setup;
 mod components;
 mod config;
-mod health_bar;
-mod health_bar_setup;
+
+mod health_bar {
+    mod health_bar;
+    mod health_bar_setup;
+
+    pub(super) use health_bar::health_bar;
+    pub(super) use health_bar_setup::setup_health_bar;
+
+    use super::*;
+}
 mod inventory {
     mod components;
     mod hud_inventory_sync;
@@ -45,8 +53,7 @@ pub use tooltips::TooltipLabel;
 
 use camera_setup::setup_camera;
 use components::*;
-use health_bar::health_bar;
-use health_bar_setup::setup_health_bar;
+use health_bar::*;
 use inventory::{spawn_inventory_ui, update_inventory};
 use tooltips::{spawn_tooltip, tooltip};
 use wield_weapon::{spawn_weapon_ui, wield_weapon};
