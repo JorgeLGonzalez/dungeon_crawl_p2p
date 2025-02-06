@@ -1,34 +1,52 @@
-use super::{Grabbable, MagicItem};
-use crate::prelude::*;
+use super::MagicItemTemplate;
+use crate::{
+    common::{DungeonAssets, DungeonData},
+    items::components::MagicItemBundle,
+    prelude::*,
+};
+use bevy::utils::hashbrown::HashMap;
 use bevy_ggrs::AddRollbackCommandExtension;
+use std::iter::repeat;
 
 pub fn spawn_items(
     dungeon: Res<DungeonMap>,
+    dungeon_assets: Res<DungeonAssets>,
+    dungeon_data_assets: Res<Assets<DungeonData>>,
     mut commands: Commands,
     mut rng: ResMut<RandomGenerator>,
 ) {
-    for pos in &dungeon.item_positions {
-        let item = random_item(&mut rng);
-        commands
-            .spawn((
-                item,
-                Grabbable,
-                Sprite {
-                    color: item.color(),
-                    custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),
-                    ..default()
-                },
-                item.tooltip(),
-                Transform::from_translation(pos.to_vec3(config::ITEM_Z_LAYER)),
-                Visibility::Hidden,
-            ))
-            .add_rollback();
-    }
+    let item_distribution = create_distribution(dungeon_data_assets.get(&dungeon_assets.data));
+
+    let stats = dungeon
+        .item_positions
+        .iter()
+        .map(|pos| {
+            (
+                item_distribution[rng.gen_range(0..item_distribution.len())],
+                pos.to_vec2(),
+            )
+        })
+        .map(|(template, pos)| MagicItemBundle::new(template, pos))
+        .fold(HashMap::new(), |mut acc, item_bundle| {
+            acc.entry(item_bundle.item.label())
+                .and_modify(|count| *count += 1)
+                .or_insert(1);
+
+            commands.spawn(item_bundle).add_rollback();
+
+            acc
+        });
+
+    info!("Spawned items: {stats:?}");
 }
 
-fn random_item(rng: &mut RandomGenerator) -> MagicItem {
-    match rng.gen_range(0..10) {
-        0..3 => MagicItem::HealingPotion,
-        _ => MagicItem::HealingPotionWeak,
-    }
+/// Create a distribution of item templates based on their frequency so that
+/// those with a higher frequency are more likely to be randomly selected.
+fn create_distribution(dungeon_data: Option<&DungeonData>) -> Vec<&MagicItemTemplate> {
+    dungeon_data
+        .expect("Failed to load dungeon data")
+        .items
+        .iter()
+        .flat_map(|template| repeat(template).take(template.frequency))
+        .collect()
 }

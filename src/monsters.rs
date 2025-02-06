@@ -25,8 +25,7 @@ mod monster_actions {
 mod plugin;
 mod spawn_monsters;
 
-pub use components::Monster;
+pub use components::{Monster, MonsterBundle, MonsterTemplate};
 pub use plugin::{MonstersCoreSet, MonstersPlugin, SpawnMonstersSet};
 
-use components::*;
 use monster_actions::*;

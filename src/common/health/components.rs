@@ -1,9 +1,10 @@
 use crate::config;
 use bevy::prelude::*;
+use serde::Deserialize;
 use std::hash::Hash;
 use std::time::Duration;
 
-#[derive(Component, Clone, Copy, Hash)]
+#[derive(Component, Clone, Copy, Debug, Deserialize, Hash)]
 pub struct Damage(pub DamageUnit);
 
 pub type DamageUnit = u8;
@@ -30,7 +31,7 @@ impl Default for Healing {
     }
 }
 
-#[derive(Component, Clone, Copy, Hash)]
+#[derive(Component, Clone, Copy, Debug, Deserialize, Hash)]
 pub struct Health {
     pub current: HealthUnit,
     pub max: HealthUnit,

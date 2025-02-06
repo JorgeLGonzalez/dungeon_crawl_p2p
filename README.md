@@ -1,6 +1,6 @@
 # Dungeon Crawl **P2P**
 
-Goal is to recreate dungeon crawl in Bevy (using Bevy rendering etc) that works on web and Mac OS and that can be with 2 players. (Unlike original, this one is NOT turn-bsaed (for better or worse).
+Goal is to recreate dungeon crawl in Bevy (using Bevy rendering etc) that works on web and Mac OS and that can be with 2 players. (Unlike original, this one is NOT turn-based (for better or worse).
 
 ## Developing
 
@@ -27,18 +27,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [x] inventory and item usage
-  - [x] press 1-9 to use inventory item
-  - [x] update system flow diagram as needed
-  - [x] refactor inventory systems
-  - [x] refactor grab_item system
-  - [x] document single_press stuff in player_action and refer to readme
-  - [x] refactor use_item system
-  - [x] we have sync issues again, but only in multi-player (not sync test)
-  - [x] updating inventory does not work in sync test. It only keeps one item in inventory and it cannot be selected via mouse nor key. Issue was that I forgot to add the Rollback component to items!
-  - [x] Why is player 0 always visible to player 1 now?!?
-  - [x] respond to mouse click on inventory title to toggle too. Interesting to see how to handle mouse inputs. But may still defer.
-- [ ] data driven dungeon monsters and items
 - [ ] weapons
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
@@ -51,6 +39,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] monster sprites
 - [ ] tile sprites
   - [ ] note wall tiles are currently always hidden. will need to adjust `recalculate_fov`
+- [ ] upgrade to rand 0.9. It has breaking changes and Xoshiro
 - [ ] improve lighting simulation
 - [ ] amulet. In original it is placed farthest from player. But we now have 2 randomly placed players.
   - [ ] Game won state and screen
@@ -157,7 +146,7 @@ flowchart TD
   - [x] synctest.
 - [x] health bar
 - [x] player FOV
-- [ ] monster follows player
+- [x] monster follows player
   - [x] FOV contains hash set of positions (or hashmap of position to tile entity)
   - [x] monster FOV
   - [x] MonsterActionDeterminer.plan_move. move towards any player it can see, otherwise move randomly
@@ -214,6 +203,20 @@ flowchart TD
   - [x] grab item
   - [x] test with sync. Likely need rollback for this.
   - [x] Issue with G key detection. Seems like you have to hit it multiple times. This only seems to happen on multi-player wasm, but not on single player wasm nor on mac either single or multi player. It fails to register right at the just_released. Changing from just_released to pressed does the trick.
+- [x] inventory and item usage
+  - [x] press 1-9 to use inventory item
+  - [x] update system flow diagram as needed
+  - [x] refactor inventory systems
+  - [x] refactor grab_item system
+  - [x] document single_press stuff in player_action and refer to readme
+  - [x] refactor use_item system
+  - [x] we have sync issues again, but only in multi-player (not sync test)
+  - [x] updating inventory does not work in sync test. It only keeps one item in inventory and it cannot be selected via mouse nor key. Issue was that I forgot to add the Rollback component to items!
+  - [x] Why is player 0 always visible to player 1 now?!?
+  - [x] respond to mouse click on inventory title to toggle too. Interesting to see how to handle mouse inputs. But may still defer.
+- [x] data driven dungeon monsters and items
+  - [x] items
+  - [x] monsters
 
 ### Archived Issues
 
