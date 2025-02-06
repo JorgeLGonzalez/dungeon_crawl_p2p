@@ -29,9 +29,9 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] weapons
   - [x] 3 sword types spawned randomly (as item types). From data file
-  - [ ] grab feature. Replaces exiting weapon rather then adding to inventory. Display in HUD to right of health bar (for now)
+  - [x] grab feature. Replaces exiting weapon rather then adding to inventory. Display in HUD to right of health bar (for now)
+  - [x] apply xtra damage based on weapon
   - [ ] think hud layer needs fixing so text is always on top of health bar and panel
-  - [ ] apply xtra damage based on weapon
 - [ ] magic map
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
