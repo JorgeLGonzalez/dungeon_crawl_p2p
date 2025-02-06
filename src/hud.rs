@@ -4,6 +4,7 @@ mod components;
 mod config;
 
 mod health {
+    mod components;
     mod health_bar;
     mod health_bar_setup;
 
@@ -11,6 +12,7 @@ mod health {
     pub(super) use health_bar_setup::setup_health_bar;
 
     use super::*;
+    use components::*;
 }
 
 mod inventory {
@@ -47,6 +49,7 @@ mod tooltips {
 }
 
 mod weapon {
+    mod components;
     mod spawn;
     mod wield;
 
@@ -54,6 +57,7 @@ mod weapon {
     pub(super) use wield::wield_weapon;
 
     use super::*;
+    use components::*;
 }
 
 pub use assets::FontAssets;
