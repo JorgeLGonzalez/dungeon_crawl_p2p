@@ -19,6 +19,6 @@ pub fn wield_weapon(
                 event.player_id,
                 event.weapon.label()
             );
-            weapon_text.single_mut().0 = format!("Weapon: {}", event.weapon.label());
+            weapon_text.single_mut().0 = event.weapon.label();
         });
 }

@@ -27,11 +27,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] weapons
-  - [x] 3 sword types spawned randomly (as item types). From data file
-  - [x] grab feature. Replaces exiting weapon rather then adding to inventory. Display in HUD to right of health bar (for now)
-  - [x] apply xtra damage based on weapon
-  - [ ] think hud layer needs fixing so text is always on top of health bar and panel
 - [ ] magic map
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
@@ -222,6 +217,11 @@ flowchart TD
 - [x] data driven dungeon monsters and items
   - [x] items
   - [x] monsters
+- [x] weapons
+  - [x] 3 sword types spawned randomly (as item types). From data file
+  - [x] grab feature. Replaces exiting weapon rather then adding to inventory. Display in HUD to right of health bar (for now)
+  - [x] apply xtra damage based on weapon
+  - [x] think hud layer needs fixing so text is always on top of health bar and panel
 
 ### Archived Issues
 

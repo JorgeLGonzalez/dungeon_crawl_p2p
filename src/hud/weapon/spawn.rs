@@ -9,13 +9,14 @@ pub fn spawn_weapon_ui(mut commands: Commands, font_assets: Res<FontAssets>) {
             Node {
                 display: Display::Flex,
                 flex_direction: FlexDirection::RowReverse,
-                margin: UiRect::all(Val::Px(10.)),
+                margin: UiRect::all(Val::Px(config::MARGIN)),
                 padding: UiRect::right(Val::Px(20.)),
                 position_type: PositionType::Absolute,
                 width: Val::Percent(100.),
                 ..default()
             },
             RenderLayers::layer(config::CAMERA_RENDER_LAYER),
+            GlobalZIndex(0),
         ))
         .with_child((
             WeaponText,
@@ -25,5 +26,6 @@ pub fn spawn_weapon_ui(mut commands: Commands, font_assets: Res<FontAssets>) {
                 font_size: config::TEXT_SIZE,
                 ..default()
             },
+            GlobalZIndex(config::Z_INDEX),
         ));
 }

@@ -30,6 +30,7 @@ pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
             },
             BackgroundColor(config::BACKGROUND_COLOR.into()),
             RenderLayers::layer(config::CAMERA_RENDER_LAYER),
+            GlobalZIndex(0),
         ))
         .with_children(|parent| {
             parent.spawn((
@@ -37,6 +38,7 @@ pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
                 text_color.clone(),
                 text_font.clone(),
                 text_node.clone(),
+                GlobalZIndex(config::Z_INDEX),
             ));
 
             // health bar itself. background rect with green rect child on top
@@ -45,7 +47,7 @@ pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
                     Node {
                         display,
                         height: Val::Px(20.),
-                        margin: UiRect::horizontal(Val::Px(10.)),
+                        margin: UiRect::horizontal(Val::Px(config::MARGIN)),
                         width: Val::Px(200.),
                         ..default()
                     },
@@ -72,6 +74,7 @@ pub fn setup_health_bar(mut commands: Commands, font_assets: Res<FontAssets>) {
                 text_color,
                 text_font,
                 text_node,
+                GlobalZIndex(config::Z_INDEX),
             ));
         });
 }
