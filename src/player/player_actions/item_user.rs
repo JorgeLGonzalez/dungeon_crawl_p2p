@@ -1,6 +1,6 @@
 use super::{Inventory, InventoryUpdatedEvent, UseItemEvent};
 use crate::{
-    dungeon::RevealDungeonCheatEvent, health::DrinkPotionEvent, items::MagicItem, player::PlayerId,
+    dungeon::RevealDungeonEvent, health::DrinkPotionEvent, items::MagicItem, player::PlayerId,
     prelude::*,
 };
 
@@ -43,7 +43,7 @@ impl<'a> ItemUser<'a> {
                 self.player_id,
                 item.healing_amount(),
             )),
-            MagicItem::Map => ItemUseEvent::RevealMap(RevealDungeonCheatEvent::new(self.player_id)),
+            MagicItem::Map => ItemUseEvent::RevealMap(RevealDungeonEvent::new(self.player_id)),
             _ => unreachable!("Invalid item type"),
         }
     }
@@ -51,5 +51,5 @@ impl<'a> ItemUser<'a> {
 
 pub enum ItemUseEvent {
     DrinkPotion(DrinkPotionEvent),
-    RevealMap(RevealDungeonCheatEvent),
+    RevealMap(RevealDungeonEvent),
 }

@@ -1,11 +1,11 @@
 use super::*;
-use crate::{dungeon::RevealDungeonCheatEvent, health::DrinkPotionEvent, prelude::*};
+use crate::{dungeon::RevealDungeonEvent, health::DrinkPotionEvent, prelude::*};
 
 pub fn use_item(
     mut drink_potion_event: EventWriter<DrinkPotionEvent>,
     mut inventory_updated_event: EventWriter<InventoryUpdatedEvent>,
     mut players: InventoryUsageQuery,
-    mut reveal_map_event: EventWriter<RevealDungeonCheatEvent>,
+    mut reveal_map_event: EventWriter<RevealDungeonEvent>,
     mut use_item_event: EventReader<UseItemEvent>,
 ) {
     use_item_event.read().for_each(|event| {

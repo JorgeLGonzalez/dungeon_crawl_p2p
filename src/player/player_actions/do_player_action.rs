@@ -2,7 +2,7 @@ use super::*;
 use crate::{
     common::SnapshotStateEvent,
     config::{self, GameMode},
-    dungeon::{RevealDungeonCheatEvent, ZoomEvent},
+    dungeon::{RevealDungeonEvent, ZoomEvent},
 };
 use bevy::prelude::*;
 use bevy_ggrs::PlayerInputs;
@@ -17,7 +17,7 @@ pub fn do_player_action(
     mut grab_event: EventWriter<GrabItemEvent>,
     mut move_event: EventWriter<PlayerMoveIntentEvent>,
     mut snapshot_event: EventWriter<SnapshotStateEvent>,
-    mut reveal_event: EventWriter<RevealDungeonCheatEvent>,
+    mut reveal_event: EventWriter<RevealDungeonEvent>,
     mut stop_moving_event: EventWriter<StopMovingEvent>,
     mut use_item_event: EventWriter<UseItemEvent>,
     mut zoom_event: EventWriter<ZoomEvent>,
@@ -48,7 +48,7 @@ pub fn do_player_action(
             }
             PlayerAction::None => (),
             PlayerAction::RevealDungeonCheat => {
-                reveal_event.send(RevealDungeonCheatEvent::new(player.id));
+                reveal_event.send(RevealDungeonEvent::new(player.id));
             }
             PlayerAction::Snapshot => {
                 snapshot_event.send(SnapshotStateEvent::new(player.id));

@@ -7,18 +7,19 @@ pub struct DungeonEventsPlugin;
 
 impl Plugin for DungeonEventsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<RevealDungeonCheatEvent>()
+        app.add_event::<RevealDungeonEvent>()
             .add_event::<ZoomEvent>();
     }
 }
 
+/// Player used the magic dungeon map item or used the reveal map cheat
 #[derive(Event)]
-pub struct RevealDungeonCheatEvent {
-    /// ID of player who requested the cheat
+pub struct RevealDungeonEvent {
+    /// ID of player who requested the reveal
     pub requestor_id: usize,
 }
 
-impl RevealDungeonCheatEvent {
+impl RevealDungeonEvent {
     pub fn new(requestor_id: usize) -> Self {
         Self { requestor_id }
     }

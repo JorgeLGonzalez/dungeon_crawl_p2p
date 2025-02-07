@@ -1,8 +1,8 @@
-use super::{FloorTile, RevealDungeonCheatEvent};
+use super::{FloorTile, RevealDungeonEvent};
 use bevy::prelude::*;
 
-pub fn reveal_cheat(
-    mut reveal_events: EventReader<RevealDungeonCheatEvent>,
+pub fn reveal_map(
+    mut reveal_events: EventReader<RevealDungeonEvent>,
     mut tiles: Query<&mut Visibility, With<FloorTile>>,
 ) {
     let Some(event) = reveal_events.read().next() else {
