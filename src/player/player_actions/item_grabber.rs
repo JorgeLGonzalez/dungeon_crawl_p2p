@@ -59,7 +59,7 @@ impl ItemGrabber {
         commands.entity(item_entity).despawn_recursive();
 
         match item {
-            MagicItem::HealingPotion(_) => {
+            MagicItem::HealingPotion(_) | MagicItem::Map => {
                 let mut inventory = players
                     .get_mut(self.player)
                     .map(|(inventory, ..)| inventory)

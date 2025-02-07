@@ -1,5 +1,8 @@
 use super::{Inventory, InventoryUpdatedEvent, UseItemEvent};
-use crate::{health::DrinkPotionEvent, player::PlayerId, prelude::*};
+use crate::{
+    dungeon::RevealDungeonEvent, health::DrinkPotionEvent, items::MagicItem, player::PlayerId,
+    prelude::*,
+};
 
 pub type InventoryUsageQuery<'w, 's, 'i> = Query<'w, 's, &'i mut Inventory, With<Player>>;
 
@@ -30,10 +33,23 @@ impl<'a> ItemUser<'a> {
         InventoryUpdatedEvent::new(self.inventory.clone(), self.player_id)
     }
 
-    pub fn use_item(&mut self) -> DrinkPotionEvent {
+    pub fn use_item(&mut self) -> ItemUseEvent {
         let item = self.inventory.items.remove(self.item_index);
         info!("Use item event: {:?}", item.label());
 
-        DrinkPotionEvent::new(self.player, self.player_id, item.healing_amount())
+        match item {
+            MagicItem::HealingPotion(_) => ItemUseEvent::DrinkPotion(DrinkPotionEvent::new(
+                self.player,
+                self.player_id,
+                item.healing_amount(),
+            )),
+            MagicItem::Map => ItemUseEvent::RevealMap(RevealDungeonEvent::new(self.player_id)),
+            _ => unreachable!("Invalid item type"),
+        }
     }
+}
+
+pub enum ItemUseEvent {
+    DrinkPotion(DrinkPotionEvent),
+    RevealMap(RevealDungeonEvent),
 }

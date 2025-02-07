@@ -11,6 +11,11 @@
       item: HealingPotion(2)
     ),
     (
+      color: (red: 0.8, green: 0.7, blue: 1.0, alpha: 1.0),
+      frequency: 3,
+      item: Map
+    ),
+    (
       color: (red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0),
       frequency: 1,
       item:Weapon( Weapon (damage: 3, sword: Huge))
