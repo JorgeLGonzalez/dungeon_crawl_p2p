@@ -48,7 +48,7 @@ pub fn do_player_action(
             }
             PlayerAction::None => (),
             PlayerAction::RevealDungeonCheat => {
-                reveal_event.send(RevealDungeonEvent::new(player.id));
+                reveal_event.send(RevealDungeonEvent::new(player.id).cheat());
             }
             PlayerAction::Snapshot => {
                 snapshot_event.send(SnapshotStateEvent::new(player.id));
