@@ -28,6 +28,8 @@ But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] magic map
+  - [ ] rename RevealDungeonCheatEvent etc to RevealDungeonEvent and have it work in cheat mode vs magic item mode. It magic item mode, map only revealed to one player
+- [ ] display item tool tip when standing over it
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
