@@ -65,7 +65,7 @@ pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 
 // RandomRoomsBuilder settings
-pub const NUM_ITEMS: usize = 20;
+pub const NUM_ITEMS: usize = 30;
 pub const NUM_MONSTERS: usize = 30;
 pub const NUM_ROOMS: usize = 20;
 pub const ROOM_MAX_WIDTH: usize = 10;

@@ -1,4 +1,4 @@
-use super::{spawn_items::spawn_items, Grabbable, MagicItem};
+use super::{spawn_items::spawn_items, Grabbable, MagicItem, Weapon};
 use crate::{monsters::SpawnMonstersSet, prelude::*};
 use bevy::prelude::*;
 use bevy_ggrs::prelude::*;
@@ -16,7 +16,9 @@ impl Plugin for ItemsPlugin {
             app.rollback_component_with_copy::<Grabbable>()
                 .checksum_component_with_hash::<Grabbable>()
                 .rollback_component_with_copy::<MagicItem>()
-                .checksum_component_with_hash::<MagicItem>();
+                .checksum_component_with_hash::<MagicItem>()
+                .rollback_component_with_copy::<Weapon>()
+                .checksum_component_with_hash::<Weapon>();
         }
     }
 }

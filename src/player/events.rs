@@ -1,5 +1,5 @@
 use super::{Inventory, PlayerId};
-use crate::health::DamageUnit;
+use crate::{health::DamageUnit, items::MagicItem};
 use bevy::prelude::*;
 
 pub struct PlayerEventsPlugin;
@@ -12,7 +12,8 @@ impl Plugin for PlayerEventsPlugin {
             .add_event::<PlayerMovesEvent>()
             .add_event::<PlayerMoveIntentEvent>()
             .add_event::<StopMovingEvent>()
-            .add_event::<UseItemEvent>();
+            .add_event::<UseItemEvent>()
+            .add_event::<WeaponWieldedEvent>();
     }
 }
 
@@ -128,5 +129,17 @@ impl UseItemEvent {
             player_id,
             item_index,
         }
+    }
+}
+
+#[derive(Event)]
+pub struct WeaponWieldedEvent {
+    pub player_id: PlayerId,
+    pub weapon: MagicItem,
+}
+
+impl WeaponWieldedEvent {
+    pub fn new(player_id: PlayerId, weapon: MagicItem) -> Self {
+        Self { player_id, weapon }
     }
 }

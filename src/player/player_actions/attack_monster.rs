@@ -32,7 +32,7 @@ fn log(event: &PlayerAttacksEvent, health: HealthUnit) {
         pos,
     } = event;
 
-    let revised_health = (health - damage).max(0);
+    let revised_health = health.saturating_sub(*damage);
 
     info!(
         "Player {player_id} attacks monster {monster} at {pos} dealing \

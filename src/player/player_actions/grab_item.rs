@@ -1,5 +1,10 @@
-use super::{GrabItemEvent, ItemGrabber, ItemQuery, PlayerInventoryQuery};
-use crate::{player::InventoryUpdatedEvent, prelude::*};
+use super::{
+    item_grabber::EquipEvent, GrabItemEvent, ItemGrabber, ItemQuery, PlayerInventoryQuery,
+};
+use crate::{
+    player::{InventoryUpdatedEvent, WeaponWieldedEvent},
+    prelude::*,
+};
 
 /// Handle a GrabItemEvent by grabbing the item the player is over (if any),
 /// despawning it, and then inserting it into the player's inventory.
@@ -9,6 +14,7 @@ pub fn grab_item(
     mut grab_events: EventReader<GrabItemEvent>,
     mut inventory_event: EventWriter<InventoryUpdatedEvent>,
     mut players: PlayerInventoryQuery,
+    mut wield_event: EventWriter<WeaponWieldedEvent>,
     items: ItemQuery,
 ) {
     grab_events
@@ -18,6 +24,14 @@ pub fn grab_item(
         .collect::<Vec<_>>()
         .into_iter()
         .for_each(|grabber| {
-            inventory_event.send(grabber.grab_item(&mut commands, &mut players));
+            let event = grabber.grab_item(&mut commands, &mut players);
+            match event {
+                EquipEvent::InventoryUpdate(event) => {
+                    inventory_event.send(event);
+                }
+                EquipEvent::Wield(event) => {
+                    wield_event.send(event);
+                }
+            }
         });
 }

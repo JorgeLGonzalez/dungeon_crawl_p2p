@@ -18,18 +18,20 @@ pub fn spawn_inventory_ui(mut commands: Commands, font_assets: Res<FontAssets>) 
                 align_items: AlignItems::Stretch,
                 display: Display::Flex,
                 flex_direction: FlexDirection::Column,
-                margin: UiRect::all(Val::Px(10.)),
+                margin: UiRect::all(Val::Px(config::MARGIN)),
                 overflow: Overflow::scroll(),
                 position_type: PositionType::Absolute,
                 ..default()
             },
             RenderLayers::layer(config::CAMERA_RENDER_LAYER),
+            GlobalZIndex(0),
         ))
         .with_children(|parent| {
             parent.spawn((
                 InventoryTitle,
                 Text::new("Inventory (0)"),
                 heading_font.clone(),
+                GlobalZIndex(config::Z_INDEX),
             ));
         });
 }

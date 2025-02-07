@@ -18,6 +18,7 @@ impl Plugin for HudPlugin {
                 setup_health_bar,
                 spawn_inventory_ui,
                 spawn_tooltip,
+                spawn_weapon_ui,
             )
                 .chain()
                 .in_set(HudStartupSet),
@@ -25,7 +26,7 @@ impl Plugin for HudPlugin {
 
         common::add_core_systems(
             app,
-            (health_bar, update_inventory, tooltip)
+            (health_bar, update_inventory, wield_weapon, tooltip)
                 .chain()
                 .in_set(HudCoreSet),
         );

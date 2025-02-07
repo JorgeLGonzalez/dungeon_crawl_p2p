@@ -10,3 +10,6 @@ pub const BACKGROUND_COLOR: Srgba = Srgba::new(0.1, 0.1, 0.1, 0.5);
 
 pub const TEXT_COLOR: Srgba = WHITE;
 pub const TEXT_SIZE: f32 = 20.;
+
+pub const MARGIN: f32 = 10.;
+pub const Z_INDEX: i32 = 10;

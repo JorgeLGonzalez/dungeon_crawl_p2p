@@ -1,9 +1,18 @@
 use super::*;
-use crate::prelude::*;
+use crate::{items::Weapon, prelude::*};
 
 pub type ObstacleQuery<'w, 's, 't, 'o> = Query<'w, 's, (&'t Transform, &'o Obstacle, Entity)>;
-pub type PlayerQuery<'w, 's, 't, 'd, 'm> =
-    Query<'w, 's, (&'t Transform, &'d Damage, Option<&'m MoveThrottle>), With<Player>>;
+pub type PlayerQuery<'w, 's, 't, 'd, 'm, 'p> = Query<
+    'w,
+    's,
+    (
+        &'t Transform,
+        &'d Damage,
+        Option<&'m MoveThrottle>,
+        Option<&'p Weapon>,
+    ),
+    With<Player>,
+>;
 
 pub enum PlayerMove {
     Attack(PlayerAttacksEvent),
@@ -12,15 +21,18 @@ pub enum PlayerMove {
 
 /// Helper for `handle_move_intent`.
 pub struct MoveIntentHandler {
+    pub throttled: bool,
+
     damage: DamageUnit,
     event: PlayerMoveIntentEvent,
     target_pos: IVec2,
-    pub throttled: bool,
+    weapon: Option<Weapon>,
 }
 
 impl MoveIntentHandler {
     pub fn new(event: PlayerMoveIntentEvent, players: &PlayerQuery) -> Self {
-        let (transform, damage, throttle) = players.get(event.player).expect("Player not found!");
+        let (transform, damage, throttle, weapon) =
+            players.get(event.player).expect("Player not found!");
         let target_pos = transform.translation.truncate().as_ivec2() + event.direction;
 
         Self {
@@ -28,6 +40,7 @@ impl MoveIntentHandler {
             event,
             target_pos,
             throttled: throttle.is_some(),
+            weapon: weapon.cloned(),
         }
     }
 
@@ -46,7 +59,7 @@ impl MoveIntentHandler {
                     player_id,
                     target_pos,
                     entity,
-                    self.damage,
+                    self.damage + self.weapon.as_ref().map_or(0, |w| w.damage),
                 ))),
                 Obstacle::Player => {
                     trace!("Player {player_id} move to {target_pos} blocked by another player");

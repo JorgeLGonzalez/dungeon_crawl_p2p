@@ -1,3 +1,4 @@
+use super::config;
 use bevy::prelude::*;
 
 #[derive(Bundle)]
@@ -6,6 +7,7 @@ pub struct InventoryItemBundle {
     pub inventory_item: InventoryItem,
     pub text: Text,
     pub text_font: TextFont,
+    pub z_index: GlobalZIndex,
 }
 
 impl InventoryItemBundle {
@@ -15,6 +17,7 @@ impl InventoryItemBundle {
             inventory_item: InventoryItem,
             text: Text(Self::ui_label(index, label)),
             text_font: font.clone(),
+            z_index: GlobalZIndex(config::Z_INDEX),
         }
     }
 
