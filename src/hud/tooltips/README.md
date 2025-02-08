@@ -1,6 +1,6 @@
 # Tooltip
 
-The system to display a [tooltip](./tooltips.rs) is non-trivial. To determine whether a tooltip should be shown, hidden or left as-is, it must consider the following conditions:
+The system to display a [tooltip](./tooltip.rs) is non-trivial. To determine whether a tooltip should be shown, hidden or left as-is, it must consider the following conditions:
 
 - **Shown?** Is a tooltip already being displayed?
 - **Mouse pos?** Is the mouse cursor over the game viewport (as opposed to being entirely off the game window).

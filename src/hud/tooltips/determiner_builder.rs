@@ -1,8 +1,8 @@
 use super::{
-    determiner::TooltipDeterminer,
+    determiner::{Mover, TooltipDeterminer},
     queries::{CameraQuery, PlayerQuery, TooltipUIQuery, WindowQuery},
 };
-use crate::player::LocalPlayer;
+use crate::player::{LocalPlayer, PlayerMovesEvent};
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 
@@ -13,6 +13,8 @@ pub struct TooltipDeterminerBuilder {
     in_fov: bool,
     mouse_moved: bool,
     mouse_pos: Option<Vec2>,
+    mover: Mover,
+    player_pos: Vec2,
     tooltipped_entity: Option<Entity>,
 }
 
@@ -33,16 +35,20 @@ impl TooltipDeterminerBuilder {
         let mouse_pos = windows.single().cursor_position();
 
         let (camera, camera_transform) = camera_query.single();
-        let game_pos = mouse_pos.map(|pos| {
-            camera
-                .viewport_to_world_2d(camera_transform, pos)
-                .expect("Inconceivable!")
-        });
+        let game_pos =
+            mouse_pos.and_then(|pos| camera.viewport_to_world_2d(camera_transform, pos).ok());
+
+        let mover = if mouse_moved {
+            Mover::Mouse
+        } else {
+            Mover::Other
+        };
 
         Self {
+            game_pos,
             mouse_moved,
             mouse_pos,
-            game_pos,
+            mover,
             ..default()
         }
     }
@@ -52,26 +58,54 @@ impl TooltipDeterminerBuilder {
         TooltipDeterminer::new(
             self.game_pos,
             self.in_fov,
-            self.mouse_moved,
+            self.mover,
             self.mouse_pos,
+            self.player_pos,
             self.tooltipped_entity,
         )
     }
 
     /// Determines whether the mouse cursor is over a game position within the
     /// local player's field of view.
-    pub fn local_player_fov(self, local_players: &LocalPlayers, players: &PlayerQuery) -> Self {
+    pub fn local_player_fov(
+        self,
+        local_players: &LocalPlayers,
+        players: &PlayerQuery,
+        player_movement_events: &mut EventReader<PlayerMovesEvent>,
+    ) -> Self {
+        if let Some(event) = player_movement_events.read().next() {
+            if LocalPlayer::is_local_player_id(event.player_id, local_players) {
+                return Self {
+                    game_pos: Some(event.pos.as_vec2()),
+                    in_fov: true,
+                    mover: Mover::Player(event.player, event.pos),
+                    player_pos: event.pos.as_vec2(),
+                    ..self
+                };
+            }
+        }
+
         let in_fov = self.game_pos.is_some_and(|pos| {
             players
                 .iter()
-                .find(|(player, _)| LocalPlayer::is_local(player, &local_players))
-                .map(|(_, fov)| fov)
+                .find(|(player, ..)| LocalPlayer::is_local(player, &local_players))
+                .map(|(_, fov, ..)| fov)
                 .expect("No local player to follow!")
                 .visible_tiles
                 .contains_key(&pos.as_ivec2())
         });
 
-        Self { in_fov, ..self }
+        let player_pos = players
+            .iter()
+            .find(|(player, ..)| LocalPlayer::is_local(player, &local_players))
+            .map(|(_, _, transform, ..)| transform.translation.truncate())
+            .expect("No local player to follow!");
+
+        Self {
+            in_fov,
+            player_pos,
+            ..self
+        }
     }
 
     /// Grabs the entity associated with the active tooltip (if applicable).

@@ -27,9 +27,9 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [x] magic map
-  - [x] rename RevealDungeonCheatEvent etc to RevealDungeonEvent and have it work in cheat mode vs magic item mode. It magic item mode, map only revealed to one player
 - [ ] display item tool tip when standing over it
+  - [ ] try out the on event check for system.
+  - [ ] Maybe the trigger observer stuff? https://taintedcoders.com/bevy/events
 - [ ] Fix zoom on web where key press detection is inconsistent
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
@@ -53,10 +53,12 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] monster patrol strategies (explore, guard, rest)
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
   - [ ] The player movement throttling can probably be simplified by resetting the key press, or using logic like monster throttling, of perhaps Leafwing makes this simpler.
+- [x] magic map
+  - [x] rename RevealDungeonCheatEvent etc to RevealDungeonEvent and have it work in cheat mode vs magic item mode. It magic item mode, map only revealed to one player
 
 ## Issues
 
-- [ ] If you move the mouse on mac app right when it is starting, it crashes.
+- [x] If you move the mouse on mac app right when it is starting, it crashes.
 
 ```
 thread 'Compute Task Pool (2)' panicked at src/player/player_actions/do_player_action.rs:73:5:

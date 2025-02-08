@@ -39,13 +39,19 @@ mod tooltips {
     mod shower;
     mod spawn_tooltip;
     mod tooltip;
+    mod tooltip_on_player_movement;
 
     pub use components::TooltipLabel;
-    pub use spawn_tooltip::spawn_tooltip;
-    pub use tooltip::tooltip;
+    pub(super) use spawn_tooltip::spawn_tooltip;
+    pub(super) use tooltip::tooltip;
 
     use super::*;
     use components::*;
+    use determiner::*;
+    use determiner_builder::*;
+    use hider::*;
+    use queries::*;
+    use shower::*;
 }
 
 mod weapon {

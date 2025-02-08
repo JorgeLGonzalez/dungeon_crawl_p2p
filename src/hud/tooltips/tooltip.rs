@@ -1,6 +1,5 @@
-use super::{
-    determiner::TooltipToggleAction, determiner_builder::TooltipDeterminerBuilder, queries::*,
-};
+use super::*;
+use crate::player::PlayerMovesEvent;
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 
@@ -13,6 +12,7 @@ use bevy_ggrs::LocalPlayers;
 /// See README.md for more information.
 pub fn tooltip(
     mut cursor_events: EventReader<CursorMoved>,
+    mut player_movement_events: EventReader<PlayerMovesEvent>,
     mut tooltip_ui: TooltipUIQuery,
     camera_query: CameraQuery,
     hud_camera_query: HudCameraQuery,
@@ -22,7 +22,7 @@ pub fn tooltip(
     windows: WindowQuery,
 ) {
     let toggle_action = TooltipDeterminerBuilder::new(&camera_query, &mut cursor_events, &windows)
-        .local_player_fov(&local_players, &players)
+        .local_player_fov(&local_players, &players, &mut player_movement_events)
         .with_tooltip_ui(&mut tooltip_ui)
         .build()
         .determine(&tooltip_entities);

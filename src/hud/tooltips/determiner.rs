@@ -1,5 +1,13 @@
-use super::{hider::TooltipHider, queries::TooltipEntityQuery, shower::TooltipShower};
+use super::*;
 use bevy::prelude::*;
+
+#[derive(Debug, Default, Eq, PartialEq)]
+pub enum Mover {
+    Mouse,
+    #[default]
+    Other,
+    Player(Entity, IVec2),
+}
 
 /// The action to take to show or hide a tooltip (or no action).
 pub enum TooltipToggleAction {
@@ -16,8 +24,9 @@ pub enum TooltipToggleAction {
 pub struct TooltipDeterminer {
     game_pos: Option<Vec2>,
     in_fov: bool,
-    mouse_moved: bool,
+    mover: Mover,
     mouse_pos: Option<Vec2>,
+    player_pos: Vec2,
     tooltipped_entity: Option<Entity>,
 }
 
@@ -25,15 +34,17 @@ impl TooltipDeterminer {
     pub fn new(
         game_pos: Option<Vec2>,
         in_fov: bool,
-        mouse_moved: bool,
+        mover: Mover,
         mouse_pos: Option<Vec2>,
+        player_pos: Vec2,
         tooltipped_entity: Option<Entity>,
     ) -> Self {
         Self {
             game_pos,
             in_fov,
-            mouse_moved,
+            mover,
             mouse_pos,
+            player_pos,
             tooltipped_entity,
         }
     }
@@ -41,8 +52,10 @@ impl TooltipDeterminer {
     /// Determine the tooltip toggle action based on the game state.
     pub fn determine(&mut self, tooltip_entities: &TooltipEntityQuery) -> TooltipToggleAction {
         if let Some(shower) = self.try_create_shower(tooltip_entities) {
+            info!("Showing tooltip based on mover {:?}", self.mover);
             TooltipToggleAction::Show(shower)
         } else if self.active_tooltip() && !self.still_on_entity(tooltip_entities) {
+            info!("Hiding tooltip based on mover {:?}", self.mover);
             TooltipToggleAction::Hide(TooltipHider)
         } else {
             TooltipToggleAction::None
@@ -76,26 +89,54 @@ impl TooltipDeterminer {
             return false;
         };
 
-        self.hit_test(transform)
+        match self.mover {
+            Mover::Mouse => self.hit_test(transform),
+            Mover::Other => {
+                (self.player_pos == transform.translation.truncate()) || self.hit_test(transform)
+            }
+            Mover::Player(_, player_pos) => {
+                player_pos.as_vec2() == transform.translation.truncate()
+            }
+        }
     }
 
     fn try_create_shower(&self, tooltip_entities: &TooltipEntityQuery) -> Option<TooltipShower> {
-        if !self.in_fov || !self.mouse_moved || self.still_on_entity(tooltip_entities) {
-            // Bail out early based on cheap tests. Obviously no need to show if:
-            // - mouse not in FOV
-            // - or mouse has not moved, so it has not moved ONTO anything
-            // - or mouse is still on the entity with the active tooltip
+        if self.mover == Mover::Mouse && !self.in_fov {
+            return None;
+        }
+        if !matches!(self.mover, Mover::Player(_, _)) && self.still_on_entity(tooltip_entities) {
             return None;
         }
 
+        // if !self.in_fov || !self.mouse_moved || self.still_on_entity(tooltip_entities) {
+        //     // Bail out early based on cheap tests. Obviously no need to show if:
+        //     // - mouse not in FOV
+        //     // - or mouse has not moved, so it has not moved ONTO anything
+        //     // - or mouse is still on the entity with the active tooltip
+        //     return None;
+        // }
+
         let Some((entity, label)) = tooltip_entities
             .iter()
+            .filter(|(entity, ..)| match self.mover {
+                Mover::Mouse | Mover::Other => true,
+                Mover::Player(player, _) => *entity != player,
+            })
             .find(|(.., transform)| self.hit_test(transform))
             .map(|(entity, label, _)| (entity, label.0.clone()))
         else {
             return None;
         };
 
-        Some(TooltipShower::new(self.mouse_pos.unwrap(), entity, label))
+        match self.mover {
+            Mover::Mouse | Mover::Other => Some(TooltipShower::new(
+                Position::Mouse(self.mouse_pos.unwrap()),
+                entity,
+                label,
+            )),
+            Mover::Player(_, player_pos) => {
+                Some(TooltipShower::new(Position::Player, entity, label))
+            }
+        }
     }
 }

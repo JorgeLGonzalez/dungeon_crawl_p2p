@@ -8,7 +8,8 @@ pub type CameraQuery<'w, 's, 'c, 'g> =
 pub type HudCameraQuery<'w, 's, 'c, 't> =
     Query<'w, 's, (&'c Camera, &'t GlobalTransform), With<HudCamera>>;
 
-pub type PlayerQuery<'w, 's, 'p, 'f> = Query<'w, 's, (&'p Player, &'f FieldOfView)>;
+pub type PlayerQuery<'w, 's, 'p, 'f, 't> =
+    Query<'w, 's, (&'p Player, &'f FieldOfView, &'t Transform)>;
 
 pub type TooltipEntityQuery<'w, 's, 'l, 't> =
     Query<'w, 's, (Entity, &'l TooltipLabel, &'t Transform)>;
