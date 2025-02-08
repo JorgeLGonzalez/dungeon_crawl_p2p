@@ -30,6 +30,14 @@ pub fn tooltip(
     match toggle_action {
         TooltipToggleAction::Hide(hider) => hider.hide(&mut tooltip_ui),
         TooltipToggleAction::None => {}
-        TooltipToggleAction::Show(shower) => shower.show(&hud_camera_query, &mut tooltip_ui),
+        TooltipToggleAction::Show(info) => {
+            let shower = TooltipShower::new(info.pos, info.target_entity, info.text);
+            match shower.pos {
+                Position::Mouse(_) => {
+                    shower.show_on_mouse_cursor(&hud_camera_query, &mut tooltip_ui)
+                }
+                Position::Player => shower.show_on_player(&mut tooltip_ui),
+            }
+        }
     }
 }

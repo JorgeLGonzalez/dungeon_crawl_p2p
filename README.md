@@ -28,6 +28,7 @@ But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] display item tool tip when standing over it
+  - [ ] test in p2p and synctest
   - [ ] try out the on event check for system.
   - [ ] Maybe the trigger observer stuff? https://taintedcoders.com/bevy/events
 - [ ] Fix zoom on web where key press detection is inconsistent

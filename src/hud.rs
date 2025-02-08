@@ -39,7 +39,6 @@ mod tooltips {
     mod shower;
     mod spawn_tooltip;
     mod tooltip;
-    mod tooltip_on_player_movement;
 
     pub use components::TooltipLabel;
     pub(super) use spawn_tooltip::spawn_tooltip;

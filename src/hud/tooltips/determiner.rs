@@ -15,8 +15,7 @@ pub enum TooltipToggleAction {
     Hide(TooltipHider),
     /// Do nothing.
     None,
-    /// Show the tooltip using the provided shower.
-    Show(TooltipShower),
+    Show(TooltipDisplayInfo),
 }
 
 /// Determines whether to show or hide a tooltip based on the current state of
@@ -100,7 +99,10 @@ impl TooltipDeterminer {
         }
     }
 
-    fn try_create_shower(&self, tooltip_entities: &TooltipEntityQuery) -> Option<TooltipShower> {
+    fn try_create_shower(
+        &self,
+        tooltip_entities: &TooltipEntityQuery,
+    ) -> Option<TooltipDisplayInfo> {
         if self.mover == Mover::Mouse && !self.in_fov {
             return None;
         }
@@ -129,14 +131,12 @@ impl TooltipDeterminer {
         };
 
         match self.mover {
-            Mover::Mouse | Mover::Other => Some(TooltipShower::new(
+            Mover::Mouse | Mover::Other => Some(TooltipDisplayInfo::new(
                 Position::Mouse(self.mouse_pos.unwrap()),
                 entity,
                 label,
             )),
-            Mover::Player(_, player_pos) => {
-                Some(TooltipShower::new(Position::Player, entity, label))
-            }
+            Mover::Player(..) => Some(TooltipDisplayInfo::new(Position::Player, entity, label)),
         }
     }
 }
