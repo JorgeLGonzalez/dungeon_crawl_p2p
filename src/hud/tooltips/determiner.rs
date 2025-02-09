@@ -5,8 +5,6 @@ use bevy::prelude::*;
 pub enum Mover {
     /// The mouse cursor moved
     Mouse,
-    /// The player moved
-    Player(Entity, IVec2),
     /// A monster may have moved
     #[default]
     Unknown,
@@ -48,13 +46,8 @@ impl TooltipDeterminer {
         tooltip_entities: &TooltipEntityQuery,
     ) -> Option<TooltipToggleTrigger> {
         if let Some(info) = self.mouse_movement(tooltip_entities) {
-            info!("Showing tooltip based on mouse {:?}", self.mover);
             Some(TooltipToggleTrigger::ShowOnMouseCursor(info))
-        } else if let Some(info) = self.player_movement(tooltip_entities) {
-            info!("Showing tooltip based on mover {:?}", self.mover);
-            Some(TooltipToggleTrigger::ShowOnPlayer(info))
         } else if self.active_tooltip() && !self.still_on_entity(tooltip_entities) {
-            info!("Hiding tooltip based on mover {:?}", self.mover);
             Some(TooltipToggleTrigger::Hide)
         } else {
             None
@@ -107,29 +100,6 @@ impl TooltipDeterminer {
         ))
     }
 
-    /// Check if a local player movement should trigger a tooltip display.
-    /// (Note any player movement requires checking all entities, excluding the
-    /// local player.)
-    fn player_movement(
-        &self,
-        tooltip_entities: &TooltipEntityQuery,
-    ) -> Option<TooltipDisplayInfo<PlayerTooltip>> {
-        let Mover::Player(player, _) = self.mover else {
-            return None;
-        };
-
-        let Some((entity, label)) = tooltip_entities
-            .iter()
-            .filter(|(entity, ..)| *entity != player)
-            .find(|(.., transform)| self.hit_test(transform))
-            .map(|(entity, label, _)| (entity, label.0.clone()))
-        else {
-            return None;
-        };
-
-        Some(TooltipDisplayInfo::new(PlayerTooltip, entity, label))
-    }
-
     fn still_on_entity(&self, tooltip_entities: &TooltipEntityQuery) -> bool {
         let Some(entity) = self.tooltipped_entity else {
             return false;
@@ -143,9 +113,6 @@ impl TooltipDeterminer {
             Mover::Mouse => self.hit_test(transform),
             Mover::Unknown => {
                 (self.player_pos == transform.translation.truncate()) || self.hit_test(transform)
-            }
-            Mover::Player(_, player_pos) => {
-                player_pos.as_vec2() == transform.translation.truncate()
             }
         }
     }

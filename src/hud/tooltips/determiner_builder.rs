@@ -2,7 +2,7 @@ use super::{
     determiner::{Mover, TooltipDeterminer},
     queries::{CameraQuery, PlayerQuery, TooltipUIQuery, WindowQuery},
 };
-use crate::player::{LocalPlayer, PlayerMovesEvent};
+use crate::player::LocalPlayer;
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 
@@ -46,30 +46,6 @@ impl TooltipDeterminerBuilder {
             self.player_pos,
             self.tooltipped_entity,
         )
-    }
-
-    pub fn check_local_player_movement(
-        self,
-        local_players: &LocalPlayers,
-        player_movement_events: &mut EventReader<PlayerMovesEvent>,
-    ) -> Option<Self> {
-        let Some(event) = player_movement_events.read().next() else {
-            return None;
-        };
-
-        if LocalPlayer::is_local_player_id(event.player_id, local_players) {
-            let player_pos = event.pos.as_vec2();
-            Some(Self {
-                game_pos: Some(player_pos),
-                in_fov: true,
-                mover: Mover::Player(event.player, event.pos),
-                mouse_pos: None,
-                player_pos,
-                tooltipped_entity: None,
-            })
-        } else {
-            None
-        }
     }
 
     /// Set up builder to determine tooltip display reacting to mouse cursor
