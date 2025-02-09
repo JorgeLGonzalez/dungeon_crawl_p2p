@@ -1,21 +1,11 @@
 use super::*;
 use bevy::prelude::*;
 
-#[derive(Debug, Default, Eq, PartialEq)]
-pub enum Mover {
-    /// The mouse cursor moved
-    Mouse,
-    /// A monster may have moved
-    #[default]
-    Unknown,
-}
-
 /// Determines whether to show or hide a tooltip based on the current state of
 /// the game.
 pub struct TooltipDeterminer {
     game_pos: Option<Vec2>,
     in_fov: bool,
-    mover: Mover,
     mouse_pos: Option<Vec2>,
     player_pos: Vec2,
     tooltipped_entity: Option<Entity>,
@@ -25,7 +15,6 @@ impl TooltipDeterminer {
     pub fn new(
         game_pos: Option<Vec2>,
         in_fov: bool,
-        mover: Mover,
         mouse_pos: Option<Vec2>,
         player_pos: Vec2,
         tooltipped_entity: Option<Entity>,
@@ -33,7 +22,6 @@ impl TooltipDeterminer {
         Self {
             game_pos,
             in_fov,
-            mover,
             mouse_pos,
             player_pos,
             tooltipped_entity,
@@ -45,13 +33,46 @@ impl TooltipDeterminer {
         &mut self,
         tooltip_entities: &TooltipEntityQuery,
     ) -> Option<TooltipToggleTrigger> {
-        if let Some(info) = self.mouse_movement(tooltip_entities) {
-            Some(TooltipToggleTrigger::ShowOnMouseCursor(info))
-        } else if self.active_tooltip() && !self.still_on_entity(tooltip_entities) {
+        if self.active_tooltip() && !self.still_on_entity(tooltip_entities) {
             Some(TooltipToggleTrigger::Hide)
         } else {
             None
         }
+    }
+
+    pub fn determine_from_mouse_move(
+        &self,
+        tooltip_entities: &TooltipEntityQuery,
+    ) -> Option<TooltipToggleTrigger> {
+        if !self.in_fov && self.active_tooltip() {
+            return Some(TooltipToggleTrigger::Hide);
+        }
+        let Some(mouse_pos) = self.mouse_pos else {
+            if self.active_tooltip() {
+                return Some(TooltipToggleTrigger::Hide);
+            } else {
+                return None;
+            }
+        };
+
+        if self.still_on_entity(tooltip_entities) {
+            return None;
+        }
+
+        tooltip_entities
+            .iter()
+            .find(|(.., transform)| self.hit_test(transform))
+            .map(|(entity, label, _)| {
+                TooltipDisplayInfo::new(MouseTooltip(mouse_pos), entity, label.0.clone())
+            })
+            .map(TooltipToggleTrigger::ShowOnMouseCursor)
+            .or_else(|| {
+                if self.active_tooltip() {
+                    Some(TooltipToggleTrigger::Hide)
+                } else {
+                    None
+                }
+            })
     }
 
     fn active_tooltip(&self) -> bool {
@@ -72,34 +93,6 @@ impl TooltipDeterminer {
         point.x > min.x && point.x < max.x && point.y > min.y && point.y < max.y
     }
 
-    /// Check if a mouse cursor movement should trigger a tooltip display.
-    fn mouse_movement(
-        &self,
-        tooltip_entities: &TooltipEntityQuery,
-    ) -> Option<TooltipDisplayInfo<MouseTooltip>> {
-        if self.mover != Mover::Mouse || !self.in_fov || self.still_on_entity(tooltip_entities) {
-            // Bail out early based on cheap tests. Obviously no need to show if:
-            // - or mouse has not moved, so it has not moved ONTO anything
-            // - mouse not in FOV
-            // - or mouse is still on the entity with the active tooltip
-            return None;
-        }
-
-        let Some((entity, label)) = tooltip_entities
-            .iter()
-            .find(|(.., transform)| self.hit_test(transform))
-            .map(|(entity, label, _)| (entity, label.0.clone()))
-        else {
-            return None;
-        };
-
-        Some(TooltipDisplayInfo::new(
-            MouseTooltip(self.mouse_pos.unwrap()),
-            entity,
-            label,
-        ))
-    }
-
     fn still_on_entity(&self, tooltip_entities: &TooltipEntityQuery) -> bool {
         let Some(entity) = self.tooltipped_entity else {
             return false;
@@ -109,11 +102,6 @@ impl TooltipDeterminer {
             return false;
         };
 
-        match self.mover {
-            Mover::Mouse => self.hit_test(transform),
-            Mover::Unknown => {
-                (self.player_pos == transform.translation.truncate()) || self.hit_test(transform)
-            }
-        }
+        self.player_pos == transform.translation.truncate() || self.hit_test(transform)
     }
 }

@@ -1,5 +1,5 @@
 use super::{
-    determiner::{Mover, TooltipDeterminer},
+    determiner::TooltipDeterminer,
     queries::{CameraQuery, PlayerQuery, TooltipUIQuery, WindowQuery},
 };
 use crate::player::LocalPlayer;
@@ -17,9 +17,6 @@ pub struct TooltipDeterminerBuilder {
     in_fov: bool,
     /// Mouse cursor position in screen coordinates, if available.
     mouse_pos: Option<Vec2>,
-    /// Whether the tooltip display is toggled based on the local player or mouse
-    /// moving, or checked if anything else has changed (e.g. monster moved).
-    mover: Mover,
     /// Local player position
     player_pos: Vec2,
     /// Entity currently with tooltip, if any
@@ -41,7 +38,6 @@ impl TooltipDeterminerBuilder {
         TooltipDeterminer::new(
             self.game_pos,
             self.in_fov,
-            self.mover,
             self.mouse_pos,
             self.player_pos,
             self.tooltipped_entity,
@@ -66,21 +62,6 @@ impl TooltipDeterminerBuilder {
             mouse_pos,
             ..self
         }
-    }
-
-    pub fn check_mouse_movement(
-        self,
-        cursor_events: &mut EventReader<CursorMoved>,
-    ) -> Option<Self> {
-        if cursor_events.is_empty() {
-            return None;
-        }
-        cursor_events.clear();
-
-        Some(Self {
-            mover: Mover::Mouse,
-            ..self
-        })
     }
 
     /// Add local player position and whether mouse cursor is in their field of

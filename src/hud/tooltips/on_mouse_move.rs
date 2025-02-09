@@ -12,16 +12,17 @@ pub fn on_mouse_move(
     tooltip_ui: TooltipUIQuery,
     windows: WindowQuery,
 ) {
-    // TODO do nothing if mouse did not move
-    if let Some(toggle_action) = TooltipDeterminerBuilder::new(&tooltip_ui)
-        .check_mouse_movement(&mut cursor_events)
-        .and_then(|b| {
-            b.mouse_info(&camera_query, &windows)
-                .add_player_info(&local_players, &players)
-                .build()
-                .determine(&tooltip_entities)
-        })
+    if cursor_events.is_empty() {
+        return;
+    }
+    cursor_events.clear();
+
+    if let Some(toggle) = TooltipDeterminerBuilder::new(&tooltip_ui)
+        .mouse_info(&camera_query, &windows)
+        .add_player_info(&local_players, &players)
+        .build()
+        .determine_from_mouse_move(&tooltip_entities)
     {
-        commands.trigger(toggle_action);
+        commands.trigger(toggle);
     }
 }

@@ -17,8 +17,8 @@ pub fn on_local_player_move(
         return;
     }
 
-    if let Some(toggle_action) = toggle_trigger(&event, &tooltip_entities) {
-        commands.trigger(toggle_action);
+    if let Some(toggle) = toggle_trigger(&event, &tooltip_entities) {
+        commands.trigger(toggle);
     }
 }
 
