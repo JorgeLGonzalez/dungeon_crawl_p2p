@@ -1,5 +1,4 @@
 use super::*;
-use crate::player::PlayerMovesEvent;
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 
@@ -12,8 +11,6 @@ use bevy_ggrs::LocalPlayers;
 /// See README.md for more information.
 pub fn tooltip(
     mut commands: Commands,
-    mut cursor_events: EventReader<CursorMoved>,
-    mut player_movement_events: EventReader<PlayerMovesEvent>,
     camera_query: CameraQuery,
     local_players: Res<LocalPlayers>,
     players: PlayerQuery,
@@ -21,10 +18,9 @@ pub fn tooltip(
     tooltip_ui: TooltipUIQuery,
     windows: WindowQuery,
 ) {
-    if let Some(toggle_action) = TooltipDeterminerBuilder::default()
-        .mouse_info(&camera_query, &mut cursor_events, &windows)
-        .local_player(&local_players, &players, &mut player_movement_events)
-        .with_tooltip_ui(&tooltip_ui)
+    if let Some(toggle_action) = TooltipDeterminerBuilder::new(&tooltip_ui)
+        .mouse_info(&camera_query, &windows)
+        .add_player_info(&local_players, &players)
         .build()
         .determine(&tooltip_entities)
     {
