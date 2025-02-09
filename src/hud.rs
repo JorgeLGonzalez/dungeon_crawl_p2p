@@ -34,7 +34,6 @@ mod tooltips {
     mod components;
     mod determiner;
     mod determiner_builder;
-    mod hider;
     mod queries;
     mod shower;
     mod spawn_tooltip;
@@ -50,7 +49,6 @@ mod tooltips {
     use super::*;
     use components::*;
     use determiner_builder::*;
-    use hider::*;
     use queries::*;
     use shower::*;
     use toggle_trigger::*;

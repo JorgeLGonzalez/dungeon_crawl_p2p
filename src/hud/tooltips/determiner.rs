@@ -55,7 +55,7 @@ impl TooltipDeterminer {
             Some(TooltipToggleTrigger::ShowOnPlayer(info))
         } else if self.active_tooltip() && !self.still_on_entity(tooltip_entities) {
             info!("Hiding tooltip based on mover {:?}", self.mover);
-            Some(TooltipToggleTrigger::Hide(TooltipHider))
+            Some(TooltipToggleTrigger::Hide)
         } else {
             None
         }
