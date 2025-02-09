@@ -11,11 +11,11 @@ use bevy_ggrs::LocalPlayers;
 /// We need to convert the mouse cursor position from window to world coordinates.
 /// See README.md for more information.
 pub fn tooltip(
+    mut commands: Commands,
     mut cursor_events: EventReader<CursorMoved>,
     mut player_movement_events: EventReader<PlayerMovesEvent>,
     mut tooltip_ui: TooltipUIQuery,
     camera_query: CameraQuery,
-    hud_camera_query: HudCameraQuery,
     local_players: Res<LocalPlayers>,
     players: PlayerQuery,
     tooltip_entities: TooltipEntityQuery,
@@ -28,12 +28,5 @@ pub fn tooltip(
         .build()
         .determine(&tooltip_entities);
 
-    match toggle_action {
-        TooltipToggleAction::Hide(hider) => hider.hide(&mut tooltip_ui),
-        TooltipToggleAction::None => {}
-        TooltipToggleAction::ShowOnMouseCursor(info) => {
-            TooltipShower::new(info).show(&hud_camera_query, &mut tooltip_ui)
-        }
-        TooltipToggleAction::ShowOnPlayer(info) => TooltipShower::new(info).show(&mut tooltip_ui),
-    }
+    commands.trigger(toggle_action);
 }

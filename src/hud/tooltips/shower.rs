@@ -1,9 +1,12 @@
 use super::queries::{HudCameraQuery, TooltipUIQuery};
 use bevy::prelude::*;
 
-pub trait TooltipPosition {}
+pub trait TooltipPosition: Clone {}
+
+#[derive(Clone, Copy)]
 pub struct MouseTooltip(pub Vec2);
 impl TooltipPosition for MouseTooltip {}
+#[derive(Clone, Copy)]
 pub struct PlayerTooltip;
 impl TooltipPosition for PlayerTooltip {}
 
@@ -30,11 +33,11 @@ pub struct TooltipShower<T: TooltipPosition> {
 }
 
 impl<T: TooltipPosition> TooltipShower<T> {
-    pub fn new(info: TooltipDisplayInfo<T>) -> Self {
+    pub fn new(info: &TooltipDisplayInfo<T>) -> Self {
         Self {
-            kind: info.kind,
+            kind: info.kind.clone(),
             target_entity: info.target_entity,
-            text: info.text,
+            text: info.text.clone(),
         }
     }
 

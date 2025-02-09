@@ -38,15 +38,16 @@ mod tooltips {
     mod queries;
     mod shower;
     mod spawn_tooltip;
+    mod toggle_tooltip;
     mod tooltip;
 
     pub use components::TooltipLabel;
     pub(super) use spawn_tooltip::spawn_tooltip;
+    pub(super) use toggle_tooltip::toggle_tooltip;
     pub(super) use tooltip::tooltip;
 
     use super::*;
     use components::*;
-    use determiner::*;
     use determiner_builder::*;
     use hider::*;
     use queries::*;
@@ -74,5 +75,5 @@ use camera_setup::setup_camera;
 use components::*;
 use health::*;
 use inventory::{spawn_inventory_ui, update_inventory};
-use tooltips::{spawn_tooltip, tooltip};
+use tooltips::{spawn_tooltip, toggle_tooltip, tooltip};
 use weapon::*;

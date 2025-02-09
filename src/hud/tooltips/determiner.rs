@@ -13,6 +13,7 @@ pub enum Mover {
 }
 
 /// The action to take to show or hide a tooltip (or no action).
+#[derive(Event)]
 pub enum TooltipToggleAction {
     /// Hide the tooltip using the provided hider.
     Hide(TooltipHider),

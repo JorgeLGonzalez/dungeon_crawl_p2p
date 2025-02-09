@@ -11,7 +11,7 @@ pub struct HudPlugin;
 
 impl Plugin for HudPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
+        app.add_observer(toggle_tooltip).add_systems(
             OnEnter(GameState::Startup),
             (
                 setup_camera,
