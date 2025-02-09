@@ -39,6 +39,7 @@ mod tooltips {
     mod shower;
     mod spawn_tooltip;
     mod toggle_tooltip;
+    mod toggle_trigger;
     mod tooltip;
 
     pub use components::TooltipLabel;
@@ -52,6 +53,7 @@ mod tooltips {
     use hider::*;
     use queries::*;
     use shower::*;
+    use toggle_trigger::*;
 }
 
 mod weapon {

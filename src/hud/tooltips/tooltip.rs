@@ -14,19 +14,20 @@ pub fn tooltip(
     mut commands: Commands,
     mut cursor_events: EventReader<CursorMoved>,
     mut player_movement_events: EventReader<PlayerMovesEvent>,
-    mut tooltip_ui: TooltipUIQuery,
     camera_query: CameraQuery,
     local_players: Res<LocalPlayers>,
     players: PlayerQuery,
     tooltip_entities: TooltipEntityQuery,
+    tooltip_ui: TooltipUIQuery,
     windows: WindowQuery,
 ) {
-    let toggle_action = TooltipDeterminerBuilder::default()
+    if let Some(toggle_action) = TooltipDeterminerBuilder::default()
         .mouse_info(&camera_query, &mut cursor_events, &windows)
         .local_player(&local_players, &players, &mut player_movement_events)
-        .with_tooltip_ui(&mut tooltip_ui)
+        .with_tooltip_ui(&tooltip_ui)
         .build()
-        .determine(&tooltip_entities);
-
-    commands.trigger(toggle_action);
+        .determine(&tooltip_entities)
+    {
+        commands.trigger(toggle_action);
+    }
 }

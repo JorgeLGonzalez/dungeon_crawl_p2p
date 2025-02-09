@@ -12,17 +12,6 @@ pub enum Mover {
     Unknown,
 }
 
-/// The action to take to show or hide a tooltip (or no action).
-#[derive(Event)]
-pub enum TooltipToggleAction {
-    /// Hide the tooltip using the provided hider.
-    Hide(TooltipHider),
-    /// Do nothing.
-    None,
-    ShowOnMouseCursor(TooltipDisplayInfo<MouseTooltip>),
-    ShowOnPlayer(TooltipDisplayInfo<PlayerTooltip>),
-}
-
 /// Determines whether to show or hide a tooltip based on the current state of
 /// the game.
 pub struct TooltipDeterminer {
@@ -54,18 +43,21 @@ impl TooltipDeterminer {
     }
 
     /// Determine the tooltip toggle action based on the game state.
-    pub fn determine(&mut self, tooltip_entities: &TooltipEntityQuery) -> TooltipToggleAction {
+    pub fn determine(
+        &mut self,
+        tooltip_entities: &TooltipEntityQuery,
+    ) -> Option<TooltipToggleTrigger> {
         if let Some(info) = self.mouse_movement(tooltip_entities) {
             info!("Showing tooltip based on mouse {:?}", self.mover);
-            TooltipToggleAction::ShowOnMouseCursor(info)
+            Some(TooltipToggleTrigger::ShowOnMouseCursor(info))
         } else if let Some(info) = self.player_movement(tooltip_entities) {
             info!("Showing tooltip based on mover {:?}", self.mover);
-            TooltipToggleAction::ShowOnPlayer(info)
+            Some(TooltipToggleTrigger::ShowOnPlayer(info))
         } else if self.active_tooltip() && !self.still_on_entity(tooltip_entities) {
             info!("Hiding tooltip based on mover {:?}", self.mover);
-            TooltipToggleAction::Hide(TooltipHider)
+            Some(TooltipToggleTrigger::Hide(TooltipHider))
         } else {
-            TooltipToggleAction::None
+            None
         }
     }
 

@@ -1,4 +1,4 @@
-use super::queries::{HudCameraQuery, TooltipUIQuery};
+use super::queries::{HudCameraQuery, TooltipUIMutQuery};
 use bevy::prelude::*;
 
 pub trait TooltipPosition: Clone {}
@@ -41,7 +41,7 @@ impl<T: TooltipPosition> TooltipShower<T> {
         }
     }
 
-    fn show_inner(&self, bottom: Val, left: Val, tooltip_ui: &mut TooltipUIQuery) {
+    fn show_inner(&self, bottom: Val, left: Val, tooltip_ui: &mut TooltipUIMutQuery) {
         let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
 
         tooltip.entity = Some(self.target_entity);
@@ -54,7 +54,7 @@ impl<T: TooltipPosition> TooltipShower<T> {
 }
 
 impl TooltipShower<MouseTooltip> {
-    pub fn show(&self, hud_camera_query: &HudCameraQuery, tooltip_ui: &mut TooltipUIQuery) {
+    pub fn show(&self, hud_camera_query: &HudCameraQuery, tooltip_ui: &mut TooltipUIMutQuery) {
         let mouse_pos = self.kind.0;
 
         let (hud_camera, hud_transform) = hud_camera_query.single();
@@ -67,7 +67,7 @@ impl TooltipShower<MouseTooltip> {
 }
 
 impl TooltipShower<PlayerTooltip> {
-    pub fn show(&self, tooltip_ui: &mut TooltipUIQuery) {
+    pub fn show(&self, tooltip_ui: &mut TooltipUIMutQuery) {
         self.show_inner(Val::Percent(50.0), Val::Percent(50.0), tooltip_ui);
     }
 }
