@@ -3,10 +3,13 @@ use bevy::prelude::*;
 
 #[derive(Debug, Default, Eq, PartialEq)]
 pub enum Mover {
+    /// The mouse cursor moved
     Mouse,
-    #[default]
-    Other,
+    /// The player moved
     Player(Entity, IVec2),
+    /// A monster may have moved
+    #[default]
+    Unknown,
 }
 
 /// The action to take to show or hide a tooltip (or no action).
@@ -145,7 +148,7 @@ impl TooltipDeterminer {
 
         match self.mover {
             Mover::Mouse => self.hit_test(transform),
-            Mover::Other => {
+            Mover::Unknown => {
                 (self.player_pos == transform.translation.truncate()) || self.hit_test(transform)
             }
             Mover::Player(_, player_pos) => {

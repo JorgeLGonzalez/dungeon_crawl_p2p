@@ -21,8 +21,9 @@ pub fn tooltip(
     tooltip_entities: TooltipEntityQuery,
     windows: WindowQuery,
 ) {
-    let toggle_action = TooltipDeterminerBuilder::new(&camera_query, &mut cursor_events, &windows)
-        .local_player_fov(&local_players, &players, &mut player_movement_events)
+    let toggle_action = TooltipDeterminerBuilder::default()
+        .mouse_info(&camera_query, &mut cursor_events, &windows)
+        .local_player(&local_players, &players, &mut player_movement_events)
         .with_tooltip_ui(&mut tooltip_ui)
         .build()
         .determine(&tooltip_entities);
