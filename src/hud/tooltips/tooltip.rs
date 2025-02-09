@@ -18,12 +18,12 @@ pub fn tooltip(
     tooltip_ui: TooltipUIQuery,
     windows: WindowQuery,
 ) {
-    if let Some(toggle_action) = TooltipDeterminerBuilder::new(&tooltip_ui)
+    if TooltipDeterminerBuilder::new(&tooltip_ui)
         .mouse_info(&camera_query, &windows)
         .add_player_info(&local_players, &players)
         .build()
-        .determine(&tooltip_entities)
+        .should_hide(&tooltip_entities)
     {
-        commands.trigger(toggle_action);
+        commands.trigger(TooltipToggleTrigger::Hide);
     }
 }

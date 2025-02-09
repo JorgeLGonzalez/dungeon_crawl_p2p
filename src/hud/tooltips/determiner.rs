@@ -28,18 +28,6 @@ impl TooltipDeterminer {
         }
     }
 
-    /// Determine the tooltip toggle action based on the game state.
-    pub fn determine(
-        &mut self,
-        tooltip_entities: &TooltipEntityQuery,
-    ) -> Option<TooltipToggleTrigger> {
-        if self.active_tooltip() && !self.still_on_entity(tooltip_entities) {
-            Some(TooltipToggleTrigger::Hide)
-        } else {
-            None
-        }
-    }
-
     pub fn determine_from_mouse_move(
         &self,
         tooltip_entities: &TooltipEntityQuery,
@@ -47,7 +35,7 @@ impl TooltipDeterminer {
         if !self.in_fov && self.active_tooltip() {
             return Some(TooltipToggleTrigger::Hide);
         }
-        let Some(mouse_pos) = self.mouse_pos else {
+        let Some(mouse_pos) = self.game_pos.and(self.mouse_pos) else {
             if self.active_tooltip() {
                 return Some(TooltipToggleTrigger::Hide);
             } else {
@@ -73,6 +61,10 @@ impl TooltipDeterminer {
                     None
                 }
             })
+    }
+
+    pub fn should_hide(&self, tooltip_entities: &TooltipEntityQuery) -> bool {
+        self.active_tooltip() && !self.still_on_entity(tooltip_entities)
     }
 
     fn active_tooltip(&self) -> bool {
