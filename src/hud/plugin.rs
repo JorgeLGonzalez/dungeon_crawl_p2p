@@ -1,5 +1,5 @@
 use super::*;
-use crate::{common, player::PlayerMovesEvent, prelude::*};
+use crate::{common, monsters::MonsterMovesEvent, player::PlayerMovesEvent, prelude::*};
 
 #[derive(SystemSet, Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct HudStartupSet;
@@ -31,8 +31,8 @@ impl Plugin for HudPlugin {
                 update_inventory,
                 wield_weapon,
                 on_local_player_move.run_if(on_event::<PlayerMovesEvent>),
+                on_monster_move.run_if(on_event::<MonsterMovesEvent>),
                 on_mouse_move.run_if(on_event::<CursorMoved>.nand(on_event::<PlayerMovesEvent>)),
-                tooltip.run_if(on_event::<PlayerMovesEvent>.nor(on_event::<CursorMoved>)),
             )
                 .chain()
                 .in_set(HudCoreSet),

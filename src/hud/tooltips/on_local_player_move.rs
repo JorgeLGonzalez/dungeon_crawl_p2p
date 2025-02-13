@@ -8,12 +8,20 @@ pub fn on_local_player_move(
     mut player_movement_events: EventReader<PlayerMovesEvent>,
     local_players: Res<LocalPlayers>,
     tooltip_entities: TooltipEntityQuery,
+    tooltip_ui: TooltipUIQuery,
 ) {
     let Some(event) = player_movement_events.read().next() else {
         return;
     };
 
     if !LocalPlayer::is_local_player_id(event.player_id, &local_players) {
+        let (.., tooltip) = tooltip_ui.single();
+        if let Some(entity_with_tooltip) = tooltip.entity {
+            if entity_with_tooltip == event.player {
+                commands.trigger(TooltipToggleTrigger::Hide);
+            }
+        };
+
         return;
     }
 

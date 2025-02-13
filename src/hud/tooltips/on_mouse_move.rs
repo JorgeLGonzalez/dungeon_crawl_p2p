@@ -17,12 +17,12 @@ pub fn on_mouse_move(
     }
     cursor_events.clear();
 
-    if let Some(toggle) = TooltipDeterminerBuilder::new(&tooltip_ui)
-        .mouse_info(&camera_query, &windows)
-        .add_player_info(&local_players, &players)
-        .build()
-        .determine_from_mouse_move(&tooltip_entities)
-    {
+    let toggle = TooltipToggleTriggerBuilder::new(&camera_query, &windows)
+        .with_player_fov(&local_players, &players)
+        .with_tooltip(&tooltip_ui, &tooltip_entities)
+        .build(&tooltip_entities);
+
+    if let Some(toggle) = toggle {
         commands.trigger(toggle);
     }
 }

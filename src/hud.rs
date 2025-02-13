@@ -32,27 +32,24 @@ mod inventory {
 mod plugin;
 mod tooltips {
     mod components;
-    mod determiner;
-    mod determiner_builder;
     mod on_local_player_move;
+    mod on_monster_move;
     mod on_mouse_move;
     mod queries;
     mod shower;
     mod spawn_tooltip;
     mod toggle_tooltip;
     mod toggle_trigger;
-    mod tooltip;
 
     pub use components::TooltipLabel;
     pub(super) use on_local_player_move::on_local_player_move;
+    pub(super) use on_monster_move::on_monster_move;
     pub(super) use on_mouse_move::on_mouse_move;
     pub(super) use spawn_tooltip::spawn_tooltip;
     pub(super) use toggle_tooltip::toggle_tooltip;
-    pub(super) use tooltip::tooltip;
 
     use super::*;
     use components::*;
-    use determiner_builder::*;
     use queries::*;
     use shower::*;
     use toggle_trigger::*;
@@ -79,5 +76,5 @@ use camera_setup::setup_camera;
 use components::*;
 use health::*;
 use inventory::{spawn_inventory_ui, update_inventory};
-use tooltips::{on_local_player_move, on_mouse_move, spawn_tooltip, toggle_tooltip, tooltip};
+use tooltips::*;
 use weapon::*;
