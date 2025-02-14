@@ -42,7 +42,7 @@ impl TooltipToggleTriggerBuilder {
         };
 
         if !self.in_fov {
-            info!("mouse not in FOV");
+            // info!("mouse not in FOV");
             return tooltip.active().then_some(TooltipToggleTrigger::Hide);
         }
         // info!("mouse in FOV");
@@ -107,22 +107,7 @@ impl MousePosition {
         players
             .iter()
             .find(|(player, ..)| LocalPlayer::is_local(player, local_players))
-            // .map(|(_, fov, ..)| fov.visible_tiles.contains_key(&self.game.as_ivec2()))
             .map(|(_, fov, ..)| {
-                info!(
-                    "pos: {} {} {} {} {}",
-                    self.game,
-                    self.game.as_ivec2(),
-                    self.game.round().as_ivec2(),
-                    fov.visible_tiles
-                        .keys()
-                        .next()
-                        .unwrap_or(&Vec2::ZERO.as_ivec2()),
-                    fov.visible_tiles
-                        .keys()
-                        .last()
-                        .unwrap_or(&Vec2::ZERO.as_ivec2())
-                );
                 fov.visible_tiles
                     .contains_key(&self.game.round().as_ivec2())
             })
@@ -167,11 +152,7 @@ impl TooltipInfo {
 }
 
 fn hit_test(mouse_pos: Vec2, target_transform: &Transform) -> bool {
-    let tile_pos = target_transform.translation.truncate();
-    let min = tile_pos - 0.5;
-    let max = tile_pos + 0.5;
+    let tile_pos = target_transform.translation.truncate().as_ivec2();
 
-    info!("tile: {min} {max} mouse: {mouse_pos}");
-
-    mouse_pos.x > min.x && mouse_pos.x < max.x && mouse_pos.y > min.y && mouse_pos.y < max.y
+    mouse_pos.round().as_ivec2() == tile_pos
 }
