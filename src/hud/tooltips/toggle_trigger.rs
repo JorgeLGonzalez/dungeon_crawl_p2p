@@ -1,6 +1,6 @@
 use super::*;
 use crate::player::LocalPlayer;
-use bevy::{math::VectorSpace, prelude::*};
+use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 
 /// The event triggered from tooltip systems monitoring mouse, player and monster
@@ -84,7 +84,7 @@ impl TooltipToggleTriggerBuilder {
 }
 
 struct MousePosition {
-    pub game: Vec2,
+    pub game: IVec2,
     pub screen: Vec2,
 }
 
@@ -97,7 +97,10 @@ impl MousePosition {
         let (camera, camera_transform) = camera_query.single();
 
         if let Ok(game) = camera.viewport_to_world_2d(camera_transform, screen) {
-            Some(Self { game, screen })
+            Some(Self {
+                game: game.round().as_ivec2(),
+                screen,
+            })
         } else {
             None
         }
@@ -107,10 +110,7 @@ impl MousePosition {
         players
             .iter()
             .find(|(player, ..)| LocalPlayer::is_local(player, local_players))
-            .map(|(_, fov, ..)| {
-                fov.visible_tiles
-                    .contains_key(&self.game.round().as_ivec2())
-            })
+            .map(|(_, fov, ..)| fov.visible_tiles.contains_key(&self.game))
             .expect("No local player!")
     }
 }
@@ -146,13 +146,13 @@ impl TooltipInfo {
         self.active
     }
 
-    pub fn hit_test(&self, pos: Vec2) -> bool {
+    pub fn hit_test(&self, pos: IVec2) -> bool {
         self.transform.is_some_and(|t| hit_test(pos, &t))
     }
 }
 
-fn hit_test(mouse_pos: Vec2, target_transform: &Transform) -> bool {
+fn hit_test(mouse_pos: IVec2, target_transform: &Transform) -> bool {
     let tile_pos = target_transform.translation.truncate().as_ivec2();
 
-    mouse_pos.round().as_ivec2() == tile_pos
+    mouse_pos == tile_pos
 }
