@@ -3,13 +3,14 @@ use bevy::prelude::*;
 
 pub trait TooltipPosition: Clone {}
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct MouseTooltip(pub Vec2);
 impl TooltipPosition for MouseTooltip {}
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 pub struct PlayerTooltip;
 impl TooltipPosition for PlayerTooltip {}
 
+#[derive(Debug)]
 pub struct TooltipDisplayInfo<T: TooltipPosition> {
     pub kind: T,
     pub target_entity: Entity,

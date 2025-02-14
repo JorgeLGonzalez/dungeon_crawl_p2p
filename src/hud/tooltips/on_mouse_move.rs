@@ -2,6 +2,7 @@ use super::*;
 use bevy::prelude::*;
 use bevy_ggrs::LocalPlayers;
 
+/// Show or hide tooltip based on mouse movement
 pub fn on_mouse_move(
     mut commands: Commands,
     mut cursor_events: EventReader<CursorMoved>,

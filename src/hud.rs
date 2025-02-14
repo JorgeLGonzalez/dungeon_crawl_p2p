@@ -32,9 +32,9 @@ mod inventory {
 mod plugin;
 mod tooltips {
     mod components;
-    mod on_local_player_move;
     mod on_monster_move;
     mod on_mouse_move;
+    mod on_player_move;
     mod queries;
     mod shower;
     mod spawn_tooltip;
@@ -42,9 +42,9 @@ mod tooltips {
     mod toggle_trigger;
 
     pub use components::TooltipLabel;
-    pub(super) use on_local_player_move::on_local_player_move;
     pub(super) use on_monster_move::on_monster_move;
     pub(super) use on_mouse_move::on_mouse_move;
+    pub(super) use on_player_move::on_player_move;
     pub(super) use spawn_tooltip::spawn_tooltip;
     pub(super) use toggle_tooltip::toggle_tooltip;
 

@@ -1,10 +1,11 @@
 use super::*;
 use crate::player::LocalPlayer;
-use bevy::prelude::*;
+use bevy::{math::VectorSpace, prelude::*};
 use bevy_ggrs::LocalPlayers;
 
-/// The event triggered from [`tooltip`] and observed by [`toggle_tooltip`].
-#[derive(Event)]
+/// The event triggered from tooltip systems monitoring mouse, player and monster
+/// movement. Observed by [`toggle_tooltip`].
+#[derive(Event, Debug)]
 pub enum TooltipToggleTrigger {
     /// Hide the active tooltip
     Hide,
@@ -14,7 +15,10 @@ pub enum TooltipToggleTrigger {
     ShowOnPlayer(TooltipDisplayInfo<PlayerTooltip>),
 }
 
+/// Builds the proper TooltipToggleTrigger variant based on a mouse movement
+/// event.
 pub struct TooltipToggleTriggerBuilder {
+    /// whether mouse is in local player's FOV
     in_fov: bool,
     mouse_pos: Option<MousePosition>,
     tooltip: Option<TooltipInfo>,
@@ -33,19 +37,19 @@ impl TooltipToggleTriggerBuilder {
         let tooltip = self.tooltip.expect("Tooltip not set");
 
         let Some(mouse_pos) = self.mouse_pos else {
-            return if tooltip.active() {
-                Some(TooltipToggleTrigger::Hide)
-            } else {
-                None
-            };
+            info!("no mouse pos");
+            return tooltip.active().then_some(TooltipToggleTrigger::Hide);
         };
 
-        if !self.in_fov && tooltip.active() {
-            return Some(TooltipToggleTrigger::Hide);
+        if !self.in_fov {
+            info!("mouse not in FOV");
+            return tooltip.active().then_some(TooltipToggleTrigger::Hide);
         }
+        // info!("mouse in FOV");
 
         // mouse moved but not off of active entity
-        if tooltip.hit_test(mouse_pos.game) {
+        if tooltip.active() && tooltip.hit_test(mouse_pos.game) {
+            info!("mouse still over tooltip entity");
             return None;
         }
 
@@ -102,8 +106,26 @@ impl MousePosition {
     pub fn in_player_fov(&self, local_players: &LocalPlayers, players: &PlayerQuery) -> bool {
         players
             .iter()
-            .find(|(player, ..)| LocalPlayer::is_local(player, &local_players))
-            .map(|(_, fov, ..)| fov.visible_tiles.contains_key(&self.game.as_ivec2()))
+            .find(|(player, ..)| LocalPlayer::is_local(player, local_players))
+            // .map(|(_, fov, ..)| fov.visible_tiles.contains_key(&self.game.as_ivec2()))
+            .map(|(_, fov, ..)| {
+                info!(
+                    "pos: {} {} {} {} {}",
+                    self.game,
+                    self.game.as_ivec2(),
+                    self.game.round().as_ivec2(),
+                    fov.visible_tiles
+                        .keys()
+                        .next()
+                        .unwrap_or(&Vec2::ZERO.as_ivec2()),
+                    fov.visible_tiles
+                        .keys()
+                        .last()
+                        .unwrap_or(&Vec2::ZERO.as_ivec2())
+                );
+                fov.visible_tiles
+                    .contains_key(&self.game.round().as_ivec2())
+            })
             .expect("No local player!")
     }
 }
@@ -148,6 +170,8 @@ fn hit_test(mouse_pos: Vec2, target_transform: &Transform) -> bool {
     let tile_pos = target_transform.translation.truncate();
     let min = tile_pos - 0.5;
     let max = tile_pos + 0.5;
+
+    info!("tile: {min} {max} mouse: {mouse_pos}");
 
     mouse_pos.x > min.x && mouse_pos.x < max.x && mouse_pos.y > min.y && mouse_pos.y < max.y
 }

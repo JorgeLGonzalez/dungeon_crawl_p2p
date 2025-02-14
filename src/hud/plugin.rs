@@ -30,9 +30,9 @@ impl Plugin for HudPlugin {
                 health_bar,
                 update_inventory,
                 wield_weapon,
-                on_local_player_move.run_if(on_event::<PlayerMovesEvent>),
+                on_player_move.run_if(on_event::<PlayerMovesEvent>),
                 on_monster_move.run_if(on_event::<MonsterMovesEvent>),
-                on_mouse_move.run_if(on_event::<CursorMoved>.nand(on_event::<PlayerMovesEvent>)),
+                on_mouse_move.run_if(on_event::<CursorMoved>),
             )
                 .chain()
                 .in_set(HudCoreSet),
