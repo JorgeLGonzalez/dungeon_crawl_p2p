@@ -29,6 +29,7 @@ mod inventory {
     use components::*;
     use hud_inventory_sync::*;
 }
+
 mod plugin;
 mod tooltips {
     mod components;
@@ -36,23 +37,25 @@ mod tooltips {
     mod on_mouse_move;
     mod on_player_move;
     mod on_zoom;
+    mod plugin;
     mod queries;
     mod spawn_tooltip;
     mod toggle;
     mod toggle_tooltip;
 
     pub use components::TooltipLabel;
-    pub(super) use on_monster_move::on_monster_move;
-    pub(super) use on_mouse_move::on_mouse_move;
-    pub(super) use on_player_move::on_player_move;
-    pub(super) use on_zoom::on_zoom;
-    pub(super) use spawn_tooltip::spawn_tooltip;
-    pub(super) use toggle_tooltip::toggle_tooltip;
+    pub(super) use plugin::TooltipPlugin;
 
     use super::*;
     use components::*;
+    use on_monster_move::on_monster_move;
+    use on_mouse_move::on_mouse_move;
+    use on_player_move::on_player_move;
+    use on_zoom::on_zoom;
     use queries::*;
+    use spawn_tooltip::spawn_tooltip;
     use toggle::*;
+    use toggle_tooltip::toggle_tooltip;
 }
 
 mod weapon {
@@ -76,5 +79,4 @@ use camera_setup::setup_camera;
 use components::*;
 use health::*;
 use inventory::{spawn_inventory_ui, update_inventory};
-use tooltips::*;
 use weapon::*;
