@@ -29,6 +29,8 @@ impl<T: TooltipPosition> TooltipShower<T> {
 }
 
 impl TooltipShower<MouseTooltip> {
+    /// Show the tooltip at the given mouse position (converted from screen to HUD
+    /// coordinates)
     pub fn show(&self, hud_camera_query: &HudCameraQuery, tooltip_ui: &mut TooltipUIMutQuery) {
         let mouse_pos = self.kind.0;
 
@@ -42,6 +44,7 @@ impl TooltipShower<MouseTooltip> {
 }
 
 impl TooltipShower<PlayerTooltip> {
+    /// Show the tooltip at the given player position (which is always the center)
     pub fn show(&self, tooltip_ui: &mut TooltipUIMutQuery) {
         self.show_inner(Val::Percent(50.0), Val::Percent(50.0), tooltip_ui);
     }

@@ -38,9 +38,10 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] try out the on event check for system.
   - [x] Maybe the trigger observer stuff? https://taintedcoders.com/bevy/events
   - [x] reusable fn to detect if tooltip is active: local player move,
-  - [ ] create tooltip plugin
-  - [ ] document tooltips
+  - [x] create tooltip plugin
+  - [x] document tooltips
   - [ ] test in p2p and synctest
+  - [ ] Consider using entity pos for mouse tooltip. Then both tooltips could be the same. But need to figure out how to convert from game to hud coordinates
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
