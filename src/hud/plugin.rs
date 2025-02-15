@@ -11,7 +11,7 @@ pub struct HudPlugin;
 
 impl Plugin for HudPlugin {
     fn build(&self, app: &mut App) {
-        app.add_plugins(tooltips::TooltipPlugin).add_systems(
+        app.add_plugins(TooltipPlugin).add_systems(
             OnEnter(GameState::Startup),
             (
                 setup_camera,
@@ -27,6 +27,7 @@ impl Plugin for HudPlugin {
             app,
             (health_bar, update_inventory, wield_weapon)
                 .chain()
+                .after(TooltipCoreSet)
                 .in_set(HudCoreSet),
         );
     }

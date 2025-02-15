@@ -44,7 +44,7 @@ mod tooltips {
     mod toggle_tooltip;
 
     pub use components::TooltipLabel;
-    pub(super) use plugin::TooltipPlugin;
+    pub(super) use plugin::{TooltipCoreSet, TooltipPlugin};
 
     use super::*;
     use components::*;
@@ -79,4 +79,5 @@ use camera_setup::setup_camera;
 use components::*;
 use health::*;
 use inventory::{spawn_inventory_ui, update_inventory};
+use tooltips::{TooltipCoreSet, TooltipPlugin};
 use weapon::*;
