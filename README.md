@@ -41,7 +41,6 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [ ] test in p2p and synctest
   - [ ] try out the on event check for system.
   - [x] Maybe the trigger observer stuff? https://taintedcoders.com/bevy/events
-- [ ] Fix zoom on web where key press detection is inconsistent
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
@@ -243,3 +242,4 @@ flowchart TD
 
 - [x] synctest mode does not work. It spawns the 2 players, but they are not seen in the GgrsSchedule systems (move_players and camera_follow). Solved by starting sync test when entering the MatchMaking state rather than in the Update. See commit 6dfacc59a686f72e3ac49ac957130c72407bb7f0.
 - [x] matchbox does not work with bevy 0.15, unless using fork from haihala. Hope to get revised bevy_ggrs and matchbox once [PRs](https://github.com/johanhelsing/matchbox/pull/466) merged
+- [x] Fix zoom on web where key press detection is inconsistent
