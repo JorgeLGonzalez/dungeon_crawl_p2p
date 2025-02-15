@@ -34,13 +34,13 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] BUG: zooming should hide tooltip
   - [x] consider breaking up toggle_trigger into diff mods
   - [x] log to confirm when event trigger systems fire
-  - [ ] refactor player movement
+  - [x] refactor player movement
+  - [x] try out the on event check for system.
+  - [x] Maybe the trigger observer stuff? https://taintedcoders.com/bevy/events
   - [ ] reusable fn to detect if tooltip is active: local player move,
   - [ ] create tooltip plugin
   - [ ] document tooltips
   - [ ] test in p2p and synctest
-  - [ ] try out the on event check for system.
-  - [x] Maybe the trigger observer stuff? https://taintedcoders.com/bevy/events
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
