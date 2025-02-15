@@ -2,6 +2,7 @@ use super::{CameraQuery, PlayerQuery, WindowQuery};
 use crate::{player::LocalPlayer, prelude::*};
 use bevy_ggrs::LocalPlayers;
 
+#[derive(Clone, Copy)]
 pub(super) struct MousePosition {
     pub game: IVec2,
     pub screen: Vec2,

@@ -32,8 +32,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] BUG: on_player_move: local player Hide even though inactive tooltip
   - [x] BUG: hit test of mouse is off. zoom in and move over item to fine tune
   - [x] BUG: zooming should hide tooltip
-  - [ ] consider breaking up toggle_trigger into diff mods
-  - [ ] log to confirm when event trigger systems fire
+  - [x] consider breaking up toggle_trigger into diff mods
+  - [x] log to confirm when event trigger systems fire
   - [ ] refactor player movement
   - [ ] reusable fn to detect if tooltip is active: local player move,
   - [ ] create tooltip plugin

@@ -6,7 +6,10 @@ pub(super) use trigger_builder::TooltipToggleTriggerBuilder;
 
 use super::queries::*;
 use super::shower::*;
+use super::TooltipLabel;
 use bevy::prelude::*;
+use mouse_position::MousePosition;
+use tooltip_info::TooltipInfo;
 
 /// The event triggered from tooltip systems monitoring mouse, player and monster
 /// movement. Observed by [`toggle_tooltip`].
