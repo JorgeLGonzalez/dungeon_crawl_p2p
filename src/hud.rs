@@ -37,10 +37,9 @@ mod tooltips {
     mod on_player_move;
     mod on_zoom;
     mod queries;
-    mod shower;
     mod spawn_tooltip;
+    mod toggle;
     mod toggle_tooltip;
-    mod toggle_trigger;
 
     pub use components::TooltipLabel;
     pub(super) use on_monster_move::on_monster_move;
@@ -53,8 +52,7 @@ mod tooltips {
     use super::*;
     use components::*;
     use queries::*;
-    use shower::*;
-    use toggle_trigger::*;
+    use toggle::*;
 }
 
 mod weapon {
