@@ -35,6 +35,7 @@ mod tooltips {
     mod on_monster_move;
     mod on_mouse_move;
     mod on_player_move;
+    mod on_zoom;
     mod queries;
     mod shower;
     mod spawn_tooltip;
@@ -45,6 +46,7 @@ mod tooltips {
     pub(super) use on_monster_move::on_monster_move;
     pub(super) use on_mouse_move::on_mouse_move;
     pub(super) use on_player_move::on_player_move;
+    pub(super) use on_zoom::on_zoom;
     pub(super) use spawn_tooltip::spawn_tooltip;
     pub(super) use toggle_tooltip::toggle_tooltip;
 

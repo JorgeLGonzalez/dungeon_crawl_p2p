@@ -31,7 +31,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] BUG: showing tooltip on entity out of FOV (still bit of a rounding error when item is just outside FOV, but good enough)
   - [x] BUG: on_player_move: local player Hide even though inactive tooltip
   - [x] BUG: hit test of mouse is off. zoom in and move over item to fine tune
-  - [ ] BUG: zooming should hide tooltip
+  - [x] BUG: zooming should hide tooltip
   - [ ] consider breaking up toggle_trigger into diff mods
   - [ ] log to confirm when event trigger systems fire
   - [ ] refactor player movement

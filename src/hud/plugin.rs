@@ -1,5 +1,7 @@
 use super::*;
-use crate::{common, monsters::MonsterMovesEvent, player::PlayerMovesEvent, prelude::*};
+use crate::{
+    common, dungeon::ZoomEvent, monsters::MonsterMovesEvent, player::PlayerMovesEvent, prelude::*,
+};
 
 #[derive(SystemSet, Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct HudStartupSet;
@@ -33,6 +35,7 @@ impl Plugin for HudPlugin {
                 on_player_move.run_if(on_event::<PlayerMovesEvent>),
                 on_monster_move.run_if(on_event::<MonsterMovesEvent>),
                 on_mouse_move.run_if(on_event::<CursorMoved>),
+                on_zoom.run_if(on_event::<ZoomEvent>),
             )
                 .chain()
                 .in_set(HudCoreSet),
