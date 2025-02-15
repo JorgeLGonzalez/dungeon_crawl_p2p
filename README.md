@@ -37,7 +37,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] refactor player movement
   - [x] try out the on event check for system.
   - [x] Maybe the trigger observer stuff? https://taintedcoders.com/bevy/events
-  - [ ] reusable fn to detect if tooltip is active: local player move,
+  - [x] reusable fn to detect if tooltip is active: local player move,
   - [ ] create tooltip plugin
   - [ ] document tooltips
   - [ ] test in p2p and synctest

@@ -1,4 +1,4 @@
-use super::{queries::TooltipUIQuery, TooltipToggleTrigger};
+use super::{queries::TooltipUIQuery, TooltipInfo, TooltipToggleTrigger};
 use crate::{dungeon::ZoomEvent, player::LocalPlayer, prelude::*};
 use bevy_ggrs::LocalPlayers;
 
@@ -14,9 +14,9 @@ pub fn on_zoom(
         .last()
         .is_some_and(|e| LocalPlayer::is_local_player_id(e.requestor_id, &local_players));
 
-    let (.., tooltip) = tooltip_ui.single();
+    let is_tooltip_active = TooltipInfo::entity(&tooltip_ui).is_some();
 
-    if tooltip.entity.is_some() && local_zoom {
+    if is_tooltip_active && local_zoom {
         commands.trigger(TooltipToggleTrigger::Hide);
     };
 }

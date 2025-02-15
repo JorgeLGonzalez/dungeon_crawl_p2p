@@ -15,13 +15,13 @@ pub fn on_player_move(
         return;
     };
 
-    let (.., tooltip) = tooltip_ui.single();
+    let tooltipped_entity = TooltipInfo::entity(&tooltip_ui);
 
     if LocalPlayer::is_local_player_id(event.player_id, &local_players) {
-        if let Some(toggle) = create_toggle(&event, &tooltip_entities, tooltip.entity) {
+        if let Some(toggle) = create_toggle(&event, &tooltip_entities, tooltipped_entity) {
             commands.trigger(toggle);
         }
-    } else if tooltip.entity.filter(|e| *e == event.player).is_some() {
+    } else if tooltipped_entity.filter(|e| *e == event.player).is_some() {
         // Hide active tooltip on the remote player if they moved
         commands.trigger(TooltipToggleTrigger::Hide);
     }

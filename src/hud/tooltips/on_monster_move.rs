@@ -1,4 +1,4 @@
-use super::{TooltipToggleTrigger, TooltipUIQuery};
+use super::{TooltipInfo, TooltipToggleTrigger, TooltipUIQuery};
 use crate::{monsters::MonsterMovesEvent, prelude::*};
 
 /// Hides the tooltip on a monster that has moved.
@@ -7,13 +7,11 @@ pub fn on_monster_move(
     mut move_events: EventReader<MonsterMovesEvent>,
     tooltip_ui: TooltipUIQuery,
 ) {
-    let (.., tooltip) = tooltip_ui.single();
-    let Some(entity_with_tooltip) = tooltip.entity else {
+    let Some(tooltipped_entity) = TooltipInfo::entity(&tooltip_ui) else {
         return;
     };
 
-    if move_events.read().any(|e| entity_with_tooltip == e.monster) {
-        info!("on_monster_move: Hide");
+    if move_events.read().any(|e| tooltipped_entity == e.monster) {
         commands.trigger(TooltipToggleTrigger::Hide);
     }
 }

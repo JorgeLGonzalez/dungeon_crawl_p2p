@@ -1,7 +1,7 @@
 use super::{TooltipEntityQuery, TooltipUIQuery};
 use bevy::prelude::*;
 
-pub(super) struct TooltipInfo {
+pub struct TooltipInfo {
     /// Whether a tooltip is being displayed
     active: bool,
     /// The transform of the entity over which the tooltip is displayed.
@@ -12,9 +12,7 @@ pub(super) struct TooltipInfo {
 
 impl TooltipInfo {
     pub fn new(tooltip_ui: &TooltipUIQuery, tooltip_entities: &TooltipEntityQuery) -> Self {
-        let (.., tooltip) = tooltip_ui.single();
-
-        let Some(entity) = tooltip.entity else {
+        let Some(entity) = Self::entity(tooltip_ui) else {
             return Self {
                 active: false,
                 transform: None,
@@ -30,6 +28,13 @@ impl TooltipInfo {
             active: true,
             transform,
         }
+    }
+
+    /// Entity with active tooltip
+    pub fn entity(tooltip_ui: &TooltipUIQuery) -> Option<Entity> {
+        let (.., tooltip) = tooltip_ui.single();
+
+        tooltip.entity
     }
 
     pub fn active(&self) -> bool {
