@@ -9,10 +9,9 @@ pub fn toggle_tooltip(
 ) {
     match trigger.event() {
         TooltipToggleTrigger::Hide => hide_tooltip(&mut tooltip_ui),
-        TooltipToggleTrigger::ShowOnMouseCursor(info) => {
+        TooltipToggleTrigger::Show(info) => {
             TooltipShower::new(info).show(&mut tooltip_ui, &game_camera, &hud_camera)
         }
-        TooltipToggleTrigger::ShowOnPlayer(info) => TooltipShower::new(info).show(&mut tooltip_ui),
     }
 }
 

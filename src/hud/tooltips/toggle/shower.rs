@@ -7,16 +7,16 @@ pub type GameCameraQuery<'w, 's, 'c, 't> =
 pub type HudCameraQuery<'w, 's, 'c, 't> =
     Query<'w, 's, (&'c Camera, &'t GlobalTransform), With<HudCamera>>;
 
-pub struct TooltipShower<T: TooltipPosition> {
-    kind: T,
+pub struct TooltipShower {
+    game_pos: Vec2,
     target_entity: Entity,
     text: String,
 }
 
-impl<T: TooltipPosition> TooltipShower<T> {
-    pub fn new(info: &TooltipDisplayInfo<T>) -> Self {
+impl TooltipShower {
+    pub fn new(info: &TooltipDisplayInfo) -> Self {
         Self {
-            kind: info.kind.clone(),
+            game_pos: info.game_pos,
             target_entity: info.target_entity,
             text: info.text.clone(),
         }
@@ -34,7 +34,7 @@ impl<T: TooltipPosition> TooltipShower<T> {
     }
 }
 
-impl TooltipShower<MouseTooltip> {
+impl TooltipShower {
     /// Show the tooltip at the given mouse position (converted from screen to HUD
     /// coordinates)
     pub fn show(
@@ -43,7 +43,7 @@ impl TooltipShower<MouseTooltip> {
         game_camera: &GameCameraQuery,
         hud_camera_query: &HudCameraQuery,
     ) {
-        let game_pos = self.kind.0;
+        let game_pos = self.game_pos;
         let (game_camera, game_transform) = game_camera.single();
         let viewport_pos = game_camera
             .world_to_viewport(game_transform, game_pos.extend(0.))
@@ -56,12 +56,5 @@ impl TooltipShower<MouseTooltip> {
         let Vec2 { x, y } = ui_pos;
 
         self.show_inner(Val::Px(y), Val::Px(x), tooltip_ui);
-    }
-}
-
-impl TooltipShower<PlayerTooltip> {
-    /// Show the tooltip at the given player position (which is always the center)
-    pub fn show(&self, tooltip_ui: &mut TooltipUIMutQuery) {
-        self.show_inner(Val::Percent(50.0), Val::Percent(50.0), tooltip_ui);
     }
 }

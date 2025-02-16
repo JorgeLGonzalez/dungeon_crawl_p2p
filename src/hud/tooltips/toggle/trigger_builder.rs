@@ -62,7 +62,7 @@ impl TooltipToggleTriggerBuilder {
         tooltip_entities
             .iter()
             .find_map(|q| create_tooltip_if_on_entity(q, mouse_pos))
-            .map(TooltipToggleTrigger::ShowOnMouseCursor)
+            .map(TooltipToggleTrigger::Show)
             .or_else(|| self.tooltip.active().then_some(TooltipToggleTrigger::Hide))
     }
 }
@@ -72,11 +72,11 @@ impl TooltipToggleTriggerBuilder {
 fn create_tooltip_if_on_entity(
     (entity, label, transform): (Entity, &TooltipLabel, &Transform),
     mouse_pos: MousePosition,
-) -> Option<TooltipDisplayInfo<MouseTooltip>> {
+) -> Option<TooltipDisplayInfo> {
     let entity_pos = transform.translation.truncate();
 
     (entity_pos.as_ivec2() == mouse_pos.game).then_some(TooltipDisplayInfo::new(
-        MouseTooltip(entity_pos),
+        entity_pos,
         entity,
         label.0.clone(),
     ))

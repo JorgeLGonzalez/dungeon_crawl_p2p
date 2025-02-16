@@ -7,8 +7,6 @@ use bevy::prelude::*;
 pub enum TooltipToggleTrigger {
     /// Hide the active tooltip
     Hide,
-    /// Show a tooltip on the entity under the mouse cursor
-    ShowOnMouseCursor(TooltipDisplayInfo<MouseTooltip>),
-    /// Show a tooltip for the entity on which the player is standing
-    ShowOnPlayer(TooltipDisplayInfo<PlayerTooltip>),
+    /// Show a tooltip on the entity under the mouse cursor or player
+    Show(TooltipDisplayInfo),
 }

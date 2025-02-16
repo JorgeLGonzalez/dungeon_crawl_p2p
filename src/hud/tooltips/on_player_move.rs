@@ -37,7 +37,7 @@ fn create_toggle(
     tooltip_entities
         .iter()
         .find_map(|q| create_tooltip_if_on_entity(q, event.player, event.pos))
-        .map(TooltipToggleTrigger::ShowOnPlayer)
+        .map(TooltipToggleTrigger::Show)
         .or_else(|| entity_with_tooltip.and(Some(TooltipToggleTrigger::Hide)))
 }
 
@@ -47,16 +47,16 @@ fn create_tooltip_if_on_entity(
     (entity, label, transform): (Entity, &TooltipLabel, &Transform),
     player: Entity,
     player_pos: IVec2,
-) -> Option<TooltipDisplayInfo<PlayerTooltip>> {
+) -> Option<TooltipDisplayInfo> {
     if entity == player {
         // Ignore the player entity itself, since the player is always at their own pos!
         return None;
     }
 
-    let entity_pos = transform.translation.truncate().as_ivec2();
+    let entity_pos = transform.translation.truncate();
 
-    (entity_pos == player_pos).then_some(TooltipDisplayInfo::new(
-        PlayerTooltip,
+    (entity_pos.as_ivec2() == player_pos).then_some(TooltipDisplayInfo::new(
+        entity_pos,
         entity,
         label.0.clone(),
     ))
