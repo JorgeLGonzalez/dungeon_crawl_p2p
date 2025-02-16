@@ -10,7 +10,7 @@ pub fn toggle_tooltip(
     match trigger.event() {
         TooltipToggleTrigger::Hide => hide_tooltip(&mut tooltip_ui),
         TooltipToggleTrigger::Show(info) => {
-            TooltipShower::new(info).show(&mut tooltip_ui, &game_camera, &hud_camera)
+            TooltipShower::new(info, &game_camera, &hud_camera).show(&mut tooltip_ui)
         }
     }
 }
