@@ -6,7 +6,7 @@ mod trigger;
 mod trigger_builder;
 
 pub(super) use display_info::*;
-pub(super) use shower::TooltipShower;
+pub(super) use shower::*;
 pub(super) use tooltip_info::TooltipInfo;
 pub(super) use trigger::TooltipToggleTrigger;
 pub(super) use trigger_builder::TooltipToggleTriggerBuilder;

@@ -73,10 +73,10 @@ fn create_tooltip_if_on_entity(
     (entity, label, transform): (Entity, &TooltipLabel, &Transform),
     mouse_pos: MousePosition,
 ) -> Option<TooltipDisplayInfo<MouseTooltip>> {
-    let entity_pos = transform.translation.truncate().as_ivec2();
+    let entity_pos = transform.translation.truncate();
 
-    (entity_pos == mouse_pos.game).then_some(TooltipDisplayInfo::new(
-        MouseTooltip(mouse_pos.screen),
+    (entity_pos.as_ivec2() == mouse_pos.game).then_some(TooltipDisplayInfo::new(
+        MouseTooltip(entity_pos),
         entity,
         label.0.clone(),
     ))
