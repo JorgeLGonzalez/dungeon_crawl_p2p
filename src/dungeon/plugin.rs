@@ -1,4 +1,4 @@
-use super::{reveal_cheat, spawn_dungeon, zoom, DungeonEventsPlugin};
+use super::{reveal_map, spawn_dungeon, zoom, DungeonEventsPlugin};
 use crate::{common, prelude::*};
 
 #[derive(SystemSet, Clone, Debug, Eq, Hash, PartialEq)]
@@ -16,6 +16,6 @@ impl Plugin for DungeonPlugin {
             spawn_dungeon.in_set(SpawnDungeonSet),
         );
 
-        common::add_core_systems(app, (reveal_cheat, zoom).in_set(DungeonCoreSet));
+        common::add_core_systems(app, (reveal_map, zoom).in_set(DungeonCoreSet));
     }
 }
