@@ -15,7 +15,7 @@ All these systems create a [TooltipToggleTrigger](./toggle/trigger.rs) observabl
 
 ### on_player_move
 
-If the local player moves, we check if they have moved onto an entity that supports a tooltip and toggle or hide the tooltip as needed. If the move was for the remote player who had a tooltip on its sprite, we hide it since we assume the player moved out from under the mouse cursor.
+If the local player moves, we check if they have moved onto an entity that supports a tooltip and show or hide the tooltip as needed. If the move was for the remote player who had a tooltip on its sprite, we hide it since we assume the player moved out from under the mouse cursor.
 
 ### on_monster_move
 
@@ -29,15 +29,17 @@ This system toggles the tooltip visibility based on mouse movement. We want to a
 2. If the mouse position is unavailable, we also hide the tooltip (if visible)
 3. If the tooltip is visible and the mouse is still on it, we do NOT toggle.
 
-Finally, if we get through all that, then check if the mouse is over any entity that supports a tooltip and show the tooltip. If none are found, we hide the tooltip if it is visible.
+Finally, if we get through all that, we then check if the mouse is over any entity that supports a tooltip and show the tooltip. If none are found, we hide the tooltip if it is visible.
 
 ### Coordinate Systems
 
 We need to deal with 3 coordinate systems:
 
-- **Game**. The 2D game coordinates is where the tooltip-able and player entities live and where we use the `PlayerCamera`. The origin here is in the center and the scale may differ.
-- **Screen**. The mouse cursor coordinates are unrelated to the `PlayerCamera`'s scale and have an origin at the top left.
+- **Game**. The 2D game coordinates is where the tooltip-able and player entities live and where we use the `PlayerCamera`. The origin here is in the center and the scale may differ based on player-controlled zoom level.
+- **Screen**. The mouse cursor screen or viewport coordinates are unrelated to the `PlayerCamera`'s scale and have an origin at the top left.
 - **HUD**. The HUD coordinates are based on the `HudCamera`, which is also independent of the `PlayerCamera` and I think the origin is at the bottom left.
+
+So to check mouse position, we convert screen coordinates to game coordinates. And to display the tooltip, we convert from game coordinates to HUD UI coordinates.
 
 ### on_zoom
 

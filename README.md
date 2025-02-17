@@ -27,7 +27,7 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] display item tool tip when standing over it
+- [x] display item tool tip when standing over it
   - [x] BUG: showing tooltip on entity out of FOV (still bit of a rounding error when item is just outside FOV, but good enough)
   - [x] BUG: on_player_move: local player Hide even though inactive tooltip
   - [x] BUG: hit test of mouse is off. zoom in and move over item to fine tune
@@ -40,8 +40,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] reusable fn to detect if tooltip is active: local player move,
   - [x] create tooltip plugin
   - [x] document tooltips
-  - [ ] test in p2p and synctest
-  - [ ] Consider using entity pos for mouse tooltip. Then both tooltips could be the same. But need to figure out how to convert from game to hud coordinates
+  - [x] test in p2p and synctest
+  - [x] Consider using entity pos for mouse tooltip. Then both tooltips could be the same. But need to figure out how to convert from game to hud coordinates
 - [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
