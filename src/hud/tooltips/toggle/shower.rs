@@ -36,24 +36,17 @@ impl TooltipShower {
         }
     }
 
-    fn show_inner(&self, bottom: Val, left: Val, tooltip_ui: &mut TooltipUIMutQuery) {
+    /// Show the tooltip at the given mouse position (converted from screen to HUD
+    /// coordinates)
+    pub fn show(&self, tooltip_ui: &mut TooltipUIMutQuery) {
         let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
 
         tooltip.entity = Some(self.target_entity);
         tooltip_text.0 = self.text.clone();
 
-        tooltip_node.display = Display::Block;
-        tooltip_node.bottom = bottom;
-        tooltip_node.left = left;
-    }
-}
-
-impl TooltipShower {
-    /// Show the tooltip at the given mouse position (converted from screen to HUD
-    /// coordinates)
-    pub fn show(&self, tooltip_ui: &mut TooltipUIMutQuery) {
         let Vec2 { x, y } = self.ui_pos;
-
-        self.show_inner(Val::Px(y), Val::Px(x), tooltip_ui);
+        tooltip_node.bottom = Val::Px(y);
+        tooltip_node.left = Val::Px(x);
+        tooltip_node.display = Display::Block;
     }
 }
