@@ -1,5 +1,5 @@
 use super::*;
-use bevy::prelude::*;
+use crate::{player::LocalPlayer, prelude::*};
 use bevy_ggrs::LocalPlayers;
 
 /// Builds the proper TooltipToggleTrigger variant based on a mouse movement
@@ -7,7 +7,7 @@ use bevy_ggrs::LocalPlayers;
 pub struct TooltipToggleTriggerBuilder {
     /// whether mouse is in local player's FOV
     in_fov: bool,
-    mouse_pos: Option<MousePosition>,
+    mouse_pos: Option<IVec2>,
     tooltip: TooltipInfo,
 }
 
@@ -20,7 +20,7 @@ impl TooltipToggleTriggerBuilder {
     ) -> Self {
         Self {
             in_fov: false,
-            mouse_pos: MousePosition::try_new(camera_query, windows),
+            mouse_pos: Self::create_mouse_pos(camera_query, windows),
             tooltip: TooltipInfo::new(tooltip_ui, tooltip_entities),
         }
     }
@@ -37,7 +37,7 @@ impl TooltipToggleTriggerBuilder {
             return self.tooltip.active().then_some(TooltipToggleTrigger::Hide);
         };
 
-        if self.tooltip.active() && self.tooltip.hit_test(mouse_pos.game) {
+        if self.tooltip.active() && self.tooltip.hit_test(mouse_pos) {
             // mouse moved but not off of active tooltipped entity
             return None;
         }
@@ -46,14 +46,31 @@ impl TooltipToggleTriggerBuilder {
     }
 
     pub fn with_player_fov(mut self, local_players: &LocalPlayers, players: &PlayerQuery) -> Self {
-        self.in_fov = self
-            .mouse_pos
-            .as_ref()
-            .map_or(false, |mp| mp.in_player_fov(local_players, players));
+        let Some(mouse_pos) = self.mouse_pos else {
+            return self;
+        };
+
+        self.in_fov = players
+            .iter()
+            .find(|(player, ..)| LocalPlayer::is_local(player, local_players))
+            .map(|(_, fov, ..)| fov.visible_tiles.contains_key(&mouse_pos))
+            .expect("No local player!");
 
         self
     }
 
+    fn create_mouse_pos(camera_query: &CameraQuery, windows: &WindowQuery) -> Option<IVec2> {
+        let Some(screen_pos) = windows.single().cursor_position() else {
+            return None;
+        };
+
+        let (camera, camera_transform) = camera_query.single();
+
+        camera
+            .viewport_to_world_2d(camera_transform, screen_pos)
+            .map(|game| game.round().as_ivec2())
+            .ok()
+    }
     /// Check all entities that can have a tooltip and create the proper toggle
     /// trigger if applicable
     fn create_toggle(&self, tooltip_entities: &TooltipEntityQuery) -> Option<TooltipToggleTrigger> {
@@ -71,11 +88,11 @@ impl TooltipToggleTriggerBuilder {
 /// entity.
 fn create_tooltip_if_on_entity(
     (entity, label, transform): (Entity, &TooltipLabel, &Transform),
-    mouse_pos: MousePosition,
+    mouse_pos: IVec2,
 ) -> Option<TooltipDisplayInfo> {
     let entity_pos = transform.translation.truncate();
 
-    (entity_pos.as_ivec2() == mouse_pos.game).then_some(TooltipDisplayInfo::new(
+    (entity_pos.as_ivec2() == mouse_pos).then_some(TooltipDisplayInfo::new(
         entity_pos,
         entity,
         label.0.clone(),
