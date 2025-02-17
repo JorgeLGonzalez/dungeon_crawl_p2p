@@ -18,10 +18,14 @@ pub fn on_mouse_move(
     }
     cursor_events.clear();
 
-    let toggle =
-        TooltipToggleTriggerBuilder::new(&camera_query, &tooltip_ui, &tooltip_entities, &windows)
-            .with_player_fov(&local_players, &players)
-            .build(&tooltip_entities);
+    let toggle = MouseBasedTooltipToggleFactory::new(
+        &camera_query,
+        &tooltip_ui,
+        &tooltip_entities,
+        &windows,
+    )
+    .with_player_fov(&local_players, &players)
+    .create(&tooltip_entities);
 
     if let Some(toggle) = toggle {
         commands.trigger(toggle);

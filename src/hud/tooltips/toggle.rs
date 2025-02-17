@@ -10,7 +10,7 @@ pub(super) use factory::TooltipToggleFactory;
 pub(super) use shower::*;
 pub(super) use tooltip_info::TooltipInfo;
 pub(super) use trigger::TooltipToggleTrigger;
-pub(super) use trigger_builder::TooltipToggleTriggerBuilder;
+pub(super) use trigger_builder::MouseBasedTooltipToggleFactory;
 
 use super::queries::*;
 use super::TooltipLabel;

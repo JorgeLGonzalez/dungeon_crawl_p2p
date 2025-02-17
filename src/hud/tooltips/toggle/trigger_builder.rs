@@ -4,7 +4,7 @@ use bevy_ggrs::LocalPlayers;
 
 /// Builds the proper TooltipToggleTrigger variant based on a mouse movement
 /// event.
-pub struct TooltipToggleTriggerBuilder {
+pub struct MouseBasedTooltipToggleFactory {
     /// whether mouse is in local player's FOV
     in_fov: bool,
     is_tooltip_visible: bool,
@@ -12,7 +12,7 @@ pub struct TooltipToggleTriggerBuilder {
     tooltip_transform: Option<Transform>,
 }
 
-impl TooltipToggleTriggerBuilder {
+impl MouseBasedTooltipToggleFactory {
     pub fn new(
         camera_query: &CameraQuery,
         tooltip_ui: &TooltipUIQuery,
@@ -37,7 +37,7 @@ impl TooltipToggleTriggerBuilder {
 
     /// Build the TooltipToggleTrigger variant (or None, if no toggle is needed).
     /// Perform simple checks first, then check all entities that can have a tooltip.
-    pub fn build(self, tooltip_entities: &TooltipEntityQuery) -> Option<TooltipToggleTrigger> {
+    pub fn create(self, tooltip_entities: &TooltipEntityQuery) -> Option<TooltipToggleTrigger> {
         if !self.in_fov {
             return self.maybe_hide();
         }
