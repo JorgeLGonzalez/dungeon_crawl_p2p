@@ -14,6 +14,8 @@ pub struct TooltipShower {
 }
 
 impl TooltipShower {
+    /// Create the shower from the given display info. Convert the game position
+    /// to the corresponding HUD UI position.
     pub fn new(
         info: &TooltipDisplayInfo,
         game_camera: &GameCameraQuery,
@@ -36,8 +38,7 @@ impl TooltipShower {
         }
     }
 
-    /// Show the tooltip at the given mouse position (converted from screen to HUD
-    /// coordinates)
+    /// Show the tooltip at the relevant game position
     pub fn show(&self, tooltip_ui: &mut TooltipUIMutQuery) {
         let (mut tooltip_node, mut tooltip_text, mut tooltip) = tooltip_ui.single_mut();
 

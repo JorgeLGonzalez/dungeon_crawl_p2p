@@ -7,8 +7,9 @@ use bevy_ggrs::LocalPlayers;
 pub struct TooltipToggleTriggerBuilder {
     /// whether mouse is in local player's FOV
     in_fov: bool,
+    is_tooltip_visible: bool,
     mouse_pos: Option<IVec2>,
-    tooltip: TooltipInfo,
+    tooltip_transform: Option<Transform>,
 }
 
 impl TooltipToggleTriggerBuilder {
@@ -18,10 +19,19 @@ impl TooltipToggleTriggerBuilder {
         tooltip_entities: &TooltipEntityQuery,
         windows: &WindowQuery,
     ) -> Self {
+        let tooltipped_entity = TooltipInfo::entity(tooltip_ui);
+        let tooltip_transform = tooltipped_entity.and_then(|entity| {
+            tooltip_entities
+                .get(entity)
+                .map(|(.., transform)| transform.clone())
+                .ok()
+        });
+
         Self {
             in_fov: false,
+            is_tooltip_visible: tooltipped_entity.is_some(),
             mouse_pos: Self::create_mouse_pos(camera_query, windows),
-            tooltip: TooltipInfo::new(tooltip_ui, tooltip_entities),
+            tooltip_transform,
         }
     }
 
@@ -29,20 +39,19 @@ impl TooltipToggleTriggerBuilder {
     /// Perform simple checks first, then check all entities that can have a tooltip.
     pub fn build(self, tooltip_entities: &TooltipEntityQuery) -> Option<TooltipToggleTrigger> {
         if !self.in_fov {
-            return self.tooltip.active().then_some(TooltipToggleTrigger::Hide);
+            return self.maybe_hide();
         }
 
         let Some(mouse_pos) = self.mouse_pos else {
             // mouse is presumably off screen
-            return self.tooltip.active().then_some(TooltipToggleTrigger::Hide);
+            return self.maybe_hide();
         };
 
-        if self.tooltip.active() && self.tooltip.hit_test(mouse_pos) {
-            // mouse moved but not off of active tooltipped entity
+        if self.still_on_tooltip(mouse_pos) {
             return None;
         }
 
-        self.create_toggle(tooltip_entities)
+        TooltipToggleFactory::new(mouse_pos, self.is_tooltip_visible).create(tooltip_entities)
     }
 
     pub fn with_player_fov(mut self, local_players: &LocalPlayers, players: &PlayerQuery) -> Self {
@@ -71,30 +80,18 @@ impl TooltipToggleTriggerBuilder {
             .map(|game| game.round().as_ivec2())
             .ok()
     }
-    /// Check all entities that can have a tooltip and create the proper toggle
-    /// trigger if applicable
-    fn create_toggle(&self, tooltip_entities: &TooltipEntityQuery) -> Option<TooltipToggleTrigger> {
-        let mouse_pos = self.mouse_pos.expect("Mouse position should be set");
 
-        tooltip_entities
-            .iter()
-            .find_map(|q| create_tooltip_if_on_entity(q, mouse_pos))
-            .map(TooltipToggleTrigger::Show)
-            .or_else(|| self.tooltip.active().then_some(TooltipToggleTrigger::Hide))
+    /// Hide the tooltip if it is visible
+    fn maybe_hide(&self) -> Option<TooltipToggleTrigger> {
+        self.is_tooltip_visible
+            .then_some(TooltipToggleTrigger::Hide)
     }
-}
 
-/// Create a TooltipDisplayInfo for a MouseTooltip if the mouse is over the given
-/// entity.
-fn create_tooltip_if_on_entity(
-    (entity, label, transform): (Entity, &TooltipLabel, &Transform),
-    mouse_pos: IVec2,
-) -> Option<TooltipDisplayInfo> {
-    let entity_pos = transform.translation.truncate();
-
-    (entity_pos.as_ivec2() == mouse_pos).then_some(TooltipDisplayInfo::new(
-        entity_pos,
-        entity,
-        label.0.clone(),
-    ))
+    /// Is the tooltip visible and the mouse is still on the same position?
+    /// This means the mouse has moved, but not off of the entity with the
+    /// active tooltip
+    fn still_on_tooltip(&self, mouse_pos: IVec2) -> bool {
+        self.tooltip_transform
+            .is_some_and(|t| mouse_pos == t.translation.truncate().as_ivec2())
+    }
 }
