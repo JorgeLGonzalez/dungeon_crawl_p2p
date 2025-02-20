@@ -2,6 +2,11 @@
 
 Goal is to recreate dungeon crawl in Bevy (using Bevy rendering etc) that works on web and Mac OS and that can be with 2 players. (Unlike original, this one is NOT turn-based (for better or worse).
 
+## Running
+
+Not meant for public use.
+Hosted at [http://3.147.199.67/](http://3.147.199.67/).
+
 ## Developing
 
 ### To run in Single Player Mode (with bacon)
@@ -27,7 +32,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] deploy such that it can be used across devices (ideally over internet)
 - [ ] cellular automata dungeon generation
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] drunkard walk dungeon generation
@@ -54,30 +58,11 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 ## Issues
 
-- [x] If you move the mouse on mac app right when it is starting, it crashes.
-
-```
-thread 'Compute Task Pool (2)' panicked at src/player/player_actions/do_player_action.rs:73:5:
-assertion `left == right` failed: Unexpected player count!
-  left: 0
- right: 2
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
-Encountered a panic in system `dungeon_crawl_p2p::player::player_actions::do_player_action::do_player_action`!
-thread 'Compute Task Pool (3)' panicked at src/player/local_player.rs:18:14:
-No local player to follow!
-Encountered a panic in system `dungeon_crawl_p2p::player::camera::follow_player::follow_with_camera`!
-thread 'Compute Task Pool (0)' panicked at src/player/local_player.rs:18:14:
-No local player to follow!
-Encountered a panic in system `dungeon_crawl_p2p::hud::health_bar::health_bar`!
-thread 'Compute Task Pool (2)' panicked at src/hud/tooltips/determiner_builder.rs:69:18:
-No local player to follow!
-Encountered a panic in system `dungeon_crawl_p2p::hud::tooltips::tooltip`!
-Encountered a panic in system `<bevy_ggrs::snapshot::set::SnapshotSetPlugin as bevy_app::plugin::Plugin>::build::{{closure}}`!
-Encountered a panic in system `bevy_ggrs::schedule_systems::run_ggrs_schedules<bevy_ggrs::GgrsConfig<u8, matchbox_protocol::PeerId>>`!
-Encountered a panic in system `bevy_app::main_schedule::Main::run_main`!
-```
-
 - [ ] Browser tab title
+
+## Deploying
+
+See [Deploying](./static/README.md)
 
 ## Main Modules
 
@@ -238,10 +223,11 @@ flowchart TD
   - [x] document tooltips
   - [x] test in p2p and synctest
   - [x] Consider using entity pos for mouse tooltip. Then both tooltips could be the same. But need to figure out how to convert from game to hud coordinates
-  - [ ]
+  - [x] deploy such that it can be used across devices (ideally over internet)
 
 ### Archived Issues
 
 - [x] synctest mode does not work. It spawns the 2 players, but they are not seen in the GgrsSchedule systems (move_players and camera_follow). Solved by starting sync test when entering the MatchMaking state rather than in the Update. See commit 6dfacc59a686f72e3ac49ac957130c72407bb7f0.
 - [x] matchbox does not work with bevy 0.15, unless using fork from haihala. Hope to get revised bevy_ggrs and matchbox once [PRs](https://github.com/johanhelsing/matchbox/pull/466) merged
 - [x] Fix zoom on web where key press detection is inconsistent
+- [x] If you move the mouse on mac app right when it is starting, it crashes.
