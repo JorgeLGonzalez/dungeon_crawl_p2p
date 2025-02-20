@@ -93,12 +93,12 @@ impl From<&mut ButtonInput<KeyCode>> for PlayerAction {
             .or_else(|| single_press(keys, KeyM, RevealDungeonCheat))
             .or_else(|| single_press(keys, KeyP, Snapshot))
             .or_else(|| {
-                (keys.just_released(Equal) && keys.any_pressed([ShiftLeft, ShiftRight]))
-                    .then_some(ZoomIn)
-            })
-            .or_else(|| {
-                (keys.just_released(Minus) && keys.any_pressed([ShiftLeft, ShiftRight]))
-                    .then_some(ZoomOut)
+                keys.any_pressed([ShiftLeft, ShiftRight])
+                    .then(|| {
+                        single_press(keys, Equal, ZoomIn)
+                            .or_else(|| single_press(keys, Minus, ZoomOut))
+                    })
+                    .flatten()
             })
             .unwrap_or(PlayerAction::None)
     }

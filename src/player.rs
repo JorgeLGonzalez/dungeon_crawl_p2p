@@ -47,7 +47,7 @@ mod plugin;
 mod spawn_players;
 
 pub use components::{Inventory, MoveThrottle, Obstacle, Player, PlayerCamera, PlayerId};
-pub use events::{InventoryUpdatedEvent, WeaponWieldedEvent};
+pub use events::{InventoryUpdatedEvent, PlayerMovesEvent, WeaponWieldedEvent};
 pub use local_player::{LocalPlayer, PlayersQuery};
 pub use plugin::{PlayerCoreSet, PlayerPlugin, SpawnPlayersSet};
 

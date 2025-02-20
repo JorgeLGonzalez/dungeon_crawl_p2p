@@ -1,59 +1,46 @@
 # Tooltip
 
-The system to display a [tooltip](./tooltips.rs) is non-trivial. To determine whether a tooltip should be shown, hidden or left as-is, it must consider the following conditions:
+A tooltip is displayed (for the local player) over a relevant entity (i.e. an entity with the `TooltipLabel` component) when the mouse pointer hovers over it or when the local player steps on the item. We use a UI entity (marked with the `TooltipUI` component) to render the tooltip. The `TooltipUI` marker component specifies the game entity (i.e. magic item, monster, or player) that has the tooltip, when the tooltip is visible. The `TooltipLabel` component specifies the tooltip text string to use for the tooltip.
 
-- **Shown?** Is a tooltip already being displayed?
-- **Mouse pos?** Is the mouse cursor over the game viewport (as opposed to being entirely off the game window).
-- **In FOV?** Is the mouse cursor over a tile within the local player's field of view? Remember the FOV can change if the player moves or if the tooltipped entity moves.
-- **Still on entity?** Is the mouse cursor over the entity for which the tooltip is being shown?
-- **Mouse moved?** Has the mouse cursor moved? If not, we can bail out early when no tooltip is being shown since we only one to activate a tooltip when the mouse moves over a relevant entity, and not when an entity moves under the mouse because either the entity moved or the camera moved.
-- **On tooltip-able?** Is the mouse cursor hovering over an entity with a `TooltipLabel` component?
+## Toggling
 
-We use two key components:
+Tooltip visibility is toggled on/off based on events that are configured to run systems via the `TooltipPlugin`:
 
-- `TooltipLabel`. This marks entities that support tooltips. It contains the tooltip label to use.
-- `TooltipUI`. This marks the entity that displays the actual tooltip for entities with a `TooltipLabel` component. So we only have a single `TooltipUI` entity in the game and it itself lacks a `TooltipLabel`, while we have many entities with a `TooltipLabel` component (e.g the players, monsters, items, and anything else we want to tooltip).
+- `PlayerMovesEvent` triggers [on_player_move](./on_player_move.rs)
+- `MonsterMovesEvent` triggers [on_monster_move](./on_monster_move.rs)
+- Mouse `CursorMoved` triggers [on_mouse_move](./on_mouse_move.rs)
+- Dungeon `ZoomEvent` triggers [on_zoom](./on_zoom.rs)
 
-The `tooltip` system delegates to the following constructs:
+All these systems create a [TooltipToggleTrigger](./toggle/trigger.rs) observable trigger event observed by the [toggle_tooltip](./toggle_tooltip.rs) system, which ultimately shows or hides the tooltip based on the `TooltipToggleTrigger` variant.
 
-- `TooltipDeterminerBuilder`, which focuses on gathering and packaging all the conditions to test and then building a `TooltipDeterminer`.
-- `TooltipDeterminer`, which tests the conditions to determine the `TooltipToggleAction` enum.
-- `TooltipToggleAction` has the following variants:
-  - `Hide`, which contains the `TooltipHider`, used to hide or deactivate the active tooltip.
-  - `None`, which indicates no toggling is needed.
-  - `Show`, which contains the `TooltipShower`, used to display or activate the tooltip at the proper location.
+### on_player_move
 
-To determine if and how to toggle a tooltip, we take this decision flow:
+If the local player moves, we check if they have moved onto an entity that supports a tooltip and show or hide the tooltip as needed. If the move was for the remote player who had a tooltip on its sprite, we hide it since we assume the player moved out from under the mouse cursor.
 
-```mermaid
-flowchart TD
-S{Can create shower?} -- yes --> Show
-S -- no --> A{tooltip active?}
-A -- yes --> E{still on entity?}
-E -- no --> Hide
-E -- yes --> N[No action]
-A -- no --> N
-```
+### on_monster_move
 
-Logic to determine whether we can create a `TooltipShower`:
+When a monster that had a visible tooltip moves, we hide the tooltip since we assume the monster moved out from under the tooltip.
 
-```mermaid
-flowchart TD
-FOV{In FOV?} -- no --> No[No shower]
-FOV -- yes --> T
-MM -- yes --> T
-E -- no --> T
-E{still on entity?} -- yes --> No
-T -- yes --> Shower[Create shower]
-MM{Mouse moved?} -- no --> No
-T{on tooltip-able?} -- no --> No
-```
+### on_mouse_move
 
-Notes:
+This system toggles the tooltip visibility based on mouse movement. We want to avoid the more expensive check against all entity positions, so we try to short-circuit that as follows:
 
-- Part of the reason for this breakdown is to defer the check on whether the mouse is over a tooltip-able entity as much as possible, since my assumption is that this is the most expensive (since it has to check all entities that have `TooltipLabel` and check their position relative to the mouse position etc.). Whereas the other conditions are presumably much cheaper.
-- The coordinate systems are tricky, since we have to deal with 3:
+1. If the mouse game position is not in the local player's FOV, we know no tooltip should be visible, so we hide it if necessary. (Even if the tooltip was shown because the player moved onto the item, we consider a mouse move a toggling event, just to keep things a bit simpler.)
+2. If the mouse position is unavailable, we also hide the tooltip (if visible)
+3. If the tooltip is visible and the mouse is still on it, we do NOT toggle.
 
-  - **Game**. The 2D game coordinates is where the tooltip-able and player entities live and where we use the `PlayerCamera`. The origin here is in the center and the scale may differ.
-  - **Screen**. The mouse cursor coordinates are unrelated to the `PlayerCamera`'s scale and have an origin at the top left.
-  - **HUD**. The HUD coordinates are based on the `HudCamera`, which is also independent of the `PlayerCamera` and I think the origin is at the bottom left.
+Finally, if we get through all that, we then check if the mouse is over any entity that supports a tooltip and show the tooltip. If none are found, we hide the tooltip if it is visible.
+
+### Coordinate Systems
+
+We need to deal with 3 coordinate systems:
+
+- **Game**. The 2D game coordinates is where the tooltip-able and player entities live and where we use the `PlayerCamera`. The origin here is in the center and the scale may differ based on player-controlled zoom level.
+- **Screen**. The mouse cursor screen or viewport coordinates are unrelated to the `PlayerCamera`'s scale and have an origin at the top left.
+- **HUD**. The HUD coordinates are based on the `HudCamera`, which is also independent of the `PlayerCamera` and I think the origin is at the bottom left.
+
+So to check mouse position, we convert screen coordinates to game coordinates. And to display the tooltip, we convert from game coordinates to HUD UI coordinates.
+
+### on_zoom
+
+When the the local player zooms the dungeon map in or out, we hide the visible tooltip since it is likely the mouse cursor will no longer be on the post-zoom entity. (This is not true when the tooltip was displayed because the player stepped on the entity, but whatever...)

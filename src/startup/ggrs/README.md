@@ -1,7 +1,7 @@
 # GGRS
 
 Remember to test with `GameMode::GgrsSyncTest` to see if things are still working.
-Last tested on 2025-02-03.
+Last tested on 2025-02-**15**.
 
 ## Rollbacks
 
@@ -63,7 +63,7 @@ The P2P stuff (among other things) is based on the [Extreme Bevy tutorial](https
 
 ### January 26, 2025
 
-The issue this time was that using a healing potion occured in one frame, but drinking it occured in the next frame. This is because the `drink_potion` system is part of the `health` module which was set to run BEFORE the player systems. So the relevant sequence was:
+The issue this time was that using a healing potion occurred in one frame, but drinking it occurred in the next frame. This is because the `drink_potion` system is part of the `health` module which was set to run BEFORE the player systems. So the relevant sequence was:
 
 1. Frame F: Player uses a healing potion. Drink event is sent, but not processed yet.
 2. Frame F + 1: Drink event is processed so player heals.
