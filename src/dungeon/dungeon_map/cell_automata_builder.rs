@@ -1,9 +1,5 @@
-use super::{DungeonMap, MapPos};
-use crate::{
-    common::RandomGenerator,
-    config,
-    dungeon::{DungeonPosition, TileType},
-};
+use super::{DungeonMap, DungeonPosition, MapPos, TileType};
+use crate::prelude::*;
 use rand::prelude::*;
 
 pub struct CellAutomataBuilder {
@@ -17,7 +13,7 @@ impl CellAutomataBuilder {
         }
         .randomize_tiles(rng)
         .smoothen()
-        .add_player_starting_positions()
+        .add_player_starting_positions(rng)
         .add_items(rng)
         .add_monster_starting_positions(rng)
         .map
@@ -41,13 +37,16 @@ impl CellAutomataBuilder {
         self
     }
 
-    fn add_player_starting_positions(mut self) -> Self {
-        let pos = self
-            .map
-            .tiles()
-            .find(|t| t.tile_type == TileType::Floor)
-            .unwrap()
-            .pos;
+    fn add_player_starting_positions(mut self, rng: &mut RandomGenerator) -> Self {
+        let corner = match rng.gen_range(0..4) {
+            0 => MapPos::new(1, 1),
+            1 => MapPos::new(config::MAP_WIDTH - 2, 1),
+            2 => MapPos::new(1, config::MAP_HEIGHT - 2),
+            _ => MapPos::new(config::MAP_WIDTH - 2, config::MAP_HEIGHT - 2),
+        };
+
+        let radius = 1;
+        let pos = self.find_nearest_floor_tile(corner.to_dungeon_pos(), radius);
 
         self.map.player_starting_positions.push(pos);
 
@@ -122,5 +121,27 @@ impl CellAutomataBuilder {
         }
 
         self
+    }
+
+    fn find_nearest_floor_tile(&self, origin: DungeonPosition, radius: isize) -> DungeonPosition {
+        if radius == 1 && self.map.get_tile_type(&origin) == TileType::Floor {
+            return origin;
+        }
+
+        for iy in -radius..=radius {
+            for ix in -radius..=radius {
+                let pos = DungeonPosition::new(origin.x + ix, origin.y + iy);
+                if !self.map.is_valid_position(&pos) {
+                    continue;
+                }
+                let tile = self.map.get_tile_type(&pos);
+                if tile == TileType::Floor {
+                    return pos;
+                }
+            }
+        }
+
+        // Expand the search radius and try again
+        self.find_nearest_floor_tile(origin, radius + 1)
     }
 }
