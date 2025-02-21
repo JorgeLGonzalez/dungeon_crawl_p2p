@@ -1,5 +1,6 @@
 mod components;
 mod dungeon_map {
+    mod cell_automata_builder;
     mod dungeon_map;
     mod dungeon_position;
     mod dungeon_tile;
@@ -8,6 +9,9 @@ mod dungeon_map {
 
     pub use dungeon_map::DungeonMap;
     pub use dungeon_position::DungeonPosition;
+
+    pub(super) use cell_automata_builder::CellAutomataBuilder;
+    pub(super) use dungeon_map::MapPos;
     pub(super) use dungeon_tile::{DungeonTile, TileType};
     pub(super) use random_rooms_builder::RandomRoomsBuilder;
     pub(super) use room::Room;

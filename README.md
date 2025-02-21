@@ -33,6 +33,11 @@ But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] cellular automata dungeon generation
+  - [x] Ensure periphery is all walls
+  - [ ] Position players in single and multi player
+  - [ ] Randomly choose dungeon builder
+  - [ ] Document (and rationalize) DungeonPosition vs MapPos vs iVec2
+  - [ ] refactor
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
