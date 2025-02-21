@@ -47,14 +47,23 @@ impl CellAutomataBuilder {
 
         let radius = 1;
         let pos = self.find_nearest_floor_tile(corner.to_dungeon_pos(), radius);
-
         self.map.player_starting_positions.push(pos);
 
-        // if config::GAME_MODE != GameMode::SinglePlayer {
-        //     self.map
-        //         .player_starting_positions
-        //         .push(self.rooms[1].center());
-        // }
+        if config::GAME_MODE != GameMode::SinglePlayer {
+            let opposite_x = if corner.x == 1 {
+                config::MAP_WIDTH - 2
+            } else {
+                1
+            };
+            let opposite_y = if corner.y == 1 {
+                config::MAP_HEIGHT - 2
+            } else {
+                1
+            };
+            let opposite = MapPos::new(opposite_x, opposite_y);
+            let pos = self.find_nearest_floor_tile(opposite.to_dungeon_pos(), radius);
+            self.map.player_starting_positions.push(pos);
+        }
 
         self
     }
