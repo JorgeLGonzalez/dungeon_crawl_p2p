@@ -8,6 +8,8 @@ pub struct CellAutomataBuilder {
 
 impl CellAutomataBuilder {
     pub fn build(rng: &mut RandomGenerator) -> DungeonMap {
+        info!("Building cellular automata dungeon.");
+
         Self {
             map: DungeonMap::new(),
         }

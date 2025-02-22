@@ -35,7 +35,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] cellular automata dungeon generation
   - [x] Ensure periphery is all walls
   - [x] Position players in single and multi player. Pick 2 random corners and put the player on closest floor tile. (There is a chance it will be isolated so later on we want to ensure path to center where we will put amulet)
-  - [ ] Randomly choose dungeon builder
+  - [x] Randomly choose dungeon builder
   - [ ] Document (and rationalize) DungeonPosition vs MapPos vs iVec2
   - [ ] refactor
     - [ ] find nearest floor tile should only search perimeter

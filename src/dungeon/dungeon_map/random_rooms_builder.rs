@@ -9,6 +9,7 @@ pub struct RandomRoomsBuilder {
 
 impl RandomRoomsBuilder {
     pub fn build(rng: &mut RandomGenerator) -> DungeonMap {
+        info!("Building random rooms dungeon.");
         Self {
             map: DungeonMap::new(),
             rooms: vec![],

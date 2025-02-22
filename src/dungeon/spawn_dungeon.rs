@@ -9,8 +9,10 @@ use crate::{
 use bevy::prelude::*;
 
 pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
-    let dungeon = CellAutomataBuilder::build(rng.as_mut());
-    // let dungeon = RandomRoomsBuilder::build(rng.as_mut());
+    let dungeon = match rng.gen_range(0..2) {
+        0 => CellAutomataBuilder::build(rng.as_mut()),
+        _ => RandomRoomsBuilder::build(rng.as_mut()),
+    };
 
     for tile in dungeon.tiles() {
         let sprite = create_sprite(tile.tile_type);
