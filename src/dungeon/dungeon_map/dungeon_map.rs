@@ -75,10 +75,6 @@ struct MapPos {
 }
 
 impl MapPos {
-    fn new(x: usize, y: usize) -> Self {
-        Self { x, y }
-    }
-
     pub fn from_dungeon_pos(pos: &DungeonPosition) -> Self {
         let x = (pos.x + (MAP_WIDTH as isize / 2)) as usize;
         let y = (pos.y + (MAP_HEIGHT as isize / 2)) as usize;
@@ -88,13 +84,6 @@ impl MapPos {
 
     pub fn is_valid(&self) -> bool {
         self.x < MAP_WIDTH && self.y < MAP_HEIGHT
-    }
-
-    fn to_dungeon_pos(&self) -> DungeonPosition {
-        DungeonPosition::new(
-            self.x as isize - (MAP_WIDTH as isize / 2),
-            self.y as isize - (MAP_HEIGHT as isize / 2),
-        )
     }
 
     pub fn to_idx(&self) -> usize {

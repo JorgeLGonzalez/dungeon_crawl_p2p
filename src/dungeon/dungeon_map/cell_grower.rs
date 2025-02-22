@@ -33,13 +33,10 @@ impl CellGrower {
             (1, 1),
         ];
 
-        let is_wall = |(ix, iy): &&(isize, isize)| {
-            self.map
-                .get_tile_type(&DungeonPosition::new(pos.x + ix, pos.y + iy))
-                == TileType::Wall
-        };
+        let is_wall =
+            |neighbor: &DungeonPosition| self.map.get_tile_type(neighbor) == TileType::Wall;
 
-        ADJACENT_POSITIONS.iter().filter(is_wall).count()
+        pos.perimeter(1).filter(is_wall).count()
     }
 
     /// Perform one generation of growth

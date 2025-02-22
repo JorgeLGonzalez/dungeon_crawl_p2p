@@ -39,6 +39,8 @@ impl CellAutomataBuilder {
         self
     }
 
+    /// Randomly assign player starting positions to opposite corners of the
+    /// dungeon.
     fn add_player_starting_positions(mut self, rng: &mut RandomGenerator) -> Self {
         let corner = match rng.gen_range(0..4) {
             0 => DungeonCorner::BottomLeft,
@@ -60,6 +62,30 @@ impl CellAutomataBuilder {
         self
     }
 
+    /// Find the nearest floor tile to the given origin, within the given radius.
+    /// If no floor tile is found within the radius, recursively search with an
+    /// increased radius.
+    fn find_nearest_floor_tile(&self, origin: DungeonPosition, radius: isize) -> DungeonPosition {
+        assert!(radius > 0 && radius < 10);
+        if radius == 1 && self.map.get_tile_type(&origin) == TileType::Floor {
+            return origin;
+        }
+
+        origin
+            .perimeter(radius)
+            .filter(|pos| self.map.is_valid_position(pos))
+            .find(|pos| self.map.get_tile_type(pos) == TileType::Floor)
+            .unwrap_or_else(|| self.find_nearest_floor_tile(origin, radius + 1))
+    }
+
+    /// Smooth out the randomly assigned tiles by converting tiles to floor unless
+    /// surrounded by too many walls (or no walls at all).
+    fn grow_cells(mut self) -> Self {
+        self.map = CellGrower::grow(self.map);
+
+        self
+    }
+
     /// Randomly assign tiles within the map, slightly favoring floors.
     /// Map perimeter is left as walls.
     fn randomize_tiles(mut self, rng: &mut RandomGenerator) -> Self {
@@ -75,35 +101,5 @@ impl CellAutomataBuilder {
             });
 
         self
-    }
-
-    /// Smooth out the randomly assigned tiles by converting tiles to floor unless
-    /// surrounded by too many walls (or no walls at all).
-    fn grow_cells(mut self) -> Self {
-        self.map = CellGrower::grow(self.map);
-
-        self
-    }
-
-    fn find_nearest_floor_tile(&self, origin: DungeonPosition, radius: isize) -> DungeonPosition {
-        if radius == 1 && self.map.get_tile_type(&origin) == TileType::Floor {
-            return origin;
-        }
-
-        for iy in -radius..=radius {
-            for ix in -radius..=radius {
-                let pos = DungeonPosition::new(origin.x + ix, origin.y + iy);
-                if !self.map.is_valid_position(&pos) {
-                    continue;
-                }
-                let tile = self.map.get_tile_type(&pos);
-                if tile == TileType::Floor {
-                    return pos;
-                }
-            }
-        }
-
-        // Expand the search radius and try again
-        self.find_nearest_floor_tile(origin, radius + 1)
     }
 }

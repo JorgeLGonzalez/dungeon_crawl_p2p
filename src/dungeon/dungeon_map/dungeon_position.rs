@@ -34,6 +34,29 @@ impl DungeonPosition {
         self.to_vec2().distance(other.to_vec2())
     }
 
+    /// Returns an iterator over the perimeter of the square with the given radius
+    /// from the current position. The perimeter is defined as the outermost tiles
+    /// of the square, including corners.
+    pub fn perimeter(&self, radius: isize) -> impl Iterator<Item = DungeonPosition> + use<'_> {
+        let mut perimeter = vec![];
+
+        for ix in -radius..=radius {
+            // top row
+            perimeter.push(DungeonPosition::new(self.x + ix, self.y + radius));
+            // bottom row
+            perimeter.push(DungeonPosition::new(self.x + ix, self.y - radius));
+        }
+
+        for iy in (-radius + 1)..radius {
+            // right column
+            perimeter.push(DungeonPosition::new(self.x + radius, self.y + iy));
+            // left column
+            perimeter.push(DungeonPosition::new(self.x - radius, self.y + iy));
+        }
+
+        perimeter.into_iter()
+    }
+
     pub fn to_vec2(&self) -> Vec2 {
         Vec2::new(self.x as f32, self.y as f32)
     }
