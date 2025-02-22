@@ -48,6 +48,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] monster sprites
 - [ ] tile sprites
   - [ ] note wall tiles are currently always hidden. will need to adjust `recalculate_fov`
+- [ ] Consider deploying web app to netlify to get DNS and use github actions similar to dog chase game
 - [ ] upgrade to rand 0.9. It has breaking changes and Xoshiro
 - [ ] improve lighting simulation
 - [ ] amulet. In original it is placed farthest from player. But we now have 2 randomly placed players.

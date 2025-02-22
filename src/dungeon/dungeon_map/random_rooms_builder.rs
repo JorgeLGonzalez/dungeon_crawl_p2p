@@ -1,5 +1,5 @@
-use super::{DungeonPosition, Room, TileType};
-use crate::{config::*, prelude::*};
+use super::*;
+use crate::prelude::*;
 use rand::prelude::*;
 
 pub struct RandomRoomsBuilder {
@@ -44,7 +44,7 @@ impl RandomRoomsBuilder {
         self.map
             .player_starting_positions
             .push(self.rooms[0].center());
-        if GAME_MODE != GameMode::SinglePlayer {
+        if config::GAME_MODE != GameMode::SinglePlayer {
             self.map
                 .player_starting_positions
                 .push(self.rooms[1].center());

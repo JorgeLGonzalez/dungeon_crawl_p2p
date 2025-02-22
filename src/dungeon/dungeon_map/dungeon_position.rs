@@ -1,4 +1,4 @@
-use crate::config;
+use super::MAP_Z_LAYER;
 use bevy::math::{Vec2, Vec3};
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -47,7 +47,7 @@ impl From<DungeonPosition> for Vec2 {
 
 impl From<DungeonPosition> for Vec3 {
     fn from(pos: DungeonPosition) -> Self {
-        pos.to_vec3(config::MAP_Z_LAYER)
+        pos.to_vec3(MAP_Z_LAYER)
     }
 }
 

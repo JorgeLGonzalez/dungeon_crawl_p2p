@@ -1,5 +1,4 @@
-use super::{DungeonPosition, DungeonTile, TileType};
-use crate::config::{self, MAP_HEIGHT, MAP_WIDTH};
+use super::*;
 use bevy::prelude::Resource;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
@@ -51,7 +50,7 @@ impl DungeonMap {
     fn far_from_players(&self, pos: DungeonPosition) -> bool {
         self.player_starting_positions
             .iter()
-            .all(|p| p.distance(pos).abs() > config::SAFETY_RADIUS)
+            .all(|p| p.distance(pos).abs() > SAFETY_RADIUS)
     }
 
     fn idx_to_position(&self, index: usize) -> DungeonPosition {

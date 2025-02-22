@@ -1,4 +1,6 @@
 mod components;
+mod config;
+
 mod dungeon_map {
     mod cell_automata_builder;
     mod dungeon_map;
@@ -15,6 +17,8 @@ mod dungeon_map {
     pub(super) use dungeon_tile::{DungeonTile, TileType};
     pub(super) use random_rooms_builder::RandomRoomsBuilder;
     pub(super) use room::Room;
+
+    use super::config::*;
 }
 mod events;
 mod illuminator;
@@ -24,13 +28,15 @@ mod spawn_dungeon;
 mod zoom;
 
 pub use components::{FloorTile, WallTile};
+pub use config::{NUM_MONSTERS, TILE_HEIGHT, TILE_WIDTH, VIEWPORT_HEIGHT};
 pub use dungeon_map::{DungeonMap, DungeonPosition};
 pub use events::{RevealDungeonEvent, ZoomEvent};
 pub use illuminator::{FloorQuery, Illuminator, PlayerQuery};
 pub use plugin::{DungeonCoreSet, DungeonPlugin, SpawnDungeonSet};
 
 use components::*;
-use dungeon_map::{RandomRoomsBuilder, TileType};
+use config::*;
+use dungeon_map::{CellAutomataBuilder, RandomRoomsBuilder, TileType};
 use events::*;
 use reveal_map::reveal_map;
 use spawn_dungeon::spawn_dungeon;

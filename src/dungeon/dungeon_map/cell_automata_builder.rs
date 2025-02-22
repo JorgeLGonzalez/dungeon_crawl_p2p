@@ -1,4 +1,4 @@
-use super::{DungeonMap, DungeonPosition, MapPos, TileType};
+use super::*;
 use crate::prelude::*;
 use rand::prelude::*;
 
@@ -25,7 +25,7 @@ impl CellAutomataBuilder {
         self.map.item_positions = self
             .map
             .spawnable_positions()
-            .choose_multiple(rng, config::NUM_ITEMS);
+            .choose_multiple(rng, NUM_ITEMS);
 
         self
     }
@@ -34,7 +34,7 @@ impl CellAutomataBuilder {
         self.map.monster_starting_positions = self
             .map
             .spawnable_positions()
-            .choose_multiple(rng, config::NUM_MONSTERS);
+            .choose_multiple(rng, NUM_MONSTERS);
 
         self
     }
@@ -42,9 +42,9 @@ impl CellAutomataBuilder {
     fn add_player_starting_positions(mut self, rng: &mut RandomGenerator) -> Self {
         let corner = match rng.gen_range(0..4) {
             0 => MapPos::new(1, 1),
-            1 => MapPos::new(config::MAP_WIDTH - 2, 1),
-            2 => MapPos::new(1, config::MAP_HEIGHT - 2),
-            _ => MapPos::new(config::MAP_WIDTH - 2, config::MAP_HEIGHT - 2),
+            1 => MapPos::new(MAP_WIDTH - 2, 1),
+            2 => MapPos::new(1, MAP_HEIGHT - 2),
+            _ => MapPos::new(MAP_WIDTH - 2, MAP_HEIGHT - 2),
         };
 
         let radius = 1;
@@ -52,16 +52,8 @@ impl CellAutomataBuilder {
         self.map.player_starting_positions.push(pos);
 
         if config::GAME_MODE != GameMode::SinglePlayer {
-            let opposite_x = if corner.x == 1 {
-                config::MAP_WIDTH - 2
-            } else {
-                1
-            };
-            let opposite_y = if corner.y == 1 {
-                config::MAP_HEIGHT - 2
-            } else {
-                1
-            };
+            let opposite_x = if corner.x == 1 { MAP_WIDTH - 2 } else { 1 };
+            let opposite_y = if corner.y == 1 { MAP_HEIGHT - 2 } else { 1 };
             let opposite = MapPos::new(opposite_x, opposite_y);
             let pos = self.find_nearest_floor_tile(opposite.to_dungeon_pos(), radius);
             self.map.player_starting_positions.push(pos);
@@ -91,8 +83,8 @@ impl CellAutomataBuilder {
     /// Randomly assign tiles within the map, slightly favoring floors.
     /// Map perimeter is left as walls.
     fn randomize_tiles(mut self, rng: &mut RandomGenerator) -> Self {
-        for y in 1..config::MAP_HEIGHT - 1 {
-            for x in 1..config::MAP_WIDTH - 1 {
+        for y in 1..MAP_HEIGHT - 1 {
+            for x in 1..MAP_WIDTH - 1 {
                 let tile = if rng.gen_range(0..100) < 45 {
                     TileType::Wall
                 } else {
@@ -113,12 +105,12 @@ impl CellAutomataBuilder {
         for _ in 0..10 {
             let mut tiles_clone = self.map.tiles.clone();
 
-            for y in 1..config::MAP_HEIGHT - 1 {
-                for x in 1..config::MAP_WIDTH - 1 {
+            for y in 1..MAP_HEIGHT - 1 {
+                for x in 1..MAP_WIDTH - 1 {
                     let pos = MapPos::new(x, y).to_dungeon_pos();
-                    let neighbors = self.count_adjacent_walls(&pos);
+                    let adjacent_wall_num = self.count_adjacent_walls(&pos);
 
-                    let tile = if neighbors > 4 || neighbors == 0 {
+                    let tile = if adjacent_wall_num > 4 || adjacent_wall_num == 0 {
                         TileType::Wall
                     } else {
                         TileType::Floor

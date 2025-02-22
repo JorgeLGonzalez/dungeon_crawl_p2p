@@ -1,10 +1,13 @@
 use super::MonsterMovesEvent;
-use crate::{config, dungeon::DungeonPosition};
+use crate::{
+    config,
+    dungeon::{DungeonPosition, NUM_MONSTERS},
+};
 use bevy::prelude::*;
 use bevy_ggrs::ggrs::Frame;
 use std::collections::VecDeque;
 
-const MAX_SIZE: usize = config::NUM_MONSTERS * 100;
+const MAX_SIZE: usize = NUM_MONSTERS * 100;
 
 /// Used for diagnostics to track monster moves
 #[derive(Resource)]
