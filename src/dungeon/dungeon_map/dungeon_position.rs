@@ -1,6 +1,7 @@
 use super::{MAP_Z_LAYER, X_MAX, X_MIN, Y_MAX, Y_MIN};
 use bevy::math::{Vec2, Vec3};
 
+/// A position in the dungeon, represented as a pair of x and y coordinates.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct DungeonPosition {
     pub x: isize,
@@ -26,6 +27,7 @@ impl DungeonPosition {
         Self { x, y }
     }
 
+    /// Returns true if the position is at the perimeter of the dungeon.
     pub fn at_perimeter(&self) -> bool {
         self.x == X_MAX || self.x == X_MIN || self.y == Y_MAX || self.y == Y_MIN
     }

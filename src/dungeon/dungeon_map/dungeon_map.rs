@@ -8,7 +8,7 @@ pub struct DungeonMap {
     pub item_positions: Vec<DungeonPosition>,
     pub monster_starting_positions: Vec<DungeonPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
-    pub tiles: Vec<TileType>,
+    tiles: Vec<TileType>,
 }
 
 impl DungeonMap {
@@ -22,15 +22,15 @@ impl DungeonMap {
     }
 
     pub fn get_tile_type(&self, pos: &DungeonPosition) -> TileType {
-        self.tiles[MapPos::from_dungeon_pos(pos).to_idx()]
+        self.tiles[MapPos::from(pos).to_idx()]
     }
 
     pub fn is_valid_position(&self, pos: &DungeonPosition) -> bool {
-        MapPos::from_dungeon_pos(pos).is_valid()
+        MapPos::from(pos).is_valid()
     }
 
     pub fn set_tile_type(&mut self, pos: &DungeonPosition, tile_type: TileType) {
-        self.tiles[MapPos::from_dungeon_pos(pos).to_idx()] = tile_type;
+        self.tiles[MapPos::from(pos).to_idx()] = tile_type;
     }
 
     /// Returns an iterator over all spawnable positions for monsters and items.
@@ -69,24 +69,30 @@ impl DungeonMap {
     }
 }
 
+/// A position in the dungeon map where the coordinate system origin is at the
+/// top left, unlike the DungeonPosition's coordinate system's origin which is
+/// at the center.
+#[derive(Clone, Copy)]
 struct MapPos {
     pub x: usize,
     pub y: usize,
 }
 
 impl MapPos {
-    pub fn from_dungeon_pos(pos: &DungeonPosition) -> Self {
-        let x = (pos.x + (MAP_WIDTH as isize / 2)) as usize;
-        let y = (pos.y + (MAP_HEIGHT as isize / 2)) as usize;
-
-        Self { x, y }
-    }
-
     pub fn is_valid(&self) -> bool {
         self.x < MAP_WIDTH && self.y < MAP_HEIGHT
     }
 
     pub fn to_idx(&self) -> usize {
         self.y * MAP_WIDTH + self.x
+    }
+}
+
+impl From<&DungeonPosition> for MapPos {
+    fn from(pos: &DungeonPosition) -> Self {
+        let x = (pos.x + (MAP_WIDTH as isize / 2)) as usize;
+        let y = (pos.y + (MAP_HEIGHT as isize / 2)) as usize;
+
+        Self { x, y }
     }
 }

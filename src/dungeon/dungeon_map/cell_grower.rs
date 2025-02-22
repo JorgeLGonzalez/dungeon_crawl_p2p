@@ -1,6 +1,6 @@
 use super::*;
 
-/// Helper for CellAutomataBuilder
+/// Helper for CellAutomataBuilder used to grow cells based on tile neighbors.
 pub(super) struct CellGrower {
     map: DungeonMap,
 }
@@ -19,26 +19,6 @@ impl CellGrower {
         grower.map
     }
 
-    /// Count the number of wall tiles adjacent to the given position.
-    /// The position itself is not counted.
-    fn count_adjacent_walls(&self, pos: &DungeonPosition) -> usize {
-        const ADJACENT_POSITIONS: [(isize, isize); 8] = [
-            (-1, -1),
-            (-1, 0),
-            (-1, 1),
-            (0, -1),
-            (0, 1),
-            (1, -1),
-            (1, 0),
-            (1, 1),
-        ];
-
-        let is_wall =
-            |neighbor: &DungeonPosition| self.map.get_tile_type(neighbor) == TileType::Wall;
-
-        pos.perimeter(1).filter(is_wall).count()
-    }
-
     /// Perform one generation of growth
     fn generation(&self) -> Vec<DungeonTile> {
         self.map
@@ -55,7 +35,10 @@ impl CellGrower {
             return None;
         }
 
-        let adjacent_wall_num = self.count_adjacent_walls(&tile.pos);
+        let is_wall =
+            |neighbor: &DungeonPosition| self.map.get_tile_type(neighbor) == TileType::Wall;
+
+        let adjacent_wall_num = tile.pos.perimeter(1).filter(is_wall).count();
         let new_type = if adjacent_wall_num > 4 || adjacent_wall_num == 0 {
             TileType::Wall
         } else {
