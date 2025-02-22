@@ -41,21 +41,19 @@ impl CellAutomataBuilder {
 
     fn add_player_starting_positions(mut self, rng: &mut RandomGenerator) -> Self {
         let corner = match rng.gen_range(0..4) {
-            0 => MapPos::new(1, 1),
-            1 => MapPos::new(MAP_WIDTH - 2, 1),
-            2 => MapPos::new(1, MAP_HEIGHT - 2),
-            _ => MapPos::new(MAP_WIDTH - 2, MAP_HEIGHT - 2),
+            0 => DungeonCorner::BottomLeft,
+            1 => DungeonCorner::BottomRight,
+            2 => DungeonCorner::TopLeft,
+            3 => DungeonCorner::TopRight,
+            _ => unreachable!(),
         };
 
         let radius = 1;
-        let pos = self.find_nearest_floor_tile(corner.to_dungeon_pos(), radius);
+        let pos = self.find_nearest_floor_tile(corner.pos(), radius);
         self.map.player_starting_positions.push(pos);
 
         if config::GAME_MODE != GameMode::SinglePlayer {
-            let opposite_x = if corner.x == 1 { MAP_WIDTH - 2 } else { 1 };
-            let opposite_y = if corner.y == 1 { MAP_HEIGHT - 2 } else { 1 };
-            let opposite = MapPos::new(opposite_x, opposite_y);
-            let pos = self.find_nearest_floor_tile(opposite.to_dungeon_pos(), radius);
+            let pos = self.find_nearest_floor_tile(corner.opposite().pos(), radius);
             self.map.player_starting_positions.push(pos);
         }
 

@@ -69,13 +69,13 @@ impl DungeonMap {
     }
 }
 
-pub struct MapPos {
+struct MapPos {
     pub x: usize,
     pub y: usize,
 }
 
 impl MapPos {
-    pub fn new(x: usize, y: usize) -> Self {
+    fn new(x: usize, y: usize) -> Self {
         Self { x, y }
     }
 
@@ -90,7 +90,7 @@ impl MapPos {
         self.x < MAP_WIDTH && self.y < MAP_HEIGHT
     }
 
-    pub fn to_dungeon_pos(&self) -> DungeonPosition {
+    fn to_dungeon_pos(&self) -> DungeonPosition {
         DungeonPosition::new(
             self.x as isize - (MAP_WIDTH as isize / 2),
             self.y as isize - (MAP_HEIGHT as isize / 2),

@@ -1,7 +1,7 @@
 use super::*;
 
 /// Helper for CellAutomataBuilder
-pub struct CellGrower {
+pub(super) struct CellGrower {
     map: DungeonMap,
 }
 
