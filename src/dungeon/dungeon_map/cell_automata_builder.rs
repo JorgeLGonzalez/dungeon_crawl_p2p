@@ -14,7 +14,7 @@ impl CellAutomataBuilder {
             map: DungeonMap::new(),
         }
         .randomize_tiles(rng)
-        .smoothen()
+        .grow_cells()
         .add_player_starting_positions(rng)
         .add_items(rng)
         .add_monster_starting_positions(rng)
@@ -62,24 +62,6 @@ impl CellAutomataBuilder {
         self
     }
 
-    /// Count the number of wall tiles adjacent to the given position.
-    /// The position itself is not counted.
-    fn count_adjacent_walls(&self, pos: &DungeonPosition) -> usize {
-        let mut neighbors = 0;
-        for iy in -1..=1 {
-            for ix in -1..=1 {
-                let tile = self
-                    .map
-                    .get_tile_type(&DungeonPosition::new(pos.x + ix, pos.y + iy));
-                if !(ix == 0 && iy == 0) && tile == TileType::Wall {
-                    neighbors += 1;
-                }
-            }
-        }
-
-        neighbors
-    }
-
     /// Randomly assign tiles within the map, slightly favoring floors.
     /// Map perimeter is left as walls.
     fn randomize_tiles(mut self, rng: &mut RandomGenerator) -> Self {
@@ -99,27 +81,8 @@ impl CellAutomataBuilder {
 
     /// Smooth out the randomly assigned tiles by converting tiles to floor unless
     /// surrounded by too many walls (or no walls at all).
-    fn smoothen(mut self) -> Self {
-        for _ in 0..10 {
-            let mut tiles_clone = self.map.tiles.clone();
-
-            for y in 1..MAP_HEIGHT - 1 {
-                for x in 1..MAP_WIDTH - 1 {
-                    let pos = MapPos::new(x, y).to_dungeon_pos();
-                    let adjacent_wall_num = self.count_adjacent_walls(&pos);
-
-                    let tile = if adjacent_wall_num > 4 || adjacent_wall_num == 0 {
-                        TileType::Wall
-                    } else {
-                        TileType::Floor
-                    };
-
-                    tiles_clone[MapPos::new(x, y).to_idx()] = tile;
-                }
-            }
-
-            self.map.tiles = tiles_clone;
-        }
+    fn grow_cells(mut self) -> Self {
+        self.map = CellGrower::grow(self.map);
 
         self
     }

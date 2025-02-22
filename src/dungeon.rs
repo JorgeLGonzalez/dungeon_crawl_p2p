@@ -3,6 +3,7 @@ mod config;
 
 mod dungeon_map {
     mod cell_automata_builder;
+    mod cell_grower;
     mod dungeon_map;
     mod dungeon_position;
     mod dungeon_tile;
@@ -19,6 +20,7 @@ mod dungeon_map {
     pub(super) use room::Room;
 
     use super::config::*;
+    use cell_grower::CellGrower;
 }
 mod events;
 mod illuminator;
