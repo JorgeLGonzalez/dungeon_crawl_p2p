@@ -12,6 +12,11 @@ pub const SAFETY_RADIUS: f32 = 10.;
 pub const TILE_WIDTH: f32 = 1.;
 pub const TILE_HEIGHT: f32 = TILE_WIDTH;
 
+pub const X_MAX: isize = (MAP_WIDTH / 2 - 1) as isize;
+pub const X_MIN: isize = -((MAP_WIDTH / 2) as isize);
+pub const Y_MAX: isize = ((MAP_HEIGHT / 2) - 1) as isize;
+pub const Y_MIN: isize = -((MAP_HEIGHT / 2) as isize);
+
 pub const VIEWPORT_HEIGHT: f32 = 20.;
 
 // RandomRoomsBuilder settings

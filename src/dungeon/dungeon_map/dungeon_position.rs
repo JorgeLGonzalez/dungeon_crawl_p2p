@@ -1,4 +1,4 @@
-use super::MAP_Z_LAYER;
+use super::{MAP_Z_LAYER, X_MAX, X_MIN, Y_MAX, Y_MIN};
 use bevy::math::{Vec2, Vec3};
 
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -24,6 +24,10 @@ impl DungeonPosition {
 
     pub fn new(x: isize, y: isize) -> Self {
         Self { x, y }
+    }
+
+    pub fn at_perimeter(&self) -> bool {
+        self.x == X_MAX || self.x == X_MIN || self.y == Y_MAX || self.y == Y_MIN
     }
 
     pub fn distance(&self, other: Self) -> f32 {

@@ -33,6 +33,9 @@ impl DungeonMap {
         self.tiles[MapPos::from_dungeon_pos(pos).to_idx()] = tile_type;
     }
 
+    /// Returns an iterator over all spawnable positions for monsters and items.
+    /// Spawnable positions are floor tiles that are outside the player's safety
+    /// radius.
     pub fn spawnable_positions(&self) -> impl Iterator<Item = DungeonPosition> + use<'_> {
         self.tiles()
             .filter(|t| t.tile_type == TileType::Floor)

@@ -100,14 +100,14 @@ impl RandomRoomsBuilder {
     }
 
     fn create_room(&self, rng: &mut RandomGenerator) -> Room {
-        const X_MAX: isize = (MAP_WIDTH / 2 - ROOM_MAX_WIDTH - 1) as isize;
-        const X_MIN: isize = -((MAP_WIDTH / 2) as isize) + 1;
-        const Y_MAX: isize = ((MAP_HEIGHT / 2) - ROOM_MAX_HEIGHT - 1) as isize;
-        const Y_MIN: isize = -((MAP_HEIGHT / 2) as isize) + 1;
+        const ROOM_X_MAX: isize = X_MAX - (ROOM_MAX_WIDTH as isize);
+        const ROOM_X_MIN: isize = X_MIN + 1;
+        const ROOM_Y_MAX: isize = Y_MAX - (ROOM_MAX_HEIGHT as isize);
+        const ROOM_Y_MIN: isize = Y_MIN + 1;
 
         Room::new(
-            rng.gen_range(X_MIN..X_MAX),
-            rng.gen_range(Y_MIN..Y_MAX),
+            rng.gen_range(ROOM_X_MIN..ROOM_X_MAX),
+            rng.gen_range(ROOM_Y_MIN..ROOM_Y_MAX),
             rng.gen_range(2..ROOM_MAX_WIDTH),
             rng.gen_range(2..ROOM_MAX_HEIGHT),
         )
