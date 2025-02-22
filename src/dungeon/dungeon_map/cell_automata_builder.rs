@@ -83,18 +83,16 @@ impl CellAutomataBuilder {
     /// Randomly assign tiles within the map, slightly favoring floors.
     /// Map perimeter is left as walls.
     fn randomize_tiles(mut self, rng: &mut RandomGenerator) -> Self {
-        for y in 1..MAP_HEIGHT - 1 {
-            for x in 1..MAP_WIDTH - 1 {
-                let tile = if rng.gen_range(0..100) < 45 {
-                    TileType::Wall
-                } else {
-                    TileType::Floor
-                };
-
-                self.map
-                    .set_tile_type(&MapPos::new(x, y).to_dungeon_pos(), tile);
-            }
-        }
+        self.map
+            .tiles()
+            .filter(|t| !t.pos.at_perimeter())
+            .filter(|t| rng.gen_range(0..100) >= 55 && t.tile_type == TileType::Wall)
+            .map(|t| t.pos)
+            .collect::<Vec<_>>()
+            .iter()
+            .for_each(|pos| {
+                self.map.set_tile_type(&pos, TileType::Floor);
+            });
 
         self
     }
