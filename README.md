@@ -36,10 +36,11 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] Ensure periphery is all walls
   - [x] Position players in single and multi player. Pick 2 random corners and put the player on closest floor tile. (There is a chance it will be isolated so later on we want to ensure path to center where we will put amulet)
   - [x] Randomly choose dungeon builder
-  - [ ] Document (and rationalize) DungeonPosition vs MapPos vs iVec2
-  - [ ] refactor
-    - [ ] find nearest floor tile should only search perimeter
+  - [x] Document (and rationalize) DungeonPosition vs MapPos vs iVec2
+  - [x] refactor
+    - [x] find nearest floor tile should only search perimeter
   - [ ] spawn_dungeon: should use insert_batch as that is more efficient
+  - [ ] Ensure player starting positions are not blocked off from rest of map
 - [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
 - [ ] stairs and dungeon levels
