@@ -16,6 +16,7 @@ impl RandomRoomsBuilder {
         }
         .create_rooms(rng)
         .build_corridors(rng)
+        .set_center()
         .add_player_starting_positions()
         .add_items(rng)
         .add_monster_starting_positions(rng)
@@ -111,6 +112,13 @@ impl RandomRoomsBuilder {
             rng.gen_range(2..ROOM_MAX_WIDTH),
             rng.gen_range(2..ROOM_MAX_HEIGHT),
         )
+    }
+
+    /// Reset the map center to the floor tile nearest the absolute center.
+    fn set_center(mut self) -> Self {
+        self.map.center = self.map.find_nearest_floor_tile(self.map.center, 1);
+
+        self
     }
 
     fn tunnel_horizontally(&mut self, x1: isize, x2: isize, y: isize) {

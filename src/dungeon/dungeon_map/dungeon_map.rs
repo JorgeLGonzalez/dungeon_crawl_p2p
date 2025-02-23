@@ -7,7 +7,6 @@ const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
 pub struct DungeonMap {
     /// Floor tile closest to the center of the dungeon where we put the exit
     /// or amulet.
-    /// TODO Not set for random rooms.
     pub center: DungeonPosition,
     pub item_positions: Vec<DungeonPosition>,
     pub monster_starting_positions: Vec<DungeonPosition>,
