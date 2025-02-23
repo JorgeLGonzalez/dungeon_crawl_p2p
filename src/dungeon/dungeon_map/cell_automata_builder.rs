@@ -54,9 +54,37 @@ impl CellAutomataBuilder {
         let pos = self.find_nearest_floor_tile(corner.pos(), radius);
         self.map.player_starting_positions.push(pos);
 
+        let center = self.find_nearest_floor_tile(DungeonPosition::new(0, 0), 1);
+
+        match AStarPathFinder::find(pos, center, &self.map) {
+            PathFindingResult::PathLength(path_len) => {
+                info!("Path from player 0 to center has length {path_len}");
+            }
+            PathFindingResult::ClosestPos(closest_pos) => {
+                warn!("No path found from player 0 to center.");
+                match AStarPathFinder::find(center, closest_pos, &self.map) {
+                    PathFindingResult::ClosestPos(pos2) => self.tunnel(closest_pos, pos2),
+                    _ => unreachable!(),
+                }
+            }
+        }
+
         if config::GAME_MODE != GameMode::SinglePlayer {
             let pos = self.find_nearest_floor_tile(corner.opposite().pos(), radius);
             self.map.player_starting_positions.push(pos);
+
+            match AStarPathFinder::find(pos, center, &self.map) {
+                PathFindingResult::PathLength(path_len) => {
+                    info!("Path from player 1 to center has length {path_len}");
+                }
+                PathFindingResult::ClosestPos(closest_pos) => {
+                    warn!("No path found from player 1 to center.");
+                    match AStarPathFinder::find(center, closest_pos, &self.map) {
+                        PathFindingResult::ClosestPos(pos2) => self.tunnel(closest_pos, pos2),
+                        _ => unreachable!(),
+                    }
+                }
+            }
         }
 
         self
@@ -101,5 +129,41 @@ impl CellAutomataBuilder {
             });
 
         self
+    }
+
+    fn tunnel(&mut self, pos1: DungeonPosition, pos2: DungeonPosition) {
+        info!("Tunneling from {pos1} to {pos2}");
+
+        if pos1.x < pos2.x {
+            self.tunnel_horizontally(pos1.x, pos2.x, pos1.y);
+        } else if pos1.x > pos2.x {
+            self.tunnel_horizontally(pos2.x, pos1.x, pos2.y);
+        }
+
+        if pos1.y < pos2.y {
+            self.tunnel_vertically(pos1.y, pos2.y, pos1.x);
+        } else if pos1.y > pos2.y {
+            self.tunnel_vertically(pos2.y, pos1.y, pos2.x);
+        }
+    }
+
+    fn tunnel_horizontally(&mut self, x1: isize, x2: isize, y: isize) {
+        for x in x1..=x2 {
+            let pos = DungeonPosition::new(x, y);
+            if self.map.get_tile_type(&pos) == TileType::Wall {
+                info!("Tunneled horizontally at {pos}");
+                self.map.set_tile_type(&pos, TileType::Floor);
+            }
+        }
+    }
+
+    fn tunnel_vertically(&mut self, y1: isize, y2: isize, x: isize) {
+        for y in y1..=y2 {
+            let pos = DungeonPosition::new(x, y);
+            if self.map.get_tile_type(&pos) == TileType::Wall {
+                info!("Tunneled vertically at {pos}");
+                self.map.set_tile_type(&pos, TileType::Floor);
+            }
+        }
     }
 }

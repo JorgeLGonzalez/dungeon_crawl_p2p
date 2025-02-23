@@ -2,6 +2,7 @@ mod components;
 mod config;
 
 mod dungeon_map {
+    mod a_star_path_finder;
     mod cell_automata_builder;
     mod cell_grower;
     mod dungeon_corner;
@@ -20,6 +21,7 @@ mod dungeon_map {
     pub(super) use room::Room;
 
     use super::config::*;
+    use a_star_path_finder::AStarPathFinder;
     use cell_grower::CellGrower;
     use dungeon_corner::DungeonCorner;
 }

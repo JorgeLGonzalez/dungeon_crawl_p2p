@@ -39,8 +39,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] Document (and rationalize) DungeonPosition vs MapPos vs iVec2
   - [x] refactor
     - [x] find nearest floor tile should only search perimeter
-  - [ ] spawn_dungeon: should use insert_batch as that is more efficient
-  - [ ] Ensure player starting positions are not blocked off from rest of map
+  - [x] Ensure player starting positions are not blocked off from rest of map
 - [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
 - [ ] stairs and dungeon levels
