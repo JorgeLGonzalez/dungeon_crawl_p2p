@@ -18,16 +18,23 @@ mod dungeon_map {
     mod dungeon_map;
     mod dungeon_position;
     mod dungeon_tile;
-    mod random_rooms_builder;
-    mod room;
+
+    mod random_rooms {
+        mod random_rooms_builder;
+        mod room;
+
+        pub use random_rooms_builder::RandomRoomsBuilder;
+
+        use super::*;
+        use room::Room;
+    }
 
     pub use dungeon_map::DungeonMap;
     pub use dungeon_position::DungeonPosition;
 
     pub(super) use cell_automata::CellAutomataBuilder;
     pub(super) use dungeon_tile::{DungeonTile, TileType};
-    pub(super) use random_rooms_builder::RandomRoomsBuilder;
-    pub(super) use room::Room;
+    pub(super) use random_rooms::RandomRoomsBuilder;
 
     use super::config::*;
 }
