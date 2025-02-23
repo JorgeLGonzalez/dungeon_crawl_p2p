@@ -5,6 +5,10 @@ const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
 
 #[derive(Resource)]
 pub struct DungeonMap {
+    /// Floor tile closest to the center of the dungeon where we put the exit
+    /// or amulet.
+    /// TODO Not set for random rooms.
+    pub center: DungeonPosition,
     pub item_positions: Vec<DungeonPosition>,
     pub monster_starting_positions: Vec<DungeonPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
@@ -14,11 +18,32 @@ pub struct DungeonMap {
 impl DungeonMap {
     pub fn new() -> Self {
         Self {
+            center: DungeonPosition::new(0, 0),
             item_positions: vec![],
             monster_starting_positions: vec![],
             player_starting_positions: vec![],
             tiles: vec![TileType::Wall; NUM_TILES],
         }
+    }
+
+    /// Find the nearest floor tile to the given origin, within the given radius.
+    /// If no floor tile is found within the radius, recursively search with an
+    /// increased radius.
+    pub fn find_nearest_floor_tile(
+        &self,
+        origin: DungeonPosition,
+        radius: isize,
+    ) -> DungeonPosition {
+        assert!(radius > 0 && radius < 10);
+        if radius == 1 && self.get_tile_type(&origin) == TileType::Floor {
+            return origin;
+        }
+
+        origin
+            .perimeter(radius)
+            .filter(|pos| self.is_valid_position(pos))
+            .find(|pos| self.get_tile_type(pos) == TileType::Floor)
+            .unwrap_or_else(|| self.find_nearest_floor_tile(origin, radius + 1))
     }
 
     pub fn get_tile_type(&self, pos: &DungeonPosition) -> TileType {

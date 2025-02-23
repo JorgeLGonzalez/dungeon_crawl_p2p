@@ -2,6 +2,7 @@ use super::{DungeonPosition, X_MAX, X_MIN, Y_MAX, Y_MIN};
 
 /// Each corner of the dungeon within the perimeter (i.e. excluding the border
 /// walls)
+#[derive(Clone, Copy)]
 pub(super) enum DungeonCorner {
     TopLeft,
     TopRight,
