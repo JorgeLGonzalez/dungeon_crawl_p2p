@@ -21,7 +21,7 @@ mod dungeon_map {
     pub(super) use room::Room;
 
     use super::config::*;
-    use a_star_path_finder::AStarPathFinder;
+    use a_star_path_finder::{AStarPathFinder, PathFindingResult};
     use cell_grower::CellGrower;
     use dungeon_corner::DungeonCorner;
 }

@@ -15,8 +15,8 @@ impl AStarPathFinder {
 
         let mut came_from = HashMap::new();
 
-        let mut g_score = HashMap::new();
-        g_score.insert(start, 0);
+        let mut node_costs = HashMap::new();
+        node_costs.insert(start, 0);
 
         let mut closest_pos = start;
         let mut closest_distance = manhattan_distance(start, goal);
@@ -42,7 +42,7 @@ impl AStarPathFinder {
             .into_iter()
             .filter(|n| map.is_valid_position(&n) && map.get_tile_type(&n) != TileType::Wall)
             .for_each(|neighbor| {
-                let tentative_g_score = g_score.get(&current.pos).unwrap_or(&usize::MAX) + 1;
+                let tentative_g_score = node_costs.get(&current.pos).unwrap_or(&usize::MAX) + 1;
 
                 let current_distance = manhattan_distance(current.pos, goal);
                 if current_distance < closest_distance {
@@ -50,9 +50,9 @@ impl AStarPathFinder {
                     closest_pos = current.pos;
                 }
 
-                if tentative_g_score < *g_score.get(&neighbor).unwrap_or(&usize::MAX) {
+                if tentative_g_score < *node_costs.get(&neighbor).unwrap_or(&usize::MAX) {
                     came_from.insert(neighbor, current.pos);
-                    g_score.insert(neighbor, tentative_g_score);
+                    node_costs.insert(neighbor, tentative_g_score);
                     open_set.push(Node::new(
                         neighbor,
                         tentative_g_score + manhattan_distance(neighbor, goal),
