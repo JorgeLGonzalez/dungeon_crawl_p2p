@@ -36,6 +36,10 @@ impl DungeonPosition {
         self.to_vec2().distance(other.to_vec2())
     }
 
+    pub fn manhattan_distance(&self, other: Self) -> usize {
+        ((self.x - other.x).abs() + (self.y - other.y).abs()) as usize
+    }
+
     /// Returns an iterator over the perimeter of the square with the given radius
     /// from the current position. The perimeter is defined as the outermost tiles
     /// of the square, including corners.

@@ -19,7 +19,7 @@ impl AStarPathFinder {
         node_costs.insert(start, 0);
 
         let mut closest_pos = start;
-        let mut closest_distance = manhattan_distance(start, goal);
+        let mut closest_distance = start.manhattan_distance(goal);
 
         while let Some(current) = open_set.pop() {
             if current.pos == goal {
@@ -44,7 +44,7 @@ impl AStarPathFinder {
             .for_each(|neighbor| {
                 let tentative_g_score = node_costs.get(&current.pos).unwrap_or(&usize::MAX) + 1;
 
-                let current_distance = manhattan_distance(current.pos, goal);
+                let current_distance = current.pos.manhattan_distance(goal);
                 if current_distance < closest_distance {
                     closest_distance = current_distance;
                     closest_pos = current.pos;
@@ -55,7 +55,7 @@ impl AStarPathFinder {
                     node_costs.insert(neighbor, tentative_g_score);
                     open_set.push(AStarNode::new(
                         neighbor,
-                        tentative_g_score + manhattan_distance(neighbor, goal),
+                        tentative_g_score + neighbor.manhattan_distance(goal),
                     ));
                 }
             });
@@ -71,10 +71,6 @@ pub(super) enum PathFindingResult {
     ClosestPos(DungeonPosition),
     /// Path found, length is returned.
     PathLength(usize),
-}
-
-fn manhattan_distance(a: DungeonPosition, b: DungeonPosition) -> usize {
-    (a.x - b.x).abs() as usize + (a.y - b.y).abs() as usize
 }
 
 #[cfg(test)]
