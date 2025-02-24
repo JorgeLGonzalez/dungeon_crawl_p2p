@@ -1,4 +1,4 @@
-use super::{player_start::PlayerStart, *};
+use super::*;
 use crate::prelude::*;
 use rand::prelude::*;
 
@@ -51,20 +51,41 @@ impl CellAutomataBuilder {
             _ => unreachable!(),
         };
 
-        PlayerStart::add_starting_position(&mut self.map, 0, quadrant);
+        let player0_pos = self.determine_player_pos(quadrant);
+        self.map.player_starting_positions.push(player0_pos);
 
         if config::GAME_MODE != GameMode::SinglePlayer {
-            PlayerStart::add_starting_position(&mut self.map, 1, quadrant.opposite());
+            let player1_pos = self.determine_player_pos(quadrant.opposite());
+            self.map.player_starting_positions.push(player1_pos);
         }
 
         self
     }
 
-    /// Reset the map center to the floor tile nearest the absolute center.
-    fn set_center(mut self) -> Self {
-        self.map.center = self.map.find_nearest_floor_tile(self.map.center, 1);
+    /// Determines the starting position for the player in the given dungeon quadrant.
+    /// Ensure player can reach dungeon center, creating a tunnel if necessary.
+    fn determine_player_pos(&mut self, quadrant: DungeonCorner) -> DungeonPosition {
+        let radius = 1;
+        let pos = self.map.find_nearest_floor_tile(quadrant.pos(), radius);
 
-        self
+        let player_id = self.map.player_starting_positions.len();
+
+        match AStarPathFinder::find(pos, self.map.center, &self.map) {
+            PathFindingResult::PathLength(path_len) => {
+                info!("Path from player {player_id} to center has length {path_len}",);
+            }
+            PathFindingResult::ClosestPos(closest_pos) => {
+                warn!("No path found from player {player_id} to center.");
+                match AStarPathFinder::find(self.map.center, closest_pos, &self.map) {
+                    PathFindingResult::ClosestPos(pos2) => {
+                        Tunneler::tunnel(&mut self.map, closest_pos, pos2)
+                    }
+                    _ => unreachable!(),
+                }
+            }
+        }
+
+        pos
     }
 
     /// Smooth out the randomly assigned tiles by converting tiles to floor unless
@@ -88,6 +109,13 @@ impl CellAutomataBuilder {
             .for_each(|pos| {
                 self.map.set_tile_type(&pos, TileType::Floor);
             });
+
+        self
+    }
+
+    /// Reset the map center to the floor tile nearest the absolute center.
+    fn set_center(mut self) -> Self {
+        self.map.center = self.map.find_nearest_floor_tile(self.map.center, 1);
 
         self
     }

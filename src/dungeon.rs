@@ -6,7 +6,6 @@ mod dungeon_map {
         mod cell_automata_builder;
         mod cell_grower;
         mod dungeon_corner;
-        mod player_start;
         mod tunneler;
 
         pub use cell_automata_builder::CellAutomataBuilder;
