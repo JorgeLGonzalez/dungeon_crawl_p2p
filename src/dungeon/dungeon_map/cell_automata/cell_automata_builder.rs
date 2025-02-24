@@ -43,13 +43,7 @@ impl CellAutomataBuilder {
     /// Randomly assign player starting positions to opposite corners of the
     /// dungeon.
     fn add_player_starting_positions(mut self, rng: &mut RandomGenerator) -> Self {
-        let quadrant = match rng.gen_range(0..4) {
-            0 => DungeonCorner::BottomLeft,
-            1 => DungeonCorner::BottomRight,
-            2 => DungeonCorner::TopLeft,
-            3 => DungeonCorner::TopRight,
-            _ => unreachable!(),
-        };
+        let quadrant = DungeonCorner::random(rng);
 
         let player0_pos = self.determine_player_pos(quadrant);
         self.map.player_starting_positions.push(player0_pos);
