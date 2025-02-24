@@ -66,7 +66,9 @@ impl AStarPathFinder {
 }
 
 pub(super) enum PathFindingResult {
+    /// No path found, but closest position to goal is returned.
     ClosestPos(DungeonPosition),
+    /// Path found, length is returned.
     PathLength(usize),
 }
 

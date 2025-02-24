@@ -1,5 +1,5 @@
 use super::*;
-use crate::prelude::*;
+use crate::{player::PlayerId, prelude::*};
 use rand::prelude::*;
 
 pub struct CellAutomataBuilder {
@@ -68,15 +68,7 @@ impl CellAutomataBuilder {
             PathFindingResult::PathLength(path_len) => {
                 info!("Path from player {player_id} to center has length {path_len}",);
             }
-            PathFindingResult::ClosestPos(closest_pos) => {
-                warn!("No path found from player {player_id} to center.");
-                match AStarPathFinder::find(self.map.center, closest_pos, &self.map) {
-                    PathFindingResult::ClosestPos(pos2) => {
-                        Tunneler::tunnel(&mut self.map, closest_pos, pos2)
-                    }
-                    _ => unreachable!(),
-                }
-            }
+            PathFindingResult::ClosestPos(closest_pos) => self.tunnel(player_id, closest_pos),
         }
 
         pos
@@ -112,5 +104,18 @@ impl CellAutomataBuilder {
         self.map.center = self.map.find_nearest_floor_tile(self.map.center, 1);
 
         self
+    }
+
+    /// Tunnel from the player segment to the dungeon center segment.
+    fn tunnel(&mut self, player_id: PlayerId, player_side: DungeonPosition) {
+        warn!("No path found from player {player_id} to center.");
+
+        let PathFindingResult::ClosestPos(center_side) =
+            AStarPathFinder::find(self.map.center, player_side, &self.map)
+        else {
+            unreachable!()
+        };
+
+        Tunneler::tunnel(&mut self.map, player_side, center_side)
     }
 }
