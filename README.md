@@ -40,6 +40,8 @@ And lets create the diff room architects. We can add exit and amulet and player.
   - [x] refactor
     - [x] find nearest floor tile should only search perimeter
   - [x] Ensure player starting positions are not blocked off from rest of map
+  - [x] unit test Tunneler
+  - [ ] Consider unit testing path finder and player start
 - [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
 - [ ] stairs and dungeon levels

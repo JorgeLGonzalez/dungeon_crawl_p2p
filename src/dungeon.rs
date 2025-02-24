@@ -7,6 +7,7 @@ mod dungeon_map {
         mod cell_grower;
         mod dungeon_corner;
         mod player_start;
+        mod tunneler;
 
         pub use cell_automata_builder::CellAutomataBuilder;
 
@@ -14,6 +15,7 @@ mod dungeon_map {
         use a_star_path_finder::{AStarPathFinder, PathFindingResult};
         use cell_grower::CellGrower;
         use dungeon_corner::DungeonCorner;
+        use tunneler::Tunneler;
     }
 
     mod dungeon_map;
