@@ -2,7 +2,14 @@ use super::{AStarNode, DungeonMap, DungeonPosition, TileType};
 use bevy::utils::hashbrown::HashMap;
 use std::collections::BinaryHeap;
 
-pub(super) struct AStarPathFinder;
+pub(super) struct AStarPathFinder {
+    came_from: HashMap<DungeonPosition, DungeonPosition>,
+    closest_distance: usize,
+    closest_pos: DungeonPosition,
+    goal: DungeonPosition,
+    node_costs: HashMap<DungeonPosition, usize>,
+    open_set: BinaryHeap<AStarNode>,
+}
 
 impl AStarPathFinder {
     pub fn find(
@@ -10,27 +17,46 @@ impl AStarPathFinder {
         goal: DungeonPosition,
         map: &DungeonMap,
     ) -> PathFindingResult {
+        /// return Option and form actual result in this method
+        Self::new(goal, start).find_path(map)
+    }
+
+    fn new(goal: DungeonPosition, start: DungeonPosition) -> Self {
         let mut open_set = BinaryHeap::new();
         open_set.push(AStarNode::new(start, 0));
-
-        let mut came_from = HashMap::new();
 
         let mut node_costs = HashMap::new();
         node_costs.insert(start, 0);
 
-        let mut closest_pos = start;
-        let mut closest_distance = start.manhattan_distance(goal);
+        let closest_pos = start;
+        let closest_distance = start.manhattan_distance(goal);
 
-        while let Some(current) = open_set.pop() {
-            if current.pos == goal {
-                let mut path_len = 1;
-                let mut current = goal;
-                while let Some(&prev) = came_from.get(&current) {
-                    path_len += 1;
-                    current = prev;
-                }
+        Self {
+            came_from: HashMap::new(),
+            closest_distance,
+            closest_pos,
+            goal,
+            node_costs,
+            open_set,
+        }
+    }
 
-                return PathFindingResult::PathLength(path_len);
+    fn calculate_path_length(&self) -> PathFindingResult {
+        let mut path_len = 1;
+        let mut current = self.goal;
+
+        while let Some(&prev) = self.came_from.get(&current) {
+            path_len += 1;
+            current = prev;
+        }
+
+        PathFindingResult::PathLength(path_len)
+    }
+
+    fn find_path(&mut self, map: &DungeonMap) -> PathFindingResult {
+        while let Some(current) = self.open_set.pop() {
+            if current.pos == self.goal {
+                return self.calculate_path_length();
             }
 
             [
@@ -42,26 +68,27 @@ impl AStarPathFinder {
             .into_iter()
             .filter(|n| map.is_valid_position(&n) && map.get_tile_type(&n) != TileType::Wall)
             .for_each(|neighbor| {
-                let tentative_g_score = node_costs.get(&current.pos).unwrap_or(&usize::MAX) + 1;
+                let tentative_g_score =
+                    self.node_costs.get(&current.pos).unwrap_or(&usize::MAX) + 1;
 
-                let current_distance = current.pos.manhattan_distance(goal);
-                if current_distance < closest_distance {
-                    closest_distance = current_distance;
-                    closest_pos = current.pos;
+                let current_distance = current.pos.manhattan_distance(self.goal);
+                if current_distance < self.closest_distance {
+                    self.closest_distance = current_distance;
+                    self.closest_pos = current.pos;
                 }
 
-                if tentative_g_score < *node_costs.get(&neighbor).unwrap_or(&usize::MAX) {
-                    came_from.insert(neighbor, current.pos);
-                    node_costs.insert(neighbor, tentative_g_score);
-                    open_set.push(AStarNode::new(
+                if tentative_g_score < *self.node_costs.get(&neighbor).unwrap_or(&usize::MAX) {
+                    self.came_from.insert(neighbor, current.pos);
+                    self.node_costs.insert(neighbor, tentative_g_score);
+                    self.open_set.push(AStarNode::new(
                         neighbor,
-                        tentative_g_score + neighbor.manhattan_distance(goal),
+                        tentative_g_score + neighbor.manhattan_distance(self.goal),
                     ));
                 }
             });
         }
 
-        PathFindingResult::ClosestPos(closest_pos)
+        PathFindingResult::ClosestPos(self.closest_pos)
     }
 }
 
