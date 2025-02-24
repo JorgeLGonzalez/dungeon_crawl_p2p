@@ -1,4 +1,4 @@
-use super::{DungeonMap, DungeonPosition, TileType};
+use super::{AStarNode, DungeonMap, DungeonPosition, TileType};
 use bevy::utils::hashbrown::HashMap;
 use std::collections::BinaryHeap;
 
@@ -11,7 +11,7 @@ impl AStarPathFinder {
         map: &DungeonMap,
     ) -> PathFindingResult {
         let mut open_set = BinaryHeap::new();
-        open_set.push(Node::new(start, 0));
+        open_set.push(AStarNode::new(start, 0));
 
         let mut came_from = HashMap::new();
 
@@ -53,7 +53,7 @@ impl AStarPathFinder {
                 if tentative_g_score < *node_costs.get(&neighbor).unwrap_or(&usize::MAX) {
                     came_from.insert(neighbor, current.pos);
                     node_costs.insert(neighbor, tentative_g_score);
-                    open_set.push(Node::new(
+                    open_set.push(AStarNode::new(
                         neighbor,
                         tentative_g_score + manhattan_distance(neighbor, goal),
                     ));
@@ -71,30 +71,6 @@ pub(super) enum PathFindingResult {
     ClosestPos(DungeonPosition),
     /// Path found, length is returned.
     PathLength(usize),
-}
-
-#[derive(Debug, Eq, PartialEq)]
-struct Node {
-    pub cost: usize,
-    pub pos: DungeonPosition,
-}
-
-impl Node {
-    fn new(pos: DungeonPosition, cost: usize) -> Self {
-        Self { cost, pos }
-    }
-}
-
-impl Ord for Node {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
-        other.cost.cmp(&self.cost)
-    }
-}
-
-impl PartialOrd for Node {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
 }
 
 fn manhattan_distance(a: DungeonPosition, b: DungeonPosition) -> usize {

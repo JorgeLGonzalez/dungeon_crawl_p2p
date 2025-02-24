@@ -2,6 +2,7 @@ mod components;
 mod config;
 mod dungeon_map {
     mod cell_automata {
+        mod a_star_node;
         mod a_star_path_finder;
         mod cell_automata_builder;
         mod cell_grower;
@@ -11,6 +12,7 @@ mod dungeon_map {
         pub use cell_automata_builder::CellAutomataBuilder;
 
         use super::*;
+        use a_star_node::AStarNode;
         use a_star_path_finder::{AStarPathFinder, PathFindingResult};
         use cell_grower::CellGrower;
         use dungeon_corner::DungeonCorner;
