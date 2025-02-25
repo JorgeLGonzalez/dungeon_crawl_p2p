@@ -2,12 +2,22 @@ use super::{AStarNode, DungeonMap, DungeonPosition, TileType};
 use bevy::utils::hashbrown::HashMap;
 use std::collections::BinaryHeap;
 
+/// A* search path finder used to determine whether a path exists between two
+/// positions (e.g. player and dungeon center).
 pub(super) struct AStarPathFinder {
+    /// Node pair where the key is the position reached from the value that was
+    /// reached from the start position. See
+    /// [`calculate_path_length`](Self::calculate_path_length) for how to retrace
+    /// the path from the goal back to the start.
     came_from: HashMap<DungeonPosition, DungeonPosition>,
+    /// Closest distance to the goal found so far.
     closest_distance: usize,
+    /// Closest position to the goal found so far.
     closest_pos: DungeonPosition,
     goal: DungeonPosition,
-    node_costs: HashMap<DungeonPosition, usize>,
+    /// Cost of reaching the position from the start position.
+    partial_costs: HashMap<DungeonPosition, usize>,
+    /// Open set (ordered by cost) of nodes to be evaluated.
     open_set: BinaryHeap<AStarNode>,
 }
 
@@ -34,11 +44,7 @@ impl AStarPathFinder {
     }
 
     pub fn find(start: DungeonPosition, goal: DungeonPosition, map: &DungeonMap) -> Self {
-        let mut finder = Self::new(goal, start);
-
-        finder.find_path(map);
-
-        finder
+        Self::new(goal, start).find_path(map)
     }
 
     fn new(goal: DungeonPosition, start: DungeonPosition) -> Self {
@@ -56,47 +62,93 @@ impl AStarPathFinder {
             closest_distance,
             closest_pos,
             goal,
-            node_costs,
+            partial_costs: node_costs,
             open_set,
         }
     }
 
-    fn find_path(&mut self, map: &DungeonMap) {
+    /// Enqueue the given neighbor for evaluation and update associated data
+    /// structures.
+    fn enqueue_neighbor(
+        &mut self,
+        current_pos: DungeonPosition,
+        neighbor: DungeonPosition,
+        tentative_cost: usize,
+    ) {
+        self.came_from.insert(neighbor, current_pos);
+        self.partial_costs.insert(neighbor, tentative_cost);
+        self.open_set.push(AStarNode::new(
+            neighbor,
+            tentative_cost + neighbor.manhattan_distance(self.goal),
+        ));
+    }
+
+    fn find_path(mut self, map: &DungeonMap) -> Self {
         while let Some(current) = self.open_set.pop() {
             if current.pos == self.goal {
-                self.closest_distance = 0;
-                self.closest_pos = current.pos;
-
-                return;
+                return self.reached_goal();
             }
 
-            [
-                DungeonPosition::new(current.pos.x + 1, current.pos.y),
-                DungeonPosition::new(current.pos.x - 1, current.pos.y),
-                DungeonPosition::new(current.pos.x, current.pos.y + 1),
-                DungeonPosition::new(current.pos.x, current.pos.y - 1),
-            ]
-            .into_iter()
-            .filter(|n| map.is_valid_position(&n) && map.get_tile_type(&n) != TileType::Wall)
-            .for_each(|neighbor| {
-                let tentative_g_score =
-                    self.node_costs.get(&current.pos).unwrap_or(&usize::MAX) + 1;
+            self.neighbors(current.pos, map)
+                .into_iter()
+                .for_each(|neighbor| {
+                    self.update_closest(current.pos);
 
-                let current_distance = current.pos.manhattan_distance(self.goal);
-                if current_distance < self.closest_distance {
-                    self.closest_distance = current_distance;
-                    self.closest_pos = current.pos;
-                }
+                    let tentative_cost = self.tentative_cost(current.pos);
+                    let neighbor_cost = self.neighbor_partial_cost(neighbor);
+                    if tentative_cost < neighbor_cost {
+                        self.enqueue_neighbor(current.pos, neighbor, tentative_cost);
+                    }
+                });
+        }
 
-                if tentative_g_score < *self.node_costs.get(&neighbor).unwrap_or(&usize::MAX) {
-                    self.came_from.insert(neighbor, current.pos);
-                    self.node_costs.insert(neighbor, tentative_g_score);
-                    self.open_set.push(AStarNode::new(
-                        neighbor,
-                        tentative_g_score + neighbor.manhattan_distance(self.goal),
-                    ));
-                }
-            });
+        self
+    }
+
+    /// Returns the neighbors of the given position that are valid and not walls.
+    fn neighbors(&self, pos: DungeonPosition, map: &DungeonMap) -> Vec<DungeonPosition> {
+        [
+            DungeonPosition::new(pos.x + 1, pos.y),
+            DungeonPosition::new(pos.x - 1, pos.y),
+            DungeonPosition::new(pos.x, pos.y + 1),
+            DungeonPosition::new(pos.x, pos.y - 1),
+        ]
+        .into_iter()
+        .filter(|n| map.is_valid_position(&n) && map.get_tile_type(&n) != TileType::Wall)
+        .collect()
+    }
+
+    /// The recorded cost of reaching the given position from the start position,
+    /// or MAX if the given position has no recorded cost.
+    fn neighbor_partial_cost(&self, pos: DungeonPosition) -> usize {
+        self.partial_costs.get(&pos).copied().unwrap_or(usize::MAX)
+    }
+
+    /// Reached goal so update closest position and distance.
+    fn reached_goal(mut self) -> Self {
+        self.closest_distance = 0;
+        self.closest_pos = self.goal;
+
+        self
+    }
+
+    /// Returns the tentative cost of a neighbor of the given position by
+    /// adding 1 step to it, or MAX if the given position has no recorded cost.
+    /// This is really the minimal possible cost of the partial path to the goal.
+    fn tentative_cost(&self, pos: DungeonPosition) -> usize {
+        self.partial_costs
+            .get(&pos)
+            .map(|&c| c + 1)
+            .unwrap_or(usize::MAX)
+    }
+
+    /// Update closest position and distance if the given position is closer to
+    /// the goal than the current closest position.
+    fn update_closest(&mut self, pos: DungeonPosition) {
+        let distance = pos.manhattan_distance(self.goal);
+        if distance < self.closest_distance {
+            self.closest_distance = distance;
+            self.closest_pos = pos;
         }
     }
 }
