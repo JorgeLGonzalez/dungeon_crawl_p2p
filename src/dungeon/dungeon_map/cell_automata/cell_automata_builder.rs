@@ -64,11 +64,9 @@ impl CellAutomataBuilder {
 
         let player_id = self.map.player_starting_positions.len();
 
-        match AStarPathFinder::find(pos, self.map.center, &self.map) {
-            PathFindingResult::PathLength(path_len) => {
-                info!("Path from player {player_id} to center has length {path_len}",);
-            }
-            PathFindingResult::ClosestPos(closest_pos) => self.tunnel(player_id, closest_pos),
+        let finder = AStarPathFinder::find(pos, self.map.center, &self.map);
+        if !finder.path_found() {
+            self.tunnel(player_id, finder.closest_position());
         }
 
         pos
@@ -110,11 +108,8 @@ impl CellAutomataBuilder {
     fn tunnel(&mut self, player_id: PlayerId, player_side: DungeonPosition) {
         warn!("No path found from player {player_id} to center.");
 
-        let PathFindingResult::ClosestPos(center_side) =
-            AStarPathFinder::find(self.map.center, player_side, &self.map)
-        else {
-            unreachable!()
-        };
+        let center_side =
+            AStarPathFinder::find(self.map.center, player_side, &self.map).closest_position();
 
         Tunneler::tunnel(&mut self.map, player_side, center_side)
     }

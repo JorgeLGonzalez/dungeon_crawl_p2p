@@ -13,7 +13,7 @@ mod dungeon_map {
 
         use super::*;
         use a_star_node::AStarNode;
-        use a_star_path_finder::{AStarPathFinder, PathFindingResult};
+        use a_star_path_finder::AStarPathFinder;
         use cell_grower::CellGrower;
         use dungeon_corner::DungeonCorner;
         use tunneler::Tunneler;

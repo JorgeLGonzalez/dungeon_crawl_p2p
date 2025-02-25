@@ -12,13 +12,33 @@ pub(super) struct AStarPathFinder {
 }
 
 impl AStarPathFinder {
-    pub fn find(
-        start: DungeonPosition,
-        goal: DungeonPosition,
-        map: &DungeonMap,
-    ) -> PathFindingResult {
-        /// return Option and form actual result in this method
-        Self::new(goal, start).find_path(map)
+    #[allow(dead_code, reason = "for testing")]
+    pub fn calculate_path_length(&self) -> usize {
+        let mut path_len = 1;
+        let mut current = self.goal;
+
+        while let Some(&prev) = self.came_from.get(&current) {
+            path_len += 1;
+            current = prev;
+        }
+
+        path_len
+    }
+
+    pub fn closest_position(&self) -> DungeonPosition {
+        self.closest_pos
+    }
+
+    pub fn path_found(&self) -> bool {
+        self.closest_distance == 0
+    }
+
+    pub fn find(start: DungeonPosition, goal: DungeonPosition, map: &DungeonMap) -> Self {
+        let mut finder = Self::new(goal, start);
+
+        finder.find_path(map);
+
+        finder
     }
 
     fn new(goal: DungeonPosition, start: DungeonPosition) -> Self {
@@ -41,22 +61,13 @@ impl AStarPathFinder {
         }
     }
 
-    fn calculate_path_length(&self) -> PathFindingResult {
-        let mut path_len = 1;
-        let mut current = self.goal;
-
-        while let Some(&prev) = self.came_from.get(&current) {
-            path_len += 1;
-            current = prev;
-        }
-
-        PathFindingResult::PathLength(path_len)
-    }
-
-    fn find_path(&mut self, map: &DungeonMap) -> PathFindingResult {
+    fn find_path(&mut self, map: &DungeonMap) {
         while let Some(current) = self.open_set.pop() {
             if current.pos == self.goal {
-                return self.calculate_path_length();
+                self.closest_distance = 0;
+                self.closest_pos = current.pos;
+
+                return;
             }
 
             [
@@ -87,17 +98,7 @@ impl AStarPathFinder {
                 }
             });
         }
-
-        PathFindingResult::ClosestPos(self.closest_pos)
     }
-}
-
-#[derive(Debug, Eq, PartialEq)]
-pub(super) enum PathFindingResult {
-    /// No path found, but closest position to goal is returned.
-    ClosestPos(DungeonPosition),
-    /// Path found, length is returned.
-    PathLength(usize),
 }
 
 #[cfg(test)]
@@ -109,38 +110,42 @@ mod tests {
     fn find_no_floors() {
         let fixture = MapFixture::new(5, 5);
 
-        let result = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
+        let finder = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
 
-        assert_eq!(result, PathFindingResult::ClosestPos(fixture.start()));
+        assert!(!finder.path_found());
+        assert_eq!(finder.closest_position(), fixture.start());
     }
 
     #[test]
     fn find_at_goal() {
         let fixture = MapFixture::new(0, 0);
 
-        let result = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
+        let finder = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
 
-        assert_eq!(result, PathFindingResult::PathLength(1));
+        assert!(finder.path_found());
+        assert_eq!(finder.calculate_path_length(), 1);
     }
 
     #[test]
     fn find_single_path() {
         let fixture = MapFixture::new(X_MIN, 0).tunnel_east();
 
-        let result = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
+        let finder = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
 
-        assert_eq!(result, PathFindingResult::PathLength(1 + -X_MIN as usize));
+        assert!(finder.path_found());
+        assert_eq!(finder.calculate_path_length(), 1 + -X_MIN as usize);
     }
 
     #[test]
     fn find_among_many_paths() {
         let fixture = MapFixture::new(X_MIN, 20).clear_walls();
 
-        let result = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
+        let finder = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
 
+        assert!(finder.path_found());
         assert_eq!(
-            result,
-            PathFindingResult::PathLength((fixture.start().y + 1 + -X_MIN) as usize)
+            finder.calculate_path_length(),
+            (fixture.start().y + 1 + -X_MIN) as usize
         );
     }
 
@@ -151,10 +156,11 @@ mod tests {
             .clear_walls()
             .with_vertical_barrier(x_bar);
 
-        let result = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
+        let finder = AStarPathFinder::find(fixture.start(), fixture.map.center, &fixture.map);
 
-        let closest_pos = DungeonPosition::new(x_bar + 1, fixture.map.center.y);
-        assert_eq!(result, PathFindingResult::ClosestPos(closest_pos));
+        assert!(!finder.path_found());
+        let expected = DungeonPosition::new(x_bar + 1, fixture.map.center.y);
+        assert_eq!(finder.closest_position(), expected);
     }
 
     struct MapFixture {
