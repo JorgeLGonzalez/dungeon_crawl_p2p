@@ -114,3 +114,65 @@ impl CellAutomataBuilder {
         Tunneler::tunnel(&mut self.map, player_side, center_side)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_dungeon_with_floor_and_walls() {
+        let mut rng = RandomGenerator::new();
+
+        let map = CellAutomataBuilder::build(&mut rng);
+
+        assert_eq!(map.tiles().count(), MAP_WIDTH * MAP_HEIGHT);
+        let floor_count = map
+            .tiles()
+            .filter(|t| t.tile_type == TileType::Floor)
+            .count();
+        assert!(floor_count > 10);
+        let wall_count = map
+            .tiles()
+            .filter(|t| t.tile_type == TileType::Wall)
+            .count();
+        assert!(wall_count > 10);
+    }
+
+    #[test]
+    fn dungeon_center_most_floor_tile() {
+        let mut rng = RandomGenerator::new();
+
+        let map = CellAutomataBuilder::build(&mut rng);
+
+        assert_eq!(map.get_tile_type(&map.center), TileType::Floor);
+    }
+
+    #[test]
+    fn player_position() {
+        let mut rng = RandomGenerator::new();
+
+        let map = CellAutomataBuilder::build(&mut rng);
+
+        assert_eq!(map.player_starting_positions.len(), 1);
+        let player_pos = map.player_starting_positions[0];
+        assert!(AStarPathFinder::find(player_pos, map.center, &map).path_found());
+    }
+
+    #[test]
+    fn dungeon_has_items() {
+        let mut rng = RandomGenerator::new();
+
+        let map = CellAutomataBuilder::build(&mut rng);
+
+        assert_eq!(map.item_positions.len(), NUM_ITEMS);
+    }
+
+    #[test]
+    fn dungeon_has_monsters() {
+        let mut rng = RandomGenerator::new();
+
+        let map = CellAutomataBuilder::build(&mut rng);
+
+        assert_eq!(map.monster_starting_positions.len(), NUM_MONSTERS);
+    }
+}

@@ -32,16 +32,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] cellular automata dungeon generation
-  - [x] Ensure periphery is all walls
-  - [x] Position players in single and multi player. Pick 2 random corners and put the player on closest floor tile. (There is a chance it will be isolated so later on we want to ensure path to center where we will put amulet)
-  - [x] Randomly choose dungeon builder
-  - [x] Document (and rationalize) DungeonPosition vs MapPos vs iVec2
-  - [x] refactor
-    - [x] find nearest floor tile should only search perimeter
-  - [x] Ensure player starting positions are not blocked off from rest of map
-  - [x] unit test Tunneler
-  - [ ] Consider unit testing path finder and player start
 - [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
 - [ ] stairs and dungeon levels
@@ -233,6 +223,16 @@ flowchart TD
   - [x] test in p2p and synctest
   - [x] Consider using entity pos for mouse tooltip. Then both tooltips could be the same. But need to figure out how to convert from game to hud coordinates
   - [x] deploy such that it can be used across devices (ideally over internet)
+- [x] cellular automata dungeon generation
+  - [x] Ensure periphery is all walls
+  - [x] Position players in single and multi player. Pick 2 random corners and put the player on closest floor tile. (There is a chance it will be isolated so later on we want to ensure path to center where we will put amulet)
+  - [x] Randomly choose dungeon builder
+  - [x] Document (and rationalize) DungeonPosition vs MapPos vs iVec2
+  - [x] refactor
+    - [x] find nearest floor tile should only search perimeter
+  - [x] Ensure player starting positions are not blocked off from rest of map
+  - [x] unit test Tunneler
+  - [x] Consider unit testing path finder and player start
 
 ### Archived Issues
 
