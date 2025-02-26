@@ -32,8 +32,6 @@ Focusing on generating the map for now. Assume it will become a resource.
 But for now, lets generate walls vs floors (just diff color boxes for now).
 And lets create the diff room architects. We can add exit and amulet and player.
 
-- [ ] cellular automata dungeon generation
-  - [ ] spawn_dungeon: should use insert_batch as that is more efficient
 - [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
 - [ ] stairs and dungeon levels
@@ -42,6 +40,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] monster sprites
 - [ ] tile sprites
   - [ ] note wall tiles are currently always hidden. will need to adjust `recalculate_fov`
+- [ ] Consider deploying web app to netlify to get DNS and use github actions similar to dog chase game
 - [ ] upgrade to rand 0.9. It has breaking changes and Xoshiro
 - [ ] improve lighting simulation
 - [ ] amulet. In original it is placed farthest from player. But we now have 2 randomly placed players.
@@ -224,6 +223,16 @@ flowchart TD
   - [x] test in p2p and synctest
   - [x] Consider using entity pos for mouse tooltip. Then both tooltips could be the same. But need to figure out how to convert from game to hud coordinates
   - [x] deploy such that it can be used across devices (ideally over internet)
+- [x] cellular automata dungeon generation
+  - [x] Ensure periphery is all walls
+  - [x] Position players in single and multi player. Pick 2 random corners and put the player on closest floor tile. (There is a chance it will be isolated so later on we want to ensure path to center where we will put amulet)
+  - [x] Randomly choose dungeon builder
+  - [x] Document (and rationalize) DungeonPosition vs MapPos vs iVec2
+  - [x] refactor
+    - [x] find nearest floor tile should only search perimeter
+  - [x] Ensure player starting positions are not blocked off from rest of map
+  - [x] unit test Tunneler
+  - [x] Consider unit testing path finder and player start
 
 ### Archived Issues
 

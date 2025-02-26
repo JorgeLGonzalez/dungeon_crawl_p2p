@@ -1,4 +1,4 @@
-use super::FloorTile;
+use super::{FloorTile, FLOOR_COLOR, FLOOR_ILLUMINATED_COLOR};
 use crate::{fov::FovTileMap, prelude::*};
 use bevy::utils::hashbrown::HashSet;
 
@@ -30,7 +30,7 @@ impl Illuminator {
             } else {
                 let (.., mut sprite, mut visibility) =
                     floor.get_mut(*tile).expect("Inconceivable!");
-                sprite.color = config::FLOOR_ILLUMINATED_COLOR;
+                sprite.color = FLOOR_ILLUMINATED_COLOR;
                 *visibility = Visibility::Visible;
             }
         });
@@ -44,7 +44,7 @@ impl Illuminator {
     fn darken_discarded_prior(&self, floor: &mut FloorQuery) {
         self.prior_set.iter().for_each(|tile| {
             let (.., mut sprite, _) = floor.get_mut(*tile).expect("Inconceivable!");
-            sprite.color = config::FLOOR_COLOR;
+            sprite.color = FLOOR_COLOR;
         });
     }
 }
