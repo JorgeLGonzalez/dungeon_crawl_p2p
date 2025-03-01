@@ -1,5 +1,6 @@
 use super::*;
 use crate::prelude::*;
+use rand::prelude::*;
 
 pub struct DrunkardsWalkBuilder {
     config: DrunkardsWalkConfig,
@@ -20,9 +21,31 @@ impl DrunkardsWalkBuilder {
         }
         .add_player_positions(rng)
         .tunnel(rng)
+        .connect_players()
+        .add_items(rng)
+        .add_monsters(rng)
         .map
     }
 
+    fn add_items(mut self, rng: &mut RandomGenerator) -> Self {
+        self.map.item_positions = self
+            .map
+            .spawnable_positions()
+            .choose_multiple(rng, self.config.num_items);
+
+        self
+    }
+
+    fn add_monsters(mut self, rng: &mut RandomGenerator) -> Self {
+        self.map.monster_starting_positions = self
+            .map
+            .spawnable_positions()
+            .choose_multiple(rng, self.config.num_monsters);
+
+        self
+    }
+
+    /// Add players to opposite corners of the dungeon.
     fn add_player_positions(mut self, rng: &mut RandomGenerator) -> Self {
         let corner = DungeonCorner::random(rng);
         self.map.player_starting_positions.push(corner.pos());
@@ -36,25 +59,50 @@ impl DrunkardsWalkBuilder {
         self
     }
 
+    /// Ensure both players can reach the center of the dungeon, tunneling if
+    /// necessary.
+    fn connect_players(mut self) -> Self {
+        let center = self.map.center;
+        for player_pos in self.map.player_starting_positions.clone() {
+            let finder = AStarPathFinder::find(player_pos, center, &self.map);
+            if !finder.path_found() {
+                let player_side = finder.closest_position();
+
+                info!("Connecting player at {player_pos} to center at {player_side}");
+                let other_side =
+                    AStarPathFinder::find(center, player_side, &self.map).closest_position();
+                Tunneler::tunnel(&mut self.map, player_side, other_side);
+            }
+        }
+
+        self
+    }
+
+    /// Drunkenly tunnel from the given position until we either stagger enough
+    /// steps or hit the dungeon boundaries too many times.
     fn drunkard(&mut self, start: &DungeonPosition, rng: &mut RandomGenerator) {
         let mut drunkard_pos = start.clone();
-        let mut distance_staggered = 0;
+        let mut stagger_steps = 0;
         let mut retries = 0;
 
-        while distance_staggered <= STAGGER_DISTANCE && retries < 10 {
+        while stagger_steps <= MAX_DRUNKARD_STEPS && retries < 10 {
             self.map.set_tile_type(&drunkard_pos, TileType::Floor);
 
             if let Some(pos) = self.step(drunkard_pos, rng) {
                 drunkard_pos = pos;
-                distance_staggered += 1;
+                stagger_steps += 1;
                 retries = 0;
             } else {
                 retries += 1;
-                info!("Retry {retries} drunkard step for {drunkard_pos}");
             }
+        }
+
+        if retries >= 10 {
+            warn!("Drunkard at {drunkard_pos} hit max stagger retries");
         }
     }
 
+    /// Check if we have enough floor tiles.
     fn insufficient_floor(&self) -> bool {
         self.map
             .tiles()
@@ -63,6 +111,8 @@ impl DrunkardsWalkBuilder {
             < self.min_floor_count
     }
 
+    /// Take a random step in one of the four cardinal directions. Return None
+    /// if we hit the dungeon boundaries.
     fn step(&self, pos: DungeonPosition, rng: &mut RandomGenerator) -> Option<DungeonPosition> {
         let random_step = match rng.gen_range(0..4) {
             0 => DungeonPosition::new(pos.x - 1, pos.y),
@@ -75,13 +125,12 @@ impl DrunkardsWalkBuilder {
         let in_bounds =
             |p: DungeonPosition| p.x > X_MIN && p.x < X_MAX && p.y > Y_MIN && p.y < Y_MAX;
 
-        if !in_bounds(random_step) {
-            info!("Random step from {pos} to {random_step} is out of bounds");
-        }
-
         in_bounds(random_step).then_some(random_step)
     }
 
+    /// Repeatedly drunkenly tunnel first starting from the center and each
+    /// player starting position. Repeat from random positions until we have
+    /// enough floor tiles.
     fn tunnel(mut self, rng: &mut RandomGenerator) -> Self {
         let center = self.map.center;
         self.drunkard(&center, rng);
@@ -178,7 +227,44 @@ mod tests {
         );
     }
 
-    // place players and ensure players can both reach the center
+    #[test]
+    fn player_can_reach_center() {
+        let mut rng = RandomGenerator::new();
+
+        for attempt in 1..=10 {
+            let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), &mut rng);
+
+            let player_pos = map.player_starting_positions[0];
+            let finder = AStarPathFinder::find(player_pos, map.center, &map);
+
+            assert!(
+                finder.path_found(),
+                "player unable to reach center on attempt {attempt}"
+            );
+        }
+    }
+
+    #[test]
+    fn add_items() {
+        let config = DrunkardsWalkConfig::default();
+        let num_items = config.num_items;
+        let mut rng = RandomGenerator::new();
+
+        let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), &mut rng);
+
+        assert_eq!(map.item_positions.len(), num_items);
+    }
+
+    #[test]
+    fn add_monsters() {
+        let config = DrunkardsWalkConfig::default();
+        let num_monsters = config.num_monsters;
+        let mut rng = RandomGenerator::new();
+
+        let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), &mut rng);
+
+        assert_eq!(map.monster_starting_positions.len(), num_monsters);
+    }
 
     fn edge_distance(pos: &DungeonPosition) -> usize {
         [

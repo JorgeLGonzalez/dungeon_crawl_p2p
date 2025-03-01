@@ -28,11 +28,6 @@ Then:
 
 ## TODO
 
-Focusing on generating the map for now. Assume it will become a resource.
-But for now, lets generate walls vs floors (just diff color boxes for now).
-And lets create the diff room architects. We can add exit and amulet and player.
-
-- [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
 - [ ] stairs, amulet and dungeon levels
   - [ ] show level in HUD
@@ -232,6 +227,7 @@ flowchart TD
   - [x] Ensure player starting positions are not blocked off from rest of map
   - [x] unit test Tunneler
   - [x] Consider unit testing path finder and player start
+- [x] drunkard walk dungeon generation
 
 ### Archived Issues
 
