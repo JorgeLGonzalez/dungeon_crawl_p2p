@@ -24,7 +24,7 @@ impl PrefabVault {
 
     pub fn create_at(&self, center: DungeonPosition, map: &mut DungeonMap) {
         let width = self.placeholder.width() as isize;
-        let vault = IRect::from_center_size(center.into(), self.placeholder.size());
+        let vault = self.vault_rect(center);
 
         let to_pos = |idx: usize| -> DungeonPosition {
             let dx = idx as isize % width;
@@ -41,6 +41,8 @@ impl PrefabVault {
             .for_each(|(pos, c)| {
                 self.create_tile(c, pos, map);
             });
+
+        info!("Vault created at {center}.");
     }
 
     pub fn determine_location(
@@ -48,10 +50,7 @@ impl PrefabVault {
         map: &DungeonMap,
         rng: &mut RandomGenerator,
     ) -> Option<DungeonPosition> {
-        let dungeon = IRect::from_center_size(
-            map.center.into(),
-            IVec2::new(MAP_WIDTH as i32, MAP_HEIGHT as i32),
-        );
+        let dungeon = self.dungeon_rect();
 
         let mut location = None;
         let mut retries = 0;
@@ -59,10 +58,19 @@ impl PrefabVault {
             let x = rng.gen_range(X_MIN..X_MAX - self.placeholder.width() as isize - 1);
             let y = rng.gen_range(Y_MIN..Y_MAX - self.placeholder.height() as isize - 1);
             let pos = DungeonPosition::new(x, y);
-            let vault = IRect::from_center_size(pos.into(), self.placeholder.size());
+            let vault = self.vault_rect(pos);
 
-            if dungeon.contains(vault.min) && dungeon.contains(vault.max) {
-                location = Some(DungeonPosition::new(x, y));
+            let vault_zone = vault.inflate(6);
+            let players_in_vault_zone = map
+                .player_starting_positions
+                .iter()
+                .any(|&p| vault_zone.contains(p.into()));
+            if !vault.contains(map.center.into())
+                && !players_in_vault_zone
+                && dungeon.contains(vault.min)
+                && dungeon.contains(vault.max)
+            {
+                location = Some(pos);
             } else {
                 retries += 1;
             }
@@ -82,12 +90,19 @@ impl PrefabVault {
             _ => unreachable!(),
         };
     }
+
+    fn dungeon_rect(&self) -> IRect {
+        IRect::from_center_size(IVec2::ZERO, IVec2::new(MAP_WIDTH as i32, MAP_HEIGHT as i32))
+    }
+
+    fn vault_rect(&self, pos: DungeonPosition) -> IRect {
+        IRect::from_center_size(pos.into(), self.placeholder.size())
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bevy::math::IVec2;
 
     #[test]
     fn new() {
@@ -99,7 +114,7 @@ mod tests {
 
     #[test]
     fn create_at() {
-        let mut map = DungeonMap::new();
+        let mut map = create_map();
         let pos = map.center;
         let prefab = PrefabVault::new(FORTRESS);
 
@@ -108,7 +123,7 @@ mod tests {
         let expected_floor_count = FORTRESS.chars().filter(|c| *c == '-' || *c == 'M').count();
         let expected_wall_count = FORTRESS.chars().filter(|c| *c == '#').count();
         let expected_monster_count = FORTRESS.chars().filter(|c| *c == 'M').count();
-        let vault = IRect::from_center_size(pos.into(), prefab.placeholder.size());
+        let vault = prefab.vault_rect(pos);
 
         assert_eq!(
             map.monster_starting_positions.len(),
@@ -132,17 +147,16 @@ mod tests {
     }
 
     #[test]
-    fn determine_location() {
-        let map = DungeonMap::new();
+    fn location_within_dungeon() {
+        let map = create_map();
         let prefab = PrefabVault::new(FORTRESS);
 
-        let location = prefab.determine_location(&map, &mut RandomGenerator::new());
+        let location = prefab
+            .determine_location(&map, &mut RandomGenerator::new())
+            .expect("no location found");
 
-        assert!(location.is_some());
-        let location = location.unwrap();
-        let vault = IRect::from_center_size(location.into(), prefab.placeholder.size());
-        let dungeon =
-            IRect::from_center_size(IVec2::ZERO, IVec2::new(MAP_WIDTH as i32, MAP_HEIGHT as i32));
+        let vault = prefab.vault_rect(location);
+        let dungeon = prefab.dungeon_rect();
         assert!(
             dungeon.contains(vault.min),
             "vault min at {} is out of bounds",
@@ -155,5 +169,52 @@ mod tests {
         );
     }
 
+    #[test]
+    fn location_far_from_players() {
+        let map = create_map();
+        let prefab = PrefabVault::new(FORTRESS);
+
+        let location = prefab
+            .determine_location(&map, &mut RandomGenerator::new())
+            .expect("no location found");
+
+        let vault_zone = prefab.vault_rect(location).inflate(6);
+        map.player_starting_positions
+            .clone()
+            .into_iter()
+            .for_each(|pos| {
+                assert!(
+                    !vault_zone.contains(pos.into()),
+                    "player at {} is within vault zone",
+                    pos
+                );
+            });
+    }
+
+    #[test]
+    fn off_dungeon_center() {
+        let map = create_map();
+        let prefab = PrefabVault::new(FORTRESS);
+
+        let location = prefab
+            .determine_location(&map, &mut RandomGenerator::new())
+            .expect("no location found");
+
+        let vault = prefab.vault_rect(location);
+        assert!(
+            !vault.contains(map.center.into()),
+            "vault at {location} contains dungeon center"
+        );
+    }
+
+    fn create_map() -> DungeonMap {
+        let mut map = DungeonMap::new();
+        map.player_starting_positions
+            .push(DungeonPosition::new(X_MIN + 1, Y_MIN + 1));
+        map.player_starting_positions
+            .push(DungeonPosition::new(X_MAX - 1, Y_MAX - 1));
+
+        map
+    }
     // TODO validate blueprint. allow blank lines at top and bottom, otherwise all must be same len
 }
