@@ -13,13 +13,11 @@ mod dungeon_map {
     mod cell_automata {
         mod cell_automata_builder;
         mod cell_grower;
-        mod tunneler;
 
         pub use cell_automata_builder::CellAutomataBuilder;
 
         use super::*;
         use cell_grower::CellGrower;
-        use tunneler::Tunneler;
     }
 
     mod drunkards_walk {
@@ -47,6 +45,8 @@ mod dungeon_map {
         use room::Room;
     }
 
+    mod tunneler;
+
     pub use dungeon_map::DungeonMap;
     pub use dungeon_position::DungeonPosition;
 
@@ -58,6 +58,7 @@ mod dungeon_map {
     use super::config::*;
     use a_star::AStarPathFinder;
     use dungeon_corner::DungeonCorner;
+    use tunneler::Tunneler;
 }
 mod events;
 mod illuminator;
