@@ -25,26 +25,35 @@ impl PrefabVault {
 
     pub fn create_at(&self, center: DungeonPosition, map: &mut DungeonMap) {
         let width = self.placeholder.width() as isize;
-        let x0 = center.x - width / 2;
-        let y0 = center.y - self.placeholder.height() as isize / 2;
+        let vault = IRect::from_center_size(center.into(), self.placeholder.size());
+
+        let to_pos = |idx: usize| -> DungeonPosition {
+            let dx = idx as isize % width;
+            let dy = idx as isize / width;
+
+            DungeonPosition::new(vault.min.x as isize + dx, vault.min.y as isize + dy)
+        };
 
         self.blueprint
             .chars()
             .filter(|c| *c != '\n' && *c != '\r')
             .enumerate()
-            .map(|(idx, c)| ((idx as isize % width, idx as isize / width), c))
-            .map(|((dx, dy), c)| (DungeonPosition::new(x0 + dx, y0 + dy), c))
+            .map(|(idx, c)| (to_pos(idx), c))
             .for_each(|(pos, c)| {
-                match c {
-                    '-' => map.set_tile_type(&pos, TileType::Floor),
-                    '#' => map.set_tile_type(&pos, TileType::Wall),
-                    'M' => {
-                        map.set_tile_type(&pos, TileType::Floor);
-                        map.monster_starting_positions.push(pos);
-                    }
-                    _ => unreachable!(),
-                };
+                self.create_tile(c, pos, map);
             });
+    }
+
+    fn create_tile(&self, c: char, pos: DungeonPosition, map: &mut DungeonMap) {
+        match c {
+            '-' => map.set_tile_type(&pos, TileType::Floor),
+            '#' => map.set_tile_type(&pos, TileType::Wall),
+            'M' => {
+                map.set_tile_type(&pos, TileType::Floor);
+                map.monster_starting_positions.push(pos);
+            }
+            _ => unreachable!(),
+        };
     }
 }
 
@@ -81,7 +90,6 @@ mod tests {
         let mut floor_count = 0;
         let mut wall_count = 0;
         for y in vault.min.y..=vault.max.y {
-            // let mut row = String::new();
             for x in vault.min.x..vault.max.x {
                 let tile = map.get_tile_type(&DungeonPosition::new(x as isize, y as isize));
                 match tile {
@@ -89,14 +97,7 @@ mod tests {
                     TileType::Wall => wall_count += 1,
                     _ => unreachable!(),
                 }
-
-                // match tile {
-                //     TileType::Floor => row.push('-'),
-                //     TileType::Wall => row.push('#'),
-                //     _ => unreachable!(),
-                // }
             }
-            // println!("{row}");
         }
         assert_eq!(floor_count, expected_floor_count, "wrong floor count");
         assert_eq!(wall_count, expected_wall_count, "wrong wall count");
