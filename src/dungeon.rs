@@ -1,9 +1,16 @@
 mod components;
 mod config;
 mod dungeon_map {
-    mod cell_automata {
+    mod a_star {
         mod a_star_node;
         mod a_star_path_finder;
+
+        pub(super) use a_star_path_finder::AStarPathFinder;
+
+        use super::*;
+        use a_star_node::AStarNode;
+    }
+    mod cell_automata {
         mod cell_automata_builder;
         mod cell_grower;
         mod tunneler;
@@ -11,8 +18,6 @@ mod dungeon_map {
         pub use cell_automata_builder::CellAutomataBuilder;
 
         use super::*;
-        use a_star_node::AStarNode;
-        use a_star_path_finder::AStarPathFinder;
         use cell_grower::CellGrower;
         use tunneler::Tunneler;
     }
@@ -51,6 +56,7 @@ mod dungeon_map {
     pub(super) use random_rooms::RandomRoomsBuilder;
 
     use super::config::*;
+    use a_star::AStarPathFinder;
     use dungeon_corner::DungeonCorner;
 }
 mod events;
