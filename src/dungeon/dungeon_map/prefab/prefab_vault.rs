@@ -1,6 +1,5 @@
 use super::*;
-use crate::dungeon::{DungeonMap, DungeonPosition};
-use bevy::math::IRect;
+use crate::prelude::*;
 
 pub struct PrefabVault {
     blueprint: String,
@@ -44,6 +43,34 @@ impl PrefabVault {
             });
     }
 
+    pub fn determine_location(
+        &self,
+        map: &DungeonMap,
+        rng: &mut RandomGenerator,
+    ) -> Option<DungeonPosition> {
+        let dungeon = IRect::from_center_size(
+            map.center.into(),
+            IVec2::new(MAP_WIDTH as i32, MAP_HEIGHT as i32),
+        );
+
+        let mut location = None;
+        let mut retries = 0;
+        while location.is_none() && retries < 10 {
+            let x = rng.gen_range(X_MIN..X_MAX - self.placeholder.width() as isize - 1);
+            let y = rng.gen_range(Y_MIN..Y_MAX - self.placeholder.height() as isize - 1);
+            let pos = DungeonPosition::new(x, y);
+            let vault = IRect::from_center_size(pos.into(), self.placeholder.size());
+
+            if dungeon.contains(vault.min) && dungeon.contains(vault.max) {
+                location = Some(DungeonPosition::new(x, y));
+            } else {
+                retries += 1;
+            }
+        }
+
+        location
+    }
+
     fn create_tile(&self, c: char, pos: DungeonPosition, map: &mut DungeonMap) {
         match c {
             '-' => map.set_tile_type(&pos, TileType::Floor),
@@ -60,6 +87,7 @@ impl PrefabVault {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use bevy::math::IVec2;
 
     #[test]
     fn new() {
@@ -101,6 +129,30 @@ mod tests {
         }
         assert_eq!(floor_count, expected_floor_count, "wrong floor count");
         assert_eq!(wall_count, expected_wall_count, "wrong wall count");
+    }
+
+    #[test]
+    fn determine_location() {
+        let map = DungeonMap::new();
+        let prefab = PrefabVault::new(FORTRESS);
+
+        let location = prefab.determine_location(&map, &mut RandomGenerator::new());
+
+        assert!(location.is_some());
+        let location = location.unwrap();
+        let vault = IRect::from_center_size(location.into(), prefab.placeholder.size());
+        let dungeon =
+            IRect::from_center_size(IVec2::ZERO, IVec2::new(MAP_WIDTH as i32, MAP_HEIGHT as i32));
+        assert!(
+            dungeon.contains(vault.min),
+            "vault min at {} is out of bounds",
+            vault.min
+        );
+        assert!(
+            dungeon.contains(vault.max),
+            "vault max at {} is out of bounds",
+            vault.max
+        );
     }
 
     // TODO validate blueprint. allow blank lines at top and bottom, otherwise all must be same len
