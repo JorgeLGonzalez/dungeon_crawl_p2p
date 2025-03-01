@@ -6,7 +6,6 @@ mod dungeon_map {
         mod a_star_path_finder;
         mod cell_automata_builder;
         mod cell_grower;
-        mod dungeon_corner;
         mod tunneler;
 
         pub use cell_automata_builder::CellAutomataBuilder;
@@ -15,10 +14,20 @@ mod dungeon_map {
         use a_star_node::AStarNode;
         use a_star_path_finder::AStarPathFinder;
         use cell_grower::CellGrower;
-        use dungeon_corner::DungeonCorner;
         use tunneler::Tunneler;
     }
 
+    mod drunkards_walk {
+        mod config;
+        mod drunkards_walk_builder;
+
+        pub use config::DrunkardsWalkConfig;
+        pub use drunkards_walk_builder::DrunkardsWalkBuilder;
+
+        use super::*;
+    }
+
+    mod dungeon_corner;
     mod dungeon_map;
     mod dungeon_position;
     mod dungeon_tile;
@@ -37,10 +46,12 @@ mod dungeon_map {
     pub use dungeon_position::DungeonPosition;
 
     pub(super) use cell_automata::CellAutomataBuilder;
+    pub(super) use drunkards_walk::{DrunkardsWalkBuilder, DrunkardsWalkConfig};
     pub(super) use dungeon_tile::{DungeonTile, TileType};
     pub(super) use random_rooms::RandomRoomsBuilder;
 
     use super::config::*;
+    use dungeon_corner::DungeonCorner;
 }
 mod events;
 mod illuminator;
@@ -58,7 +69,9 @@ pub use plugin::{DungeonCoreSet, DungeonPlugin, SpawnDungeonSet};
 
 use components::*;
 use config::*;
-use dungeon_map::{CellAutomataBuilder, RandomRoomsBuilder, TileType};
+use dungeon_map::{
+    CellAutomataBuilder, DrunkardsWalkBuilder, DrunkardsWalkConfig, RandomRoomsBuilder, TileType,
+};
 use events::*;
 use reveal_map::reveal_map;
 use spawn_dungeon::spawn_dungeon;

@@ -19,6 +19,10 @@ pub const Y_MIN: isize = -((MAP_HEIGHT / 2) as isize);
 
 pub const VIEWPORT_HEIGHT: f32 = 20.;
 
+// DrunkardsWalkBuilder settings
+pub const PERCENT_FLOOR: usize = 33;
+pub const STAGGER_DISTANCE: usize = 400;
+
 // RandomRoomsBuilder settings
 pub const NUM_ITEMS: usize = 30;
 pub const NUM_MONSTERS: usize = 30;

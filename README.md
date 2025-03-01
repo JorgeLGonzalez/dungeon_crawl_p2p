@@ -34,7 +34,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 
 - [ ] drunkard walk dungeon generation
 - [ ] prefab dungeon sections
-- [ ] stairs and dungeon levels
+- [ ] stairs, amulet and dungeon levels
   - [ ] show level in HUD
 - [ ] player sprites
 - [ ] monster sprites
@@ -43,8 +43,7 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] Consider deploying web app to netlify to get DNS and use github actions similar to dog chase game
 - [ ] upgrade to rand 0.9. It has breaking changes and Xoshiro
 - [ ] improve lighting simulation
-- [ ] amulet. In original it is placed farthest from player. But we now have 2 randomly placed players.
-  - [ ] Game won state and screen
+- [ ] Game won state and screen
 - [ ] monsters now move intentionally, but still not very smart. If they see any players, they will hone in on the closest one and take any valid step that brings them closer to that player, but it is a shortsighted strategy since the distance to the player does not account for any obstacles, so there's probably situations where going to a farther player would be better or where stepping further first is a better path. In other words, there's no path-finding like Dikjstra path. They also have no memory so they will stop chasing a player who escapes their FOV like just around a corner. See [Dijkstra Maps](https://www.roguebasin.com/index.php/The_Incredible_Power_of_Dijkstra_Maps) for an implementation of the algorithm in the context of a rogue-like dungeon crawler. I think this is what the Hands-On Rust book used.
 - [ ] restart game on game over key press. And actual game over systems and display
 - [ ] dungeon themes
@@ -52,8 +51,6 @@ And lets create the diff room architects. We can add exit and amulet and player.
 - [ ] monster patrol strategies (explore, guard, rest)
 - [ ] worth looking at [Leafwing input manager](https://github.com/Leafwing-Studios/leafwing-input-manager) for keyboard input handling (and mouse)
   - [ ] The player movement throttling can probably be simplified by resetting the key press, or using logic like monster throttling, of perhaps Leafwing makes this simpler.
-- [x] magic map
-  - [x] rename RevealDungeonCheatEvent etc to RevealDungeonEvent and have it work in cheat mode vs magic item mode. It magic item mode, map only revealed to one player
 
 ## Issues
 
@@ -202,6 +199,8 @@ flowchart TD
 - [x] data driven dungeon monsters and items
   - [x] items
   - [x] monsters
+- [x] magic map
+  - [x] rename RevealDungeonCheatEvent etc to RevealDungeonEvent and have it work in cheat mode vs magic item mode. It magic item mode, map only revealed to one player
 - [x] weapons
   - [x] 3 sword types spawned randomly (as item types). From data file
   - [x] grab feature. Replaces exiting weapon rather then adding to inventory. Display in HUD to right of health bar (for now)
