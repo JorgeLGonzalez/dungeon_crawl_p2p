@@ -1,13 +1,11 @@
-use super::{ExitTile, FloorTile, RandomRoomsBuilder, TileType, WallTile};
-use crate::{
-    common::RandomGenerator,
-    config::{self, TILE_HEIGHT, TILE_WIDTH},
-    player::Obstacle,
-};
-use bevy::prelude::*;
+use super::*;
+use crate::{player::Obstacle, prelude::*};
 
 pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
-    let dungeon = RandomRoomsBuilder::build(rng.as_mut());
+    let dungeon = match rng.gen_range(0..2) {
+        0 => CellAutomataBuilder::build(rng.as_mut()),
+        _ => RandomRoomsBuilder::build(rng.as_mut()),
+    };
 
     for tile in dungeon.tiles() {
         let sprite = create_sprite(tile.tile_type);
@@ -28,7 +26,7 @@ pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
 fn create_sprite(tile_type: TileType) -> Sprite {
     let color = match tile_type {
         TileType::Exit => Color::srgb(1., 1., 1.),
-        TileType::Floor => config::FLOOR_COLOR,
+        TileType::Floor => FLOOR_COLOR,
         TileType::Wall => Color::srgb(0., 0., 0.),
     };
 

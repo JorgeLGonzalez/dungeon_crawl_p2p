@@ -13,7 +13,7 @@ pub use common::{fov, health};
 pub mod prelude {
     pub use crate::common::RandomGenerator;
     pub use crate::config::{self, game_mode, GameMode};
-    pub use crate::dungeon::DungeonMap;
+    pub use crate::dungeon::{DungeonMap, TILE_HEIGHT, TILE_WIDTH};
     pub use crate::fov::FieldOfView;
     pub use crate::game_states::GameState;
     pub use crate::health::{Damage, DamageUnit, Healing, Health, HealthUnit};

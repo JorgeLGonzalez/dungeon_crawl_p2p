@@ -1,5 +1,5 @@
-use super::{DungeonPosition, Room, TileType};
-use crate::{config::*, prelude::*};
+use super::*;
+use crate::prelude::*;
 use rand::prelude::*;
 
 pub struct RandomRoomsBuilder {
@@ -9,12 +9,14 @@ pub struct RandomRoomsBuilder {
 
 impl RandomRoomsBuilder {
     pub fn build(rng: &mut RandomGenerator) -> DungeonMap {
+        info!("Building random rooms dungeon.");
         Self {
             map: DungeonMap::new(),
             rooms: vec![],
         }
         .create_rooms(rng)
         .build_corridors(rng)
+        .set_center()
         .add_player_starting_positions()
         .add_items(rng)
         .add_monster_starting_positions(rng)
@@ -43,7 +45,7 @@ impl RandomRoomsBuilder {
         self.map
             .player_starting_positions
             .push(self.rooms[0].center());
-        if GAME_MODE != GameMode::SinglePlayer {
+        if config::GAME_MODE != GameMode::SinglePlayer {
             self.map
                 .player_starting_positions
                 .push(self.rooms[1].center());
@@ -99,17 +101,24 @@ impl RandomRoomsBuilder {
     }
 
     fn create_room(&self, rng: &mut RandomGenerator) -> Room {
-        const X_MAX: isize = (MAP_WIDTH / 2 - ROOM_MAX_WIDTH - 1) as isize;
-        const X_MIN: isize = -((MAP_WIDTH / 2) as isize) + 1;
-        const Y_MAX: isize = ((MAP_HEIGHT / 2) - ROOM_MAX_HEIGHT - 1) as isize;
-        const Y_MIN: isize = -((MAP_HEIGHT / 2) as isize) + 1;
+        const ROOM_X_MAX: isize = X_MAX - (ROOM_MAX_WIDTH as isize);
+        const ROOM_X_MIN: isize = X_MIN + 1;
+        const ROOM_Y_MAX: isize = Y_MAX - (ROOM_MAX_HEIGHT as isize);
+        const ROOM_Y_MIN: isize = Y_MIN + 1;
 
         Room::new(
-            rng.gen_range(X_MIN..X_MAX),
-            rng.gen_range(Y_MIN..Y_MAX),
+            rng.gen_range(ROOM_X_MIN..ROOM_X_MAX),
+            rng.gen_range(ROOM_Y_MIN..ROOM_Y_MAX),
             rng.gen_range(2..ROOM_MAX_WIDTH),
             rng.gen_range(2..ROOM_MAX_HEIGHT),
         )
+    }
+
+    /// Reset the map center to the floor tile nearest the absolute center.
+    fn set_center(mut self) -> Self {
+        self.map.center = self.map.find_nearest_floor_tile(self.map.center, 1);
+
+        self
     }
 
     fn tunnel_horizontally(&mut self, x1: isize, x2: isize, y: isize) {

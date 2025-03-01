@@ -20,7 +20,7 @@ impl MagicItemBundle {
             grabbable: Grabbable,
             sprite: Sprite {
                 color: template.color(),
-                custom_size: Some(Vec2::new(config::TILE_WIDTH, config::TILE_HEIGHT)),
+                custom_size: Some(Vec2::new(TILE_WIDTH, TILE_HEIGHT)),
                 ..default()
             },
             tooltip_label: TooltipLabel(item.label()),
