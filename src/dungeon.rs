@@ -35,6 +35,16 @@ mod dungeon_map {
     mod dungeon_position;
     mod dungeon_tile;
 
+    mod prefab {
+        mod prefab_areas;
+        mod prefab_vault;
+
+        pub use prefab_areas::*;
+        pub use prefab_vault::PrefabVault;
+
+        use super::*;
+    }
+
     mod random_rooms {
         mod random_rooms_builder;
         mod room;
@@ -53,6 +63,7 @@ mod dungeon_map {
     pub(super) use cell_automata::CellAutomataBuilder;
     pub(super) use drunkards_walk::{DrunkardsWalkBuilder, DrunkardsWalkConfig};
     pub(super) use dungeon_tile::{DungeonTile, TileType};
+    pub(super) use prefab::*;
     pub(super) use random_rooms::RandomRoomsBuilder;
 
     use super::config::*;
@@ -76,9 +87,7 @@ pub use plugin::{DungeonCoreSet, DungeonPlugin, SpawnDungeonSet};
 
 use components::*;
 use config::*;
-use dungeon_map::{
-    CellAutomataBuilder, DrunkardsWalkBuilder, DrunkardsWalkConfig, RandomRoomsBuilder, TileType,
-};
+use dungeon_map::*;
 use events::*;
 use reveal_map::reveal_map;
 use spawn_dungeon::spawn_dungeon;
