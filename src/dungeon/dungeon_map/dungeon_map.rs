@@ -8,7 +8,7 @@ pub struct DungeonMap {
     /// Floor tile closest to the center of the dungeon where we put the exit
     /// or amulet.
     pub center: DungeonPosition,
-    pub item_positions: Vec<DungeonPosition>,
+    pub item_positions: Vec<ItemPosition>,
     pub monster_starting_positions: Vec<DungeonPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
     tiles: Vec<TileType>,

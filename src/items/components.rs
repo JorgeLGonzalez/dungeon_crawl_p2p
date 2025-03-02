@@ -12,14 +12,12 @@ pub struct MagicItemBundle {
 }
 
 impl MagicItemBundle {
-    pub fn new(template: &MagicItemTemplate, pos: Vec2) -> Self {
-        let item = template.item;
-
+    pub fn new(item: MagicItem, pos: Vec2) -> Self {
         Self {
             item,
             grabbable: Grabbable,
             sprite: Sprite {
-                color: template.color(),
+                color: item.color(),
                 custom_size: Some(Vec2::new(TILE_WIDTH, TILE_HEIGHT)),
                 ..default()
             },
@@ -37,30 +35,28 @@ pub struct Grabbable;
 pub struct MagicItemTemplate {
     pub frequency: usize,
     pub item: MagicItem,
-    color: Srgba,
 }
 
-impl MagicItemTemplate {
-    pub fn color(&self) -> Color {
-        self.color.into()
-    }
-}
-
-#[derive(Component, Clone, Debug, Deserialize, Copy, Hash)]
+#[derive(Component, Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub enum MagicItem {
     HealingPotion(HealthUnit),
     Map,
     Weapon(Weapon),
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Hash)]
-pub enum Sword {
-    Huge,
-    Rusty,
-    Shiny,
-}
-
 impl MagicItem {
+    pub fn color(&self) -> Color {
+        match self {
+            MagicItem::HealingPotion(h) => match h {
+                2 => Color::srgb(0.5, 0.5, 0.9),
+                6 => Color::srgb(0., 0., 1.),
+                _ => unreachable!(),
+            },
+            MagicItem::Map => Color::srgb(0.8, 0.7, 1.0),
+            MagicItem::Weapon(w) => w.color(),
+        }
+    }
+
     pub fn healing_amount(&self) -> HealthUnit {
         match self {
             MagicItem::HealingPotion(amount) => *amount,
@@ -77,8 +73,31 @@ impl MagicItem {
     }
 }
 
-#[derive(Component, Clone, Copy, Debug, Deserialize, Hash)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash)]
+pub enum Sword {
+    Huge,
+    Rusty,
+    Shiny,
+}
+
+impl Sword {
+    pub fn color(&self) -> Color {
+        match self {
+            Sword::Huge => Color::srgb(1.0, 0.8, 0.),
+            Sword::Rusty => Color::srgb(0.8, 0.6, 0.),
+            Sword::Shiny => Color::srgb(0.8, 0.8, 0.),
+        }
+    }
+}
+
+#[derive(Component, Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
 pub struct Weapon {
     pub damage: HealthUnit,
     pub sword: Sword,
+}
+
+impl Weapon {
+    pub fn color(&self) -> Color {
+        self.sword.color()
+    }
 }

@@ -27,6 +27,7 @@ impl RandomRoomsBuilder {
         self.map.item_positions = self
             .map
             .spawnable_positions()
+            .map(ItemPosition::new)
             .choose_multiple(rng, NUM_ITEMS);
 
         self

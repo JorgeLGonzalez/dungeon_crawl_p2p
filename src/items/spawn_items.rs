@@ -1,4 +1,4 @@
-use super::MagicItemTemplate;
+use super::MagicItem;
 use crate::{
     common::{DungeonAssets, DungeonData},
     items::components::MagicItemBundle,
@@ -17,16 +17,18 @@ pub fn spawn_items(
 ) {
     let item_distribution = create_distribution(dungeon_data_assets.get(&dungeon_assets.data));
 
+    let mut random_item = || item_distribution[rng.gen_range(0..item_distribution.len())].clone();
+
     let stats = dungeon
         .item_positions
         .iter()
-        .map(|pos| {
+        .map(|item_pos| {
             (
-                item_distribution[rng.gen_range(0..item_distribution.len())],
-                pos.to_vec2(),
+                item_pos.item.unwrap_or_else(&mut random_item),
+                item_pos.pos.to_vec2(),
             )
         })
-        .map(|(template, pos)| MagicItemBundle::new(template, pos))
+        .map(|(item, pos)| MagicItemBundle::new(item, pos))
         .fold(HashMap::new(), |mut acc, item_bundle| {
             acc.entry(item_bundle.item.label())
                 .and_modify(|count| *count += 1)
@@ -42,11 +44,11 @@ pub fn spawn_items(
 
 /// Create a distribution of item templates based on their frequency so that
 /// those with a higher frequency are more likely to be randomly selected.
-fn create_distribution(dungeon_data: Option<&DungeonData>) -> Vec<&MagicItemTemplate> {
+fn create_distribution(dungeon_data: Option<&DungeonData>) -> Vec<MagicItem> {
     dungeon_data
         .expect("Failed to load dungeon data")
         .items
         .iter()
-        .flat_map(|template| repeat(template).take(template.frequency))
+        .flat_map(|template| repeat(template.item).take(template.frequency))
         .collect()
 }

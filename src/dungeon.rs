@@ -1,19 +1,6 @@
 mod components;
 mod config;
 mod dungeon_map {
-    mod reachability {
-        mod a_star_node;
-        mod a_star_path_finder;
-        mod reachability_ensurer;
-        mod tunneler;
-
-        pub(super) use a_star_path_finder::AStarPathFinder;
-        pub(super) use reachability_ensurer::{ReachabilityEnsurer, Searchers};
-
-        use super::*;
-        use a_star_node::AStarNode;
-        use tunneler::Tunneler;
-    }
     mod cell_automata {
         mod cell_automata_builder;
         mod cell_grower;
@@ -39,6 +26,14 @@ mod dungeon_map {
     mod dungeon_position;
     mod dungeon_tile;
 
+    mod position {
+        mod item_position;
+
+        pub use item_position::ItemPosition;
+
+        use super::DungeonPosition;
+    }
+
     mod prefab {
         mod prefab_areas;
         mod prefab_vault;
@@ -58,9 +53,23 @@ mod dungeon_map {
         use super::*;
         use room::Room;
     }
+    mod reachability {
+        mod a_star_node;
+        mod a_star_path_finder;
+        mod reachability_ensurer;
+        mod tunneler;
+
+        pub(super) use a_star_path_finder::AStarPathFinder;
+        pub(super) use reachability_ensurer::{ReachabilityEnsurer, Searchers};
+
+        use super::*;
+        use a_star_node::AStarNode;
+        use tunneler::Tunneler;
+    }
 
     pub use dungeon_map::DungeonMap;
     pub use dungeon_position::DungeonPosition;
+    pub use position::ItemPosition;
 
     pub(super) use cell_automata::CellAutomataBuilder;
     pub(super) use drunkards_walk::{DrunkardsWalkBuilder, DrunkardsWalkConfig};

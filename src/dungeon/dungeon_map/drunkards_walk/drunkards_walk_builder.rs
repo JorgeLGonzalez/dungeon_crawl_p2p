@@ -31,6 +31,7 @@ impl DrunkardsWalkBuilder {
         self.map.item_positions = self
             .map
             .spawnable_positions()
+            .map(ItemPosition::new)
             .choose_multiple(rng, self.config.num_items);
 
         self
