@@ -62,18 +62,8 @@ impl DrunkardsWalkBuilder {
     /// Ensure both players can reach the center of the dungeon, tunneling if
     /// necessary.
     fn connect_players(mut self) -> Self {
-        let center = self.map.center;
-        for player_pos in self.map.player_starting_positions.clone() {
-            let finder = AStarPathFinder::find(player_pos, center, &self.map);
-            if !finder.path_found() {
-                let player_side = finder.closest_position();
-
-                info!("Connecting player at {player_pos} to center at {player_side}");
-                let other_side =
-                    AStarPathFinder::find(center, player_side, &self.map).closest_position();
-                Tunneler::tunnel(&mut self.map, player_side, other_side);
-            }
-        }
+        let players = Searchers::from_iter("Player", self.map.player_starting_positions.clone());
+        ReachabilityEnsurer::ensure(&players, self.map.center, &mut self.map);
 
         self
     }
@@ -153,7 +143,7 @@ impl DrunkardsWalkBuilder {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{a_star::AStarPathFinder, *};
     use rstest::rstest;
 
     #[test]

@@ -3,6 +3,7 @@ use crate::prelude::*;
 
 pub struct PrefabVault {
     blueprint: String,
+    key_pos: DungeonPosition,
     placeholder: IRect,
 }
 
@@ -18,11 +19,12 @@ impl PrefabVault {
 
         Self {
             blueprint: blueprint.to_string(),
+            key_pos: DungeonPosition::new(0, 0),
             placeholder,
         }
     }
 
-    pub fn create_at(&self, center: DungeonPosition, map: &mut DungeonMap) {
+    pub fn create_at(&mut self, center: DungeonPosition, map: &mut DungeonMap) {
         let width = self.placeholder.width() as isize;
         let vault = self.vault_rect(center);
 
@@ -40,6 +42,8 @@ impl PrefabVault {
             .filter(|c| *c != '\n' && *c != '\r')
             .enumerate()
             .map(|(idx, c)| (to_pos(idx), c))
+            .collect::<Vec<_>>()
+            .into_iter()
             .for_each(|(pos, c)| {
                 self.create_tile(c, pos, map);
             });
@@ -88,7 +92,7 @@ impl PrefabVault {
             .retain(|&pos| !vault.contains(pos.into()));
     }
 
-    fn create_tile(&self, c: char, pos: DungeonPosition, map: &mut DungeonMap) {
+    fn create_tile(&mut self, c: char, pos: DungeonPosition, map: &mut DungeonMap) {
         match c {
             '-' => map.set_tile_type(&pos, TileType::Floor),
             '#' => map.set_tile_type(&pos, TileType::Wall),
@@ -99,6 +103,10 @@ impl PrefabVault {
             'M' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 map.monster_starting_positions.push(pos);
+            }
+            'X' => {
+                map.set_tile_type(&pos, TileType::Floor);
+                self.key_pos = pos;
             }
             _ => unreachable!(),
         };
@@ -115,7 +123,7 @@ impl PrefabVault {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{a_star::AStarPathFinder, *};
 
     #[test]
     fn new() {
@@ -129,7 +137,7 @@ mod tests {
     fn create_at() {
         let mut map = create_map();
         let pos = map.center;
-        let prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(FORTRESS);
 
         prefab.create_at(pos, &mut map);
 
@@ -160,7 +168,7 @@ mod tests {
     #[test]
     fn add_items() {
         let mut map = create_map();
-        let prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(FORTRESS);
 
         prefab.create_at(map.center, &mut map);
 
@@ -171,7 +179,7 @@ mod tests {
     #[test]
     fn add_monsters() {
         let mut map = create_map();
-        let prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(FORTRESS);
 
         prefab.create_at(map.center, &mut map);
 
@@ -247,7 +255,7 @@ mod tests {
     #[test]
     fn remove_pre_existing_monsters() {
         let mut map = create_map();
-        let prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(FORTRESS);
         let location = prefab
             .determine_location(&map, &mut RandomGenerator::new())
             .expect("no location found");
@@ -269,7 +277,7 @@ mod tests {
     #[test]
     fn remove_pre_existing_items() {
         let mut map = create_map();
-        let prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(FORTRESS);
         let location = prefab
             .determine_location(&map, &mut RandomGenerator::new())
             .expect("no location found");
@@ -288,6 +296,26 @@ mod tests {
         );
     }
 
+    #[test]
+    fn ensure_reachable() {
+        let mut map = create_map();
+        let mut prefab = PrefabVault::new(FORTRESS);
+        let location = prefab
+            .determine_location(&map, &mut RandomGenerator::new())
+            .expect("no location found");
+
+        prefab.create_at(location, &mut map);
+
+        map.player_starting_positions.iter().for_each(|&pos| {
+            let path_finder = AStarPathFinder::find(pos, prefab.key_pos, &map);
+            assert!(
+                path_finder.path_found(),
+                "player at {pos} is unable to reach key at {}",
+                prefab.key_pos
+            );
+        });
+    }
+
     fn create_map() -> DungeonMap {
         let mut map = DungeonMap::new();
         map.player_starting_positions
@@ -297,5 +325,4 @@ mod tests {
 
         map
     }
-    // TODO validate blueprint. allow blank lines at top and bottom, otherwise all must be same len
 }

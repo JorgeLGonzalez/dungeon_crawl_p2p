@@ -4,11 +4,15 @@ mod dungeon_map {
     mod a_star {
         mod a_star_node;
         mod a_star_path_finder;
+        mod reachability_ensurer;
+        mod tunneler;
 
         pub(super) use a_star_path_finder::AStarPathFinder;
+        pub(super) use reachability_ensurer::{ReachabilityEnsurer, Searchers};
 
         use super::*;
         use a_star_node::AStarNode;
+        use tunneler::Tunneler;
     }
     mod cell_automata {
         mod cell_automata_builder;
@@ -55,8 +59,6 @@ mod dungeon_map {
         use room::Room;
     }
 
-    mod tunneler;
-
     pub use dungeon_map::DungeonMap;
     pub use dungeon_position::DungeonPosition;
 
@@ -67,9 +69,8 @@ mod dungeon_map {
     pub(super) use random_rooms::RandomRoomsBuilder;
 
     use super::config::*;
-    use a_star::AStarPathFinder;
+    use a_star::{ReachabilityEnsurer, Searchers};
     use dungeon_corner::DungeonCorner;
-    use tunneler::Tunneler;
 }
 mod events;
 mod illuminator;
