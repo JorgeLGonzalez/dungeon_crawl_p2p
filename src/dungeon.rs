@@ -10,7 +10,6 @@ mod dungeon_map {
         use super::*;
         use cell_grower::CellGrower;
     }
-
     mod drunkards_walk {
         mod config;
         mod drunkards_walk_builder;
@@ -21,17 +20,21 @@ mod dungeon_map {
         use super::*;
     }
 
-    mod dungeon_corner;
     mod dungeon_map;
-    mod dungeon_position;
-    mod dungeon_tile;
 
     mod position {
+        mod dungeon_corner;
+        mod dungeon_position;
+        mod dungeon_tile;
         mod item_position;
 
+        pub use dungeon_position::DungeonPosition;
+        pub use dungeon_tile::{DungeonTile, TileType};
         pub use item_position::ItemPosition;
 
-        use super::DungeonPosition;
+        pub(super) use dungeon_corner::DungeonCorner;
+
+        use super::*;
     }
 
     mod prefab {
@@ -68,17 +71,15 @@ mod dungeon_map {
     }
 
     pub use dungeon_map::DungeonMap;
-    pub use dungeon_position::DungeonPosition;
-    pub use position::ItemPosition;
+    pub use position::{DungeonPosition, ItemPosition, TileType};
 
     pub(super) use cell_automata::CellAutomataBuilder;
     pub(super) use drunkards_walk::{DrunkardsWalkBuilder, DrunkardsWalkConfig};
-    pub(super) use dungeon_tile::{DungeonTile, TileType};
     pub(super) use prefab::*;
     pub(super) use random_rooms::RandomRoomsBuilder;
 
     use super::config::*;
-    use dungeon_corner::DungeonCorner;
+    use position::{DungeonCorner, DungeonTile};
     use reachability::{ReachabilityEnsurer, Searchers};
 }
 mod events;

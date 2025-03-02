@@ -4,7 +4,7 @@ use crate::common::RandomGenerator;
 /// Each corner of the dungeon within the perimeter (i.e. excluding the border
 /// walls)
 #[derive(Clone, Copy)]
-pub(super) enum DungeonCorner {
+pub enum DungeonCorner {
     TopLeft,
     TopRight,
     BottomLeft,
