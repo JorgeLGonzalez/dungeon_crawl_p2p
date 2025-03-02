@@ -26,6 +26,8 @@ impl PrefabVault {
         let width = self.placeholder.width() as isize;
         let vault = self.vault_rect(center);
 
+        self.clear_content(vault, map);
+
         let to_pos = |idx: usize| -> DungeonPosition {
             let dx = idx as isize % width;
             let dy = idx as isize / width;
@@ -77,6 +79,13 @@ impl PrefabVault {
         }
 
         location
+    }
+
+    fn clear_content(&self, vault: IRect, map: &mut DungeonMap) {
+        map.item_positions
+            .retain(|&pos| !vault.contains(pos.into()));
+        map.monster_starting_positions
+            .retain(|&pos| !vault.contains(pos.into()));
     }
 
     fn create_tile(&self, c: char, pos: DungeonPosition, map: &mut DungeonMap) {
@@ -204,6 +213,50 @@ mod tests {
         assert!(
             !vault.contains(map.center.into()),
             "vault at {location} contains dungeon center"
+        );
+    }
+
+    #[test]
+    fn remove_pre_existing_monsters() {
+        let mut map = create_map();
+        let prefab = PrefabVault::new(FORTRESS);
+        let location = prefab
+            .determine_location(&map, &mut RandomGenerator::new())
+            .expect("no location found");
+        let vault = prefab.vault_rect(location);
+        let monster_pos = DungeonPosition::from_vec2(vault.center().as_vec2());
+        map.monster_starting_positions.push(monster_pos);
+
+        prefab.create_at(location, &mut map);
+
+        assert!(
+            map.monster_starting_positions
+                .iter()
+                .find(|&pos| pos.eq(&monster_pos))
+                .is_none(),
+            "monster at {monster_pos} was not removed"
+        );
+    }
+
+    #[test]
+    fn remove_pre_existing_items() {
+        let mut map = create_map();
+        let prefab = PrefabVault::new(FORTRESS);
+        let location = prefab
+            .determine_location(&map, &mut RandomGenerator::new())
+            .expect("no location found");
+        let vault = prefab.vault_rect(location);
+        let item_pos = DungeonPosition::from_vec2(vault.center().as_vec2());
+        map.item_positions.push(item_pos);
+
+        prefab.create_at(location, &mut map);
+
+        assert!(
+            map.item_positions
+                .iter()
+                .find(|&pos| pos.eq(&item_pos))
+                .is_none(),
+            "item at {item_pos} was not removed"
         );
     }
 

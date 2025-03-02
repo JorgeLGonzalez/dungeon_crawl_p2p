@@ -29,6 +29,13 @@ Then:
 ## TODO
 
 - [ ] prefab dungeon sections
+  - [x] clear monsters and items
+  - [ ] add items
+  - [ ] ensure key vault pos is reachable by each player
+  - [ ] validate blueprint
+  - [ ] warn if unable to place
+  - [ ] improve vault log entry (monster and item location s?)
+  - [ ] refactor VaultSiteSelector
 - [ ] stairs, amulet and dungeon levels
   - [ ] show level in HUD
 - [ ] player sprites
