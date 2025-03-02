@@ -2,23 +2,24 @@ use super::*;
 use crate::{items::*, monsters::Monster, prelude::*};
 
 pub struct PrefabVault {
-    blueprint: String,
+    blueprint: PrefabBlueprint,
     key_pos: DungeonPosition,
     placeholder: IRect,
 }
 
 impl PrefabVault {
-    pub fn new(blueprint: &str) -> Self {
+    pub fn new(blueprint: PrefabBlueprint) -> Self {
         let width = blueprint
+            .blueprint()
             .chars()
             .skip(1)
             .position(|c| c == '\n' || c == '\r')
             .expect("No newline in blueprint") as i32;
-        let height = (blueprint.lines().count() as i32) - 1;
+        let height = (blueprint.blueprint().lines().count() as i32) - 1;
         let placeholder = IRect::new(0, 0, width, height);
 
         Self {
-            blueprint: blueprint.to_string(),
+            blueprint,
             key_pos: DungeonPosition::new(0, 0),
             placeholder,
         }
@@ -38,6 +39,7 @@ impl PrefabVault {
         };
 
         self.blueprint
+            .blueprint()
             .chars()
             .filter(|c| *c != '\n' && *c != '\r')
             .enumerate()
@@ -50,7 +52,7 @@ impl PrefabVault {
 
         ReachabilityEnsurer::ensure(&Searchers::from_players(map), self.key_pos, map);
 
-        info!("Vault created at {center}.");
+        info!("{:?} prefab vault created at {center}.", self.blueprint);
     }
 
     pub fn determine_location(
@@ -101,21 +103,25 @@ impl PrefabVault {
             'I' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 map.item_positions.push(ItemPosition::new(pos));
+                trace!("Item placed at {pos}");
             }
             'M' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 map.monster_starting_positions
                     .push(MonsterPosition::new(pos));
+                trace!("Monster placed at {pos}");
             }
             'O' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 map.monster_starting_positions
                     .push(MonsterPosition::new_with_monster(pos, Monster::Orc));
+                trace!("Orc placed at {pos}");
             }
             'P' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 map.item_positions
                     .push(ItemPosition::new_with_item(pos, MagicItem::Map));
+                trace!("Magic Map placed at {pos}");
             }
             'S' => {
                 map.set_tile_type(&pos, TileType::Floor);
@@ -123,10 +129,12 @@ impl PrefabVault {
                     pos,
                     MagicItem::Weapon(Weapon::HugeSword),
                 ));
+                trace!("Huge Sword placed at {pos}");
             }
             'X' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 self.key_pos = pos;
+                trace!("Key marker placed at {pos}");
             }
             _ => unreachable!("Unknown character {c} in vault blueprint"),
         };
@@ -149,7 +157,7 @@ mod tests {
 
     #[test]
     fn new() {
-        let prefab = PrefabVault::new(FORTRESS);
+        let prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
         assert_eq!(prefab.placeholder.width(), 12, "wrong width");
         assert_eq!(prefab.placeholder.height(), 11, "wrong height");
@@ -159,11 +167,13 @@ mod tests {
     fn create_at() {
         let mut map = create_map();
         let pos = map.center;
-        let mut prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
         prefab.create_at(pos, &mut map);
 
-        let blueprint = FORTRESS
+        let blueprint = prefab
+            .blueprint
+            .blueprint()
             .chars()
             .filter(|c| *c != '\n' && *c != '\r')
             .collect::<String>();
@@ -190,12 +200,16 @@ mod tests {
     #[test]
     fn add_items() {
         let mut map = create_map();
-        let mut prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
         prefab.create_at(map.center, &mut map);
 
         let item_set: HashSet<char> = HashSet::from_iter("IPS".chars());
-        let expected = FORTRESS.chars().filter(|c| item_set.contains(c)).count();
+        let expected = PrefabBlueprint::Fortress
+            .blueprint()
+            .chars()
+            .filter(|c| item_set.contains(c))
+            .count();
         assert_eq!(map.item_positions.len(), expected, "wrong item count");
         assert!(
             map.item_positions
@@ -214,12 +228,17 @@ mod tests {
     #[test]
     fn add_monsters() {
         let mut map = create_map();
-        let mut prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
         prefab.create_at(map.center, &mut map);
 
         let monster_set: HashSet<char> = HashSet::from_iter("MO".chars());
-        let expected = FORTRESS.chars().filter(|c| monster_set.contains(c)).count();
+        let expected = prefab
+            .blueprint
+            .blueprint()
+            .chars()
+            .filter(|c| monster_set.contains(c))
+            .count();
         assert_eq!(
             map.monster_starting_positions.len(),
             expected,
@@ -236,7 +255,7 @@ mod tests {
     #[test]
     fn location_within_dungeon() {
         let map = create_map();
-        let prefab = PrefabVault::new(FORTRESS);
+        let prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
         let location = prefab
             .determine_location(&map, &mut RandomGenerator::new())
@@ -259,7 +278,7 @@ mod tests {
     #[test]
     fn location_far_from_players() {
         let map = create_map();
-        let prefab = PrefabVault::new(FORTRESS);
+        let prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
         let location = prefab
             .determine_location(&map, &mut RandomGenerator::new())
@@ -281,7 +300,7 @@ mod tests {
     #[test]
     fn off_dungeon_center() {
         let map = create_map();
-        let prefab = PrefabVault::new(FORTRESS);
+        let prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
         let location = prefab
             .determine_location(&map, &mut RandomGenerator::new())
@@ -297,7 +316,7 @@ mod tests {
     #[test]
     fn remove_pre_existing_monsters() {
         let mut map = create_map();
-        let mut prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(PrefabBlueprint::Fortress);
         let location = prefab
             .determine_location(&map, &mut RandomGenerator::new())
             .expect("no location found");
@@ -320,7 +339,7 @@ mod tests {
     #[test]
     fn remove_pre_existing_items() {
         let mut map = create_map();
-        let mut prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(PrefabBlueprint::Fortress);
         let location = prefab
             .determine_location(&map, &mut RandomGenerator::new())
             .expect("no location found");
@@ -342,7 +361,7 @@ mod tests {
     #[test]
     fn ensure_reachable() {
         let mut map = create_map();
-        let mut prefab = PrefabVault::new(FORTRESS);
+        let mut prefab = PrefabVault::new(PrefabBlueprint::Fortress);
         let location = prefab
             .determine_location(&map, &mut RandomGenerator::new())
             .expect("no location found");

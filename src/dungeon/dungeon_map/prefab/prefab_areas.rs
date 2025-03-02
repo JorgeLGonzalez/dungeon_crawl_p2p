@@ -1,3 +1,16 @@
+#[derive(Debug)]
+pub enum PrefabBlueprint {
+    Fortress,
+}
+
+impl PrefabBlueprint {
+    pub fn blueprint(&self) -> &'static str {
+        match self {
+            PrefabBlueprint::Fortress => &FORTRESS,
+        }
+    }
+}
+
 /*
 LEGEND
 ======
@@ -11,7 +24,7 @@ P Magic Map
 X Key marker location that must be reachable by players
 */
 
-pub const FORTRESS: &str = "
+const FORTRESS: &str = "
 ------------
 ---######---
 ---#---S#---

@@ -33,11 +33,11 @@ Then:
   - [x] add items
   - [x] ensure key vault pos is reachable by each player
   - [x] Add specific items and monsters
+  - [x] improve vault log entry (monster and item location s?)
   - [ ] validate blueprint
     - [ ] (e.g. allow blank lines at top and bottom, otherwise all must be same len)
     - [ ] require X marker
   - [ ] warn if unable to place
-  - [ ] improve vault log entry (monster and item location s?)
   - [ ] refactor VaultSiteSelector
   - [ ] document
 - [ ] stairs, amulet and dungeon levels
