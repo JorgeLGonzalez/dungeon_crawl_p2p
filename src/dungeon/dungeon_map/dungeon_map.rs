@@ -1,4 +1,4 @@
-use super::*;
+use super::{position::MonsterPosition, *};
 use bevy::prelude::Resource;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
@@ -9,7 +9,7 @@ pub struct DungeonMap {
     /// or amulet.
     pub center: DungeonPosition,
     pub item_positions: Vec<ItemPosition>,
-    pub monster_starting_positions: Vec<DungeonPosition>,
+    pub monster_starting_positions: Vec<MonsterPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
     tiles: Vec<TileType>,
 }

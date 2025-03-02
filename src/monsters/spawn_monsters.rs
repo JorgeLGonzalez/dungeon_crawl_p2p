@@ -1,4 +1,4 @@
-use super::{MonsterBundle, MonsterTemplate};
+use super::{Monster, MonsterBundle};
 use crate::{
     common::{DungeonAssets, DungeonData},
     prelude::*,
@@ -15,14 +15,16 @@ pub fn spawn_monsters(
     mut rng: ResMut<RandomGenerator>,
 ) {
     let monster_distribution = create_distribution(dungeon_data_assets.get(&dungeon_assets.data));
+    let mut random_monster =
+        || monster_distribution[rng.gen_range(0..monster_distribution.len())].clone();
 
     let stats = dungeon
         .monster_starting_positions
         .iter()
-        .map(|pos| {
+        .map(|monster_pos| {
             (
-                monster_distribution[rng.gen_range(0..monster_distribution.len())],
-                pos.to_vec2(),
+                monster_pos.monster.unwrap_or_else(&mut random_monster),
+                monster_pos.pos.to_vec2(),
             )
         })
         .map(|(template, pos)| MonsterBundle::new(template, pos))
@@ -41,11 +43,11 @@ pub fn spawn_monsters(
 
 /// Create a distribution of monster templates based on their frequency so that
 /// those with a higher frequency are more likely to be randomly selected.
-fn create_distribution(dungeon_data: Option<&DungeonData>) -> Vec<&MonsterTemplate> {
+fn create_distribution(dungeon_data: Option<&DungeonData>) -> Vec<&Monster> {
     dungeon_data
         .expect("Failed to load dungeon data")
         .monsters
         .iter()
-        .flat_map(|template| repeat(template).take(template.frequency))
+        .flat_map(|template| repeat(&template.monster).take(template.frequency))
         .collect()
 }

@@ -104,7 +104,8 @@ impl PrefabVault {
             }
             'M' => {
                 map.set_tile_type(&pos, TileType::Floor);
-                map.monster_starting_positions.push(pos);
+                map.monster_starting_positions
+                    .push(MonsterPosition::new(pos));
             }
             'P' => {
                 map.set_tile_type(&pos, TileType::Floor);
@@ -288,7 +289,8 @@ mod tests {
             .determine_location(&map, &mut RandomGenerator::new())
             .expect("no location found");
         let vault = prefab.vault_rect(location);
-        let monster_pos = DungeonPosition::from_vec2(vault.center().as_vec2());
+        let monster_pos =
+            MonsterPosition::new(DungeonPosition::from_vec2(vault.center().as_vec2()));
         map.monster_starting_positions.push(monster_pos);
 
         prefab.create_at(location, &mut map);
@@ -298,7 +300,7 @@ mod tests {
                 .iter()
                 .find(|&pos| pos.eq(&monster_pos))
                 .is_none(),
-            "monster at {monster_pos} was not removed"
+            "monster at {monster_pos:?} was not removed"
         );
     }
 

@@ -4,8 +4,8 @@ use bevy::math::IVec2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ItemPosition {
-    pub pos: DungeonPosition,
     pub item: Option<MagicItem>,
+    pub pos: DungeonPosition,
 }
 
 impl ItemPosition {

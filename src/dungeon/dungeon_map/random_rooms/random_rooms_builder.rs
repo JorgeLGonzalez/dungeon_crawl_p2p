@@ -37,6 +37,7 @@ impl RandomRoomsBuilder {
         self.map.monster_starting_positions = self
             .map
             .spawnable_positions()
+            .map(MonsterPosition::new)
             .choose_multiple(rng, NUM_MONSTERS);
 
         self

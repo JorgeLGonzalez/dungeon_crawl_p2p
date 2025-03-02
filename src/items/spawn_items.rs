@@ -1,7 +1,6 @@
-use super::MagicItem;
+use super::{MagicItem, MagicItemBundle};
 use crate::{
     common::{DungeonAssets, DungeonData},
-    items::components::MagicItemBundle,
     prelude::*,
 };
 use bevy::utils::hashbrown::HashMap;
@@ -16,7 +15,6 @@ pub fn spawn_items(
     mut rng: ResMut<RandomGenerator>,
 ) {
     let item_distribution = create_distribution(dungeon_data_assets.get(&dungeon_assets.data));
-
     let mut random_item = || item_distribution[rng.gen_range(0..item_distribution.len())].clone();
 
     let stats = dungeon

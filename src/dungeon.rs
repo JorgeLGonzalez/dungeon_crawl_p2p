@@ -27,10 +27,12 @@ mod dungeon_map {
         mod dungeon_position;
         mod dungeon_tile;
         mod item_position;
+        mod monster_position;
 
         pub use dungeon_position::DungeonPosition;
         pub use dungeon_tile::{DungeonTile, TileType};
         pub use item_position::ItemPosition;
+        pub use monster_position::MonsterPosition;
 
         pub(super) use dungeon_corner::DungeonCorner;
 
@@ -71,7 +73,7 @@ mod dungeon_map {
     }
 
     pub use dungeon_map::DungeonMap;
-    pub use position::{DungeonPosition, ItemPosition, TileType};
+    pub use position::{DungeonPosition, TileType};
 
     pub(super) use cell_automata::CellAutomataBuilder;
     pub(super) use drunkards_walk::{DrunkardsWalkBuilder, DrunkardsWalkConfig};
@@ -79,7 +81,7 @@ mod dungeon_map {
     pub(super) use random_rooms::RandomRoomsBuilder;
 
     use super::config::*;
-    use position::{DungeonCorner, DungeonTile};
+    use position::{DungeonCorner, DungeonTile, ItemPosition, MonsterPosition};
     use reachability::{ReachabilityEnsurer, Searchers};
 }
 mod events;
