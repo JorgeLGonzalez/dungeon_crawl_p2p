@@ -143,7 +143,7 @@ impl DrunkardsWalkBuilder {
 
 #[cfg(test)]
 mod tests {
-    use super::{a_star::AStarPathFinder, *};
+    use super::{reachability::AStarPathFinder, *};
     use rstest::rstest;
 
     #[test]

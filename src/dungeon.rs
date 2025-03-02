@@ -1,7 +1,7 @@
 mod components;
 mod config;
 mod dungeon_map {
-    mod a_star {
+    mod reachability {
         mod a_star_node;
         mod a_star_path_finder;
         mod reachability_ensurer;
@@ -69,8 +69,8 @@ mod dungeon_map {
     pub(super) use random_rooms::RandomRoomsBuilder;
 
     use super::config::*;
-    use a_star::{ReachabilityEnsurer, Searchers};
     use dungeon_corner::DungeonCorner;
+    use reachability::{ReachabilityEnsurer, Searchers};
 }
 mod events;
 mod illuminator;

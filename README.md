@@ -39,6 +39,7 @@ Then:
   - [ ] warn if unable to place
   - [ ] improve vault log entry (monster and item location s?)
   - [ ] refactor VaultSiteSelector
+  - [ ] document
 - [ ] stairs, amulet and dungeon levels
   - [ ] show level in HUD
 - [ ] player sprites

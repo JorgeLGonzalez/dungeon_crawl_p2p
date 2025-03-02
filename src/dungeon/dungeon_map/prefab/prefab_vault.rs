@@ -123,7 +123,7 @@ impl PrefabVault {
 
 #[cfg(test)]
 mod tests {
-    use super::{a_star::AStarPathFinder, *};
+    use super::{reachability::AStarPathFinder, *};
 
     #[test]
     fn new() {

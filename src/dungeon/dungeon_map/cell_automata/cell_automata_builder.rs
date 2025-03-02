@@ -109,7 +109,7 @@ impl CellAutomataBuilder {
 
 #[cfg(test)]
 mod tests {
-    use super::{a_star::AStarPathFinder, *};
+    use super::{reachability::AStarPathFinder, *};
 
     #[test]
     fn create_dungeon_with_floor_and_walls() {
