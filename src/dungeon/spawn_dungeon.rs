@@ -9,7 +9,7 @@ pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
         _ => unreachable!(),
     };
 
-    let prefab = PrefabVault::new(FORTRESS);
+    let mut prefab = PrefabVault::new(FORTRESS);
     if let Some(pos) = prefab.determine_location(&dungeon, &mut rng) {
         prefab.create_at(pos, &mut dungeon);
     }
