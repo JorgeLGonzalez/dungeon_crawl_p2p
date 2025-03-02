@@ -60,8 +60,11 @@ impl CellAutomataBuilder {
     /// Ensure both players can reach the center of the dungeon, tunneling if
     /// necessary.
     fn connect_players(mut self) -> Self {
-        let players = Searchers::from_iter("Player", self.map.player_starting_positions.clone());
-        ReachabilityEnsurer::ensure(&players, self.map.center, &mut self.map);
+        ReachabilityEnsurer::ensure(
+            &Searchers::from_players(&self.map),
+            self.map.center,
+            &mut self.map,
+        );
 
         self
     }

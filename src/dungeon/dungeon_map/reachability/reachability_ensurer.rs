@@ -42,6 +42,10 @@ impl Searchers {
             .collect()
     }
 
+    pub fn from_players(map: &DungeonMap) -> Vec<Self> {
+        Self::from_iter("Player", map.player_starting_positions.clone())
+    }
+
     pub fn new(name: String, pos: DungeonPosition) -> Self {
         Self { name, pos }
     }

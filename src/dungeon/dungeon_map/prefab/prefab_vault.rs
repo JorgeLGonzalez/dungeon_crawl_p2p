@@ -48,6 +48,8 @@ impl PrefabVault {
                 self.create_tile(c, pos, map);
             });
 
+        ReachabilityEnsurer::ensure(&Searchers::from_players(map), self.key_pos, map);
+
         info!("Vault created at {center}.");
     }
 

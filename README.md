@@ -31,7 +31,7 @@ Then:
 - [ ] prefab dungeon sections
   - [x] clear monsters and items
   - [x] add items
-  - [ ] ensure key vault pos is reachable by each player
+  - [x] ensure key vault pos is reachable by each player
   - [ ] Add specific items and monsters
   - [ ] validate blueprint
     - [ ] (e.g. allow blank lines at top and bottom, otherwise all must be same len)
