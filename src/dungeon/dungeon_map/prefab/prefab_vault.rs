@@ -33,8 +33,8 @@ impl PrefabVault {
         let to_pos = |idx: usize| -> DungeonPosition {
             let dx = idx as isize % width;
             let dy = idx as isize / width;
-
-            DungeonPosition::new(vault.min.x as isize + dx, vault.min.y as isize + dy)
+            // note y-axis is inverted
+            DungeonPosition::new(vault.min.x as isize + dx, vault.max.y as isize - dy)
         };
 
         self.blueprint
