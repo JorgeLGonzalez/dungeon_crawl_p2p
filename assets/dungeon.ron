@@ -9,20 +9,20 @@
       item: HealingPotion(2)
     ),
     (
-      frequency: 3,
+      frequency: 1,
       item: Map
     ),
     (
       frequency: 1,
-      item:Weapon( Weapon (damage: 3, sword: Huge))
+      item:Weapon(HugeSword)
     ),
     (
       frequency: 4,
-      item: Weapon(Weapon (damage: 1, sword: Rusty))
+      item: Weapon(RustySword)
     ),
     (
       frequency: 3,
-      item: Weapon(Weapon (damage: 2, sword: Shiny))
+      item: Weapon(ShinySword)
     ),
   ],
   monsters: [

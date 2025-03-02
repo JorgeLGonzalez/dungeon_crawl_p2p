@@ -68,36 +68,40 @@ impl MagicItem {
         match self {
             MagicItem::HealingPotion(hp) => format!("Healing Potion ({hp} hp)"),
             MagicItem::Map => "Magic Map".to_string(),
-            MagicItem::Weapon(w) => format!("{:?} Sword ({} hp)", w.sword, w.damage),
+            MagicItem::Weapon(s) => s.label(),
         }
     }
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash)]
-pub enum Sword {
-    Huge,
-    Rusty,
-    Shiny,
-}
-
-impl Sword {
-    pub fn color(&self) -> Color {
-        match self {
-            Sword::Huge => Color::srgb(1.0, 0.8, 0.),
-            Sword::Rusty => Color::srgb(0.8, 0.6, 0.),
-            Sword::Shiny => Color::srgb(0.8, 0.8, 0.),
-        }
-    }
-}
-
-#[derive(Component, Clone, Copy, Debug, Deserialize, Eq, Hash, PartialEq)]
-pub struct Weapon {
-    pub damage: HealthUnit,
-    pub sword: Sword,
+#[derive(Component, Clone, Copy, Debug, Deserialize, Eq, PartialEq, Hash)]
+pub enum Weapon {
+    HugeSword,
+    RustySword,
+    ShinySword,
 }
 
 impl Weapon {
     pub fn color(&self) -> Color {
-        self.sword.color()
+        match self {
+            Weapon::HugeSword => Color::srgb(1.0, 0.8, 0.),
+            Weapon::RustySword => Color::srgb(0.8, 0.6, 0.),
+            Weapon::ShinySword => Color::srgb(0.8, 0.8, 0.),
+        }
+    }
+
+    pub fn damage(&self) -> HealthUnit {
+        match self {
+            Weapon::HugeSword => 3,
+            Weapon::RustySword => 1,
+            Weapon::ShinySword => 2,
+        }
+    }
+
+    pub fn label(&self) -> String {
+        match self {
+            Weapon::HugeSword => format!("Huge Sword ({} hp)", self.damage()),
+            Weapon::RustySword => format!("Rusty Sword ({} hp)", self.damage()),
+            Weapon::ShinySword => format!("Shiny Sword ({} hp)", self.damage()),
+        }
     }
 }

@@ -1,5 +1,5 @@
 use super::*;
-use crate::prelude::*;
+use crate::{items::*, prelude::*};
 
 pub struct PrefabVault {
     blueprint: String,
@@ -106,11 +106,23 @@ impl PrefabVault {
                 map.set_tile_type(&pos, TileType::Floor);
                 map.monster_starting_positions.push(pos);
             }
+            'P' => {
+                map.set_tile_type(&pos, TileType::Floor);
+                map.item_positions
+                    .push(ItemPosition::new_with_item(pos, MagicItem::Map));
+            }
+            'S' => {
+                map.set_tile_type(&pos, TileType::Floor);
+                map.item_positions.push(ItemPosition::new_with_item(
+                    pos,
+                    MagicItem::Weapon(Weapon::HugeSword),
+                ));
+            }
             'X' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 self.key_pos = pos;
             }
-            _ => unreachable!(),
+            _ => unreachable!("Unknown character {c} in vault blueprint"),
         };
     }
 
@@ -126,6 +138,7 @@ impl PrefabVault {
 #[cfg(test)]
 mod tests {
     use super::{reachability::AStarPathFinder, *};
+    use bevy::utils::hashbrown::HashSet;
 
     #[test]
     fn new() {
@@ -174,8 +187,21 @@ mod tests {
 
         prefab.create_at(map.center, &mut map);
 
-        let expected = FORTRESS.chars().filter(|c| *c == 'I').count();
+        let item_set: HashSet<char> = HashSet::from_iter("IPS".chars());
+        let expected = FORTRESS.chars().filter(|c| item_set.contains(c)).count();
         assert_eq!(map.item_positions.len(), expected, "wrong item count");
+        assert!(
+            map.item_positions
+                .iter()
+                .any(|i| i.item == Some(MagicItem::Map)),
+            "Magic Map missing"
+        );
+        assert!(
+            map.item_positions
+                .iter()
+                .any(|i| i.item == Some(MagicItem::Weapon(Weapon::HugeSword))),
+            "Huge Sword missing"
+        );
     }
 
     #[test]

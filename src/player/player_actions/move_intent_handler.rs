@@ -59,7 +59,7 @@ impl MoveIntentHandler {
                     player_id,
                     target_pos,
                     entity,
-                    self.damage + self.weapon.as_ref().map_or(0, |w| w.damage),
+                    self.damage + self.weapon.as_ref().map_or(0, |w| w.damage()),
                 ))),
                 Obstacle::Player => {
                     trace!("Player {player_id} move to {target_pos} blocked by another player");
