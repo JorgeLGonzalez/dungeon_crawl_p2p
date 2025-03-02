@@ -1,7 +1,14 @@
+/*
+- Floor
+# Wall
+I Item
+M Random Monster
+*/
+
 pub const FORTRESS: &str = "
 ------------
 ---######---
----#----#---
+---#---I#---
 ---#-M--#---
 -###----###-
 --M------M--

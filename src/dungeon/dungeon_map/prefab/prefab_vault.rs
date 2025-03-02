@@ -92,6 +92,10 @@ impl PrefabVault {
         match c {
             '-' => map.set_tile_type(&pos, TileType::Floor),
             '#' => map.set_tile_type(&pos, TileType::Wall),
+            'I' => {
+                map.set_tile_type(&pos, TileType::Floor);
+                map.item_positions.push(pos);
+            }
             'M' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 map.monster_starting_positions.push(pos);
@@ -129,16 +133,14 @@ mod tests {
 
         prefab.create_at(pos, &mut map);
 
-        let expected_floor_count = FORTRESS.chars().filter(|c| *c == '-' || *c == 'M').count();
-        let expected_wall_count = FORTRESS.chars().filter(|c| *c == '#').count();
-        let expected_monster_count = FORTRESS.chars().filter(|c| *c == 'M').count();
+        let blueprint = FORTRESS
+            .chars()
+            .filter(|c| *c != '\n' && *c != '\r')
+            .collect::<String>();
+        let expected_floor_count = blueprint.chars().filter(|c| *c != '#').count();
+        let expected_wall_count = blueprint.chars().filter(|c| *c == '#').count();
         let vault = prefab.vault_rect(pos);
 
-        assert_eq!(
-            map.monster_starting_positions.len(),
-            expected_monster_count,
-            "wrong monster count"
-        );
         let mut floor_count = 0;
         let mut wall_count = 0;
         for y in vault.min.y..=vault.max.y {
@@ -153,6 +155,32 @@ mod tests {
         }
         assert_eq!(floor_count, expected_floor_count, "wrong floor count");
         assert_eq!(wall_count, expected_wall_count, "wrong wall count");
+    }
+
+    #[test]
+    fn add_items() {
+        let mut map = create_map();
+        let prefab = PrefabVault::new(FORTRESS);
+
+        prefab.create_at(map.center, &mut map);
+
+        let expected = FORTRESS.chars().filter(|c| *c == 'I').count();
+        assert_eq!(map.item_positions.len(), expected, "wrong item count");
+    }
+
+    #[test]
+    fn add_monsters() {
+        let mut map = create_map();
+        let prefab = PrefabVault::new(FORTRESS);
+
+        prefab.create_at(map.center, &mut map);
+
+        let expected = FORTRESS.chars().filter(|c| *c == 'M').count();
+        assert_eq!(
+            map.monster_starting_positions.len(),
+            expected,
+            "wrong monster count"
+        );
     }
 
     #[test]

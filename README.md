@@ -30,8 +30,9 @@ Then:
 
 - [ ] prefab dungeon sections
   - [x] clear monsters and items
-  - [ ] add items
+  - [x] add items
   - [ ] ensure key vault pos is reachable by each player
+  - [ ] Add specific items and monsters
   - [ ] validate blueprint
   - [ ] warn if unable to place
   - [ ] improve vault log entry (monster and item location s?)
