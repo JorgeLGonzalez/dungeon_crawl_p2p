@@ -5,6 +5,7 @@ LEGEND
 # Wall
 I Item
 M Random Monster
+O Ogre
 S Huge sword
 P Magic Map
 X Key marker location that must be reachable by players
@@ -14,7 +15,7 @@ pub const FORTRESS: &str = "
 ------------
 ---######---
 ---#---S#---
----#-M--#---
+---#-O--#---
 -###----###-
 --M--X---M--
 -###----###-

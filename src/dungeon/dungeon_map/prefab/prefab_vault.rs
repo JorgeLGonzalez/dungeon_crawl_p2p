@@ -1,5 +1,5 @@
 use super::*;
-use crate::{items::*, prelude::*};
+use crate::{items::*, monsters::Monster, prelude::*};
 
 pub struct PrefabVault {
     blueprint: String,
@@ -107,6 +107,11 @@ impl PrefabVault {
                 map.monster_starting_positions
                     .push(MonsterPosition::new(pos));
             }
+            'O' => {
+                map.set_tile_type(&pos, TileType::Floor);
+                map.monster_starting_positions
+                    .push(MonsterPosition::new_with_monster(pos, Monster::Orc));
+            }
             'P' => {
                 map.set_tile_type(&pos, TileType::Floor);
                 map.item_positions
@@ -139,6 +144,7 @@ impl PrefabVault {
 #[cfg(test)]
 mod tests {
     use super::{reachability::AStarPathFinder, *};
+    use crate::monsters::Monster;
     use bevy::utils::hashbrown::HashSet;
 
     #[test]
@@ -212,11 +218,18 @@ mod tests {
 
         prefab.create_at(map.center, &mut map);
 
-        let expected = FORTRESS.chars().filter(|c| *c == 'M').count();
+        let monster_set: HashSet<char> = HashSet::from_iter("MO".chars());
+        let expected = FORTRESS.chars().filter(|c| monster_set.contains(c)).count();
         assert_eq!(
             map.monster_starting_positions.len(),
             expected,
             "wrong monster count"
+        );
+        assert!(
+            map.monster_starting_positions
+                .iter()
+                .any(|m| m.monster == Some(Monster::Orc)),
+            "Orc missing"
         );
     }
 
