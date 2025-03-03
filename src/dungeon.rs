@@ -40,11 +40,15 @@ mod dungeon_map {
     }
 
     mod prefab {
-        mod prefab_areas;
+        mod blueprint_tile;
+        mod blueprints;
+        mod prefab_blueprint;
         mod prefab_vault;
 
-        pub use prefab_areas::*;
+        pub use prefab_blueprint::PrefabBlueprint;
         pub use prefab_vault::PrefabVault;
+
+        pub(super) use blueprint_tile::BlueprintTile;
 
         use super::*;
     }

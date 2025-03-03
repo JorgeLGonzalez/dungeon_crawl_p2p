@@ -1,54 +1,32 @@
 use super::*;
-use crate::{items::*, monsters::Monster, prelude::*};
+use crate::prelude::*;
 
 pub struct PrefabVault {
     blueprint: PrefabBlueprint,
     key_pos: DungeonPosition,
-    placeholder: IRect,
+    blueprint_rect: IRect,
 }
 
 impl PrefabVault {
     pub fn new(blueprint: PrefabBlueprint) -> Self {
-        let width = blueprint
-            .blueprint()
-            .chars()
-            .skip(1)
-            .position(|c| c == '\n' || c == '\r')
-            .expect("No newline in blueprint") as i32;
-        let height = (blueprint.blueprint().lines().count() as i32) - 1;
-        let placeholder = IRect::new(0, 0, width, height);
+        let blueprint_rect = blueprint.rect();
 
         Self {
             blueprint,
             key_pos: DungeonPosition::new(0, 0),
-            placeholder,
+            blueprint_rect,
         }
     }
 
     pub fn create_at(&mut self, center: DungeonPosition, map: &mut DungeonMap) {
-        let width = self.placeholder.width() as isize;
         let vault = self.vault_rect(center);
-
         self.clear_content(vault, map);
-
-        let to_pos = |idx: usize| -> DungeonPosition {
-            let dx = idx as isize % width;
-            let dy = idx as isize / width;
-            // note y-axis is inverted
-            DungeonPosition::new(vault.min.x as isize + dx, vault.max.y as isize - dy)
-        };
-
-        self.blueprint
-            .blueprint()
-            .chars()
-            .filter(|c| *c != '\n' && *c != '\r')
-            .enumerate()
-            .map(|(idx, c)| (to_pos(idx), c))
-            .collect::<Vec<_>>()
-            .into_iter()
-            .for_each(|(pos, c)| {
-                self.create_tile(c, pos, map);
-            });
+        self.blueprint.tiles(vault).iter().for_each(|tile| {
+            tile.add_to(map);
+            if matches!(tile, BlueprintTile::KeyMarker(_)) {
+                self.key_pos = tile.pos();
+            }
+        });
 
         ReachabilityEnsurer::ensure(&Searchers::from_players(map), self.key_pos, map);
 
@@ -65,8 +43,8 @@ impl PrefabVault {
         let mut location = None;
         let mut retries = 0;
         while location.is_none() && retries < 10 {
-            let x = rng.gen_range(X_MIN..X_MAX - self.placeholder.width() as isize - 1);
-            let y = rng.gen_range(Y_MIN..Y_MAX - self.placeholder.height() as isize - 1);
+            let x = rng.gen_range(X_MIN..X_MAX - self.blueprint_rect.width() as isize - 1);
+            let y = rng.gen_range(Y_MIN..Y_MAX - self.blueprint_rect.height() as isize - 1);
             let pos = DungeonPosition::new(x, y);
             let vault = self.vault_rect(pos);
 
@@ -96,56 +74,12 @@ impl PrefabVault {
             .retain(|&pos| !vault.contains(pos.into()));
     }
 
-    fn create_tile(&mut self, c: char, pos: DungeonPosition, map: &mut DungeonMap) {
-        match c {
-            '-' => map.set_tile_type(&pos, TileType::Floor),
-            '#' => map.set_tile_type(&pos, TileType::Wall),
-            'I' => {
-                map.set_tile_type(&pos, TileType::Floor);
-                map.item_positions.push(ItemPosition::new(pos));
-                trace!("Item placed at {pos}");
-            }
-            'M' => {
-                map.set_tile_type(&pos, TileType::Floor);
-                map.monster_starting_positions
-                    .push(MonsterPosition::new(pos));
-                trace!("Monster placed at {pos}");
-            }
-            'O' => {
-                map.set_tile_type(&pos, TileType::Floor);
-                map.monster_starting_positions
-                    .push(MonsterPosition::new_with_monster(pos, Monster::Orc));
-                trace!("Orc placed at {pos}");
-            }
-            'P' => {
-                map.set_tile_type(&pos, TileType::Floor);
-                map.item_positions
-                    .push(ItemPosition::new_with_item(pos, MagicItem::Map));
-                trace!("Magic Map placed at {pos}");
-            }
-            'S' => {
-                map.set_tile_type(&pos, TileType::Floor);
-                map.item_positions.push(ItemPosition::new_with_item(
-                    pos,
-                    MagicItem::Weapon(Weapon::HugeSword),
-                ));
-                trace!("Huge Sword placed at {pos}");
-            }
-            'X' => {
-                map.set_tile_type(&pos, TileType::Floor);
-                self.key_pos = pos;
-                trace!("Key marker placed at {pos}");
-            }
-            _ => unreachable!("Unknown character {c} in vault blueprint"),
-        };
-    }
-
     fn dungeon_rect(&self) -> IRect {
         IRect::from_center_size(IVec2::ZERO, IVec2::new(MAP_WIDTH as i32, MAP_HEIGHT as i32))
     }
 
     fn vault_rect(&self, pos: DungeonPosition) -> IRect {
-        IRect::from_center_size(pos.into(), self.placeholder.size())
+        IRect::from_center_size(pos.into(), self.blueprint_rect.size())
     }
 }
 
@@ -159,8 +93,8 @@ mod tests {
     fn new() {
         let prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
-        assert_eq!(prefab.placeholder.width(), 12, "wrong width");
-        assert_eq!(prefab.placeholder.height(), 11, "wrong height");
+        assert_eq!(prefab.blueprint_rect.width(), 12, "wrong width");
+        assert_eq!(prefab.blueprint_rect.height(), 11, "wrong height");
     }
 
     #[test]
@@ -177,6 +111,7 @@ mod tests {
             .chars()
             .filter(|c| *c != '\n' && *c != '\r')
             .collect::<String>();
+        assert_eq!(blueprint.len(), 12 * 11, "wrong blueprint length");
         let expected_floor_count = blueprint.chars().filter(|c| *c != '#').count();
         let expected_wall_count = blueprint.chars().filter(|c| *c == '#').count();
         let vault = prefab.vault_rect(pos);
@@ -193,8 +128,8 @@ mod tests {
                 }
             }
         }
-        assert_eq!(floor_count, expected_floor_count, "wrong floor count");
         assert_eq!(wall_count, expected_wall_count, "wrong wall count");
+        assert_eq!(floor_count, expected_floor_count, "wrong floor count");
     }
 
     #[test]
