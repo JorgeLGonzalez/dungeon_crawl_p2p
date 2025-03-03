@@ -21,13 +21,16 @@ impl PrefabVault {
     pub fn create_at(&mut self, center: DungeonPosition, map: &mut DungeonMap) {
         let vault = self.vault_rect(center);
         self.clear_content(vault, map);
-        self.blueprint.tiles(vault).iter().for_each(|tile| {
+        let tiles = self.blueprint.tiles(vault).collect::<Vec<_>>();
+        tiles.iter().for_each(|tile| {
             tile.add_to(map);
-            if matches!(tile, BlueprintTile::KeyMarker(_)) {
-                self.key_pos = tile.pos();
-            }
         });
 
+        self.key_pos = tiles
+            .iter()
+            .find(|t| matches!(t, BlueprintTile::KeyMarker(_)))
+            .expect("Blueprint is missing a KeyMarker tile")
+            .pos();
         ReachabilityEnsurer::ensure(&Searchers::from_players(map), self.key_pos, map);
 
         info!("{:?} prefab vault created at {center}.", self.blueprint);
@@ -67,6 +70,7 @@ impl PrefabVault {
         location
     }
 
+    /// Remove any monsters or items slated for the tiles encompassed by the vault.
     fn clear_content(&self, vault: IRect, map: &mut DungeonMap) {
         map.item_positions
             .retain(|&pos| !vault.contains(pos.into()));
@@ -86,7 +90,10 @@ impl PrefabVault {
 #[cfg(test)]
 mod tests {
     use super::{reachability::AStarPathFinder, *};
-    use crate::monsters::Monster;
+    use crate::{
+        items::{MagicItem, Weapon},
+        monsters::Monster,
+    };
     use bevy::utils::hashbrown::HashSet;
 
     #[test]

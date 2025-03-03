@@ -25,10 +25,10 @@ impl PrefabBlueprint {
         IRect::new(0, 0, width, height)
     }
 
-    pub fn tiles(&self, vault: IRect) -> Vec<BlueprintTile> {
+    pub fn tiles(&self, vault: IRect) -> impl Iterator<Item = BlueprintTile> + use<'_> {
         let width = vault.width() as isize;
 
-        let to_pos = |idx: usize| -> DungeonPosition {
+        let to_pos = move |idx: usize| -> DungeonPosition {
             let dx = idx as isize % width;
             let dy = idx as isize / width;
             // note y-axis is inverted
@@ -39,7 +39,6 @@ impl PrefabBlueprint {
             .chars()
             .filter(|c| *c != '\n' && *c != '\r')
             .enumerate()
-            .map(|(idx, c)| BlueprintTile::new(c, to_pos(idx)))
-            .collect()
+            .map(move |(idx, c)| BlueprintTile::new(c, to_pos(idx)))
     }
 }
