@@ -42,3 +42,56 @@ impl PrefabBlueprint {
             .map(move |(idx, c)| BlueprintTile::new(c, to_pos(idx)))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::blueprints::FORTRESS;
+    use super::*;
+    use rstest::rstest;
+
+    #[test]
+    fn rect() {
+        let rect = PrefabBlueprint::Fortress.rect();
+
+        assert_eq!(rect, IRect::new(0, 0, 12, 11));
+    }
+
+    #[test]
+    fn tiles() {
+        let vault = IRect::new(10, 10, 22, 21);
+
+        let tiles = PrefabBlueprint::Fortress.tiles(vault).collect::<Vec<_>>();
+
+        assert_eq!(tiles.len() as i32, vault.width() * vault.height());
+        let mut index = 0;
+        for x in 10..=22 {
+            for y in 21..=10 {
+                let pos = DungeonPosition::new(x as isize, y as isize);
+                assert_eq!(tiles[index].pos(), pos);
+                index += 1;
+            }
+        }
+    }
+
+    #[rstest]
+    #[case::fortress(PrefabBlueprint::Fortress, FORTRESS)]
+    fn test_blueprint(#[case] blueprint: PrefabBlueprint, #[case] raw_blueprint: &str) {
+        assert_eq!(blueprint.blueprint(), raw_blueprint);
+
+        let expected_len = raw_blueprint.lines().skip(1).next().unwrap().len();
+        for (row_number, row) in raw_blueprint.lines().skip(1).enumerate() {
+            assert_eq!(
+                row.len(),
+                expected_len,
+                "invalid row length for row {row_number}"
+            );
+        }
+        let vault = blueprint.rect();
+        let tiles = blueprint.tiles(blueprint.rect()).collect::<Vec<_>>();
+        assert_eq!(tiles.len() as i32, vault.width() * vault.height());
+        let x_pos = tiles
+            .iter()
+            .find(|t| matches!(t, BlueprintTile::KeyMarker(_)));
+        assert!(x_pos.is_some(), "missing X marker");
+    }
+}
