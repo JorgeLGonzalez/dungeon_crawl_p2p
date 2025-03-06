@@ -1,20 +1,20 @@
-use super::*;
+use super::{site_selector::VaultSiteSelector, *};
 use crate::prelude::*;
 
 pub struct PrefabVault {
     blueprint: PrefabBlueprint,
     key_pos: DungeonPosition,
-    blueprint_rect: IRect,
+    dimensions: IVec2,
 }
 
 impl PrefabVault {
     pub fn new(blueprint: PrefabBlueprint) -> Self {
-        let blueprint_rect = blueprint.rect();
+        let dimensions = blueprint.dimensions();
 
         Self {
             blueprint,
             key_pos: DungeonPosition::new(0, 0),
-            blueprint_rect,
+            dimensions,
         }
     }
 
@@ -41,33 +41,15 @@ impl PrefabVault {
         map: &DungeonMap,
         rng: &mut RandomGenerator,
     ) -> Option<DungeonPosition> {
-        let dungeon = self.dungeon_rect();
-
-        let mut location = None;
-        let mut retries = 0;
-        while location.is_none() && retries < 10 {
-            let x = rng.gen_range(X_MIN..X_MAX - self.blueprint_rect.width() as isize - 1);
-            let y = rng.gen_range(Y_MIN..Y_MAX - self.blueprint_rect.height() as isize - 1);
-            let pos = DungeonPosition::new(x, y);
-            let vault = self.vault_rect(pos);
-
-            let vault_zone = vault.inflate(6);
-            let players_in_vault_zone = map
-                .player_starting_positions
-                .iter()
-                .any(|&p| vault_zone.contains(p.into()));
-            if !vault.contains(map.center.into())
-                && !players_in_vault_zone
-                && dungeon.contains(vault.min)
-                && dungeon.contains(vault.max)
-            {
-                location = Some(pos);
-            } else {
-                retries += 1;
-            }
-        }
-
-        location
+        VaultSiteSelector::new(self.dimensions)
+            .select(map, rng)
+            .map(|pos| {
+                info!(
+                    "Selected location for {:?} prefab vault: {pos}.",
+                    self.blueprint
+                );
+                pos
+            })
     }
 
     /// Remove any monsters or items slated for the tiles encompassed by the vault.
@@ -78,12 +60,9 @@ impl PrefabVault {
             .retain(|&pos| !vault.contains(pos.into()));
     }
 
-    fn dungeon_rect(&self) -> IRect {
-        IRect::from_center_size(IVec2::ZERO, IVec2::new(MAP_WIDTH as i32, MAP_HEIGHT as i32))
-    }
-
+    // TODO remove
     fn vault_rect(&self, pos: DungeonPosition) -> IRect {
-        IRect::from_center_size(pos.into(), self.blueprint_rect.size())
+        IRect::from_center_size(pos.into(), self.dimensions)
     }
 }
 
@@ -100,8 +79,8 @@ mod tests {
     fn new() {
         let prefab = PrefabVault::new(PrefabBlueprint::Fortress);
 
-        assert_eq!(prefab.blueprint_rect.width(), 12, "wrong width");
-        assert_eq!(prefab.blueprint_rect.height(), 11, "wrong height");
+        assert_eq!(prefab.dimensions.x, 12, "wrong width");
+        assert_eq!(prefab.dimensions.y, 11, "wrong height");
     }
 
     #[test]
@@ -204,7 +183,8 @@ mod tests {
             .expect("no location found");
 
         let vault = prefab.vault_rect(location);
-        let dungeon = prefab.dungeon_rect();
+        let dungeon =
+            IRect::from_center_size(IVec2::ZERO, IVec2::new(MAP_WIDTH as i32, MAP_HEIGHT as i32));
         assert!(
             dungeon.contains(vault.min),
             "vault min at {} is out of bounds",

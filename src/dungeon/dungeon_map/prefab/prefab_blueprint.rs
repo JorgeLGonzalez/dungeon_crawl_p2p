@@ -13,7 +13,7 @@ impl PrefabBlueprint {
         }
     }
 
-    pub fn rect(&self) -> IRect {
+    pub fn dimensions(&self) -> IVec2 {
         let blueprint = self.blueprint();
         let width = blueprint
             .chars()
@@ -22,7 +22,7 @@ impl PrefabBlueprint {
             .expect("No newline in blueprint") as i32;
         let height = (blueprint.lines().count() as i32) - 1;
 
-        IRect::new(0, 0, width, height)
+        IVec2::new(width, height)
     }
 
     pub fn tiles(&self, vault: IRect) -> impl Iterator<Item = BlueprintTile> + use<'_> {
@@ -51,9 +51,9 @@ mod tests {
 
     #[test]
     fn rect() {
-        let rect = PrefabBlueprint::Fortress.rect();
+        let rect = PrefabBlueprint::Fortress.dimensions();
 
-        assert_eq!(rect, IRect::new(0, 0, 12, 11));
+        assert_eq!(rect, IVec2::new(12, 11));
     }
 
     #[test]
@@ -86,9 +86,10 @@ mod tests {
                 "invalid row length for row {row_number}"
             );
         }
-        let vault = blueprint.rect();
-        let tiles = blueprint.tiles(blueprint.rect()).collect::<Vec<_>>();
-        assert_eq!(tiles.len() as i32, vault.width() * vault.height());
+        let dimensions = blueprint.dimensions();
+        let vault = IRect::from_center_size(IVec2::ZERO, dimensions);
+        let tiles = blueprint.tiles(vault).collect::<Vec<_>>();
+        assert_eq!(tiles.len() as i32, dimensions.x * dimensions.y);
         let x_pos = tiles
             .iter()
             .find(|t| matches!(t, BlueprintTile::KeyMarker(_)));

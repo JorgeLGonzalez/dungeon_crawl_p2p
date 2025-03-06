@@ -44,6 +44,7 @@ mod dungeon_map {
         mod blueprints;
         mod prefab_blueprint;
         mod prefab_vault;
+        mod site_selector;
 
         pub use prefab_blueprint::PrefabBlueprint;
         pub use prefab_vault::PrefabVault;
