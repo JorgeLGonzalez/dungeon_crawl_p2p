@@ -4,7 +4,7 @@ use std::collections::BinaryHeap;
 
 /// A* search path finder used to determine whether a path exists between two
 /// positions (e.g. player and dungeon center).
-pub(super) struct AStarPathFinder {
+pub struct AStarPathFinder {
     /// Node pair where the key is the position reached from the value that was
     /// reached from the start position. See
     /// [`calculate_path_length`](Self::calculate_path_length) for how to retrace

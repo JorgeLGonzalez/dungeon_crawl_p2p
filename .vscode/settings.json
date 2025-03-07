@@ -18,6 +18,7 @@
     "hashbrown",
     "nand",
     "Respawn",
+    "rstest",
     "serde",
     "spawnable",
     "srgb",

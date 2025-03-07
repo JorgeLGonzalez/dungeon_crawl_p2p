@@ -2,9 +2,11 @@ use super::*;
 use crate::{player::Obstacle, prelude::*};
 
 pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
-    let dungeon = match rng.gen_range(0..2) {
+    let dungeon = match rng.gen_range(0..3) {
         0 => CellAutomataBuilder::build(rng.as_mut()),
-        _ => RandomRoomsBuilder::build(rng.as_mut()),
+        1 => DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), rng.as_mut()),
+        2 => RandomRoomsBuilder::build(rng.as_mut()),
+        _ => unreachable!(),
     };
 
     for tile in dungeon.tiles() {
