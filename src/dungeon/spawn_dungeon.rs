@@ -9,12 +9,7 @@ pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
         _ => unreachable!(),
     };
 
-    let mut prefab = PrefabVault::new(PrefabBlueprint::Fortress);
-    if let Some(pos) = prefab.determine_location(&dungeon, &mut rng) {
-        prefab.create_at(pos, &mut dungeon);
-    } else {
-        warn!("Unable to find a proper location for the prefab vault!");
-    }
+    PrefabVault::from(PrefabBlueprint::Fortress).create_in(&mut dungeon, &mut rng);
 
     for tile in dungeon.tiles() {
         let sprite = create_sprite(tile.tile_type);

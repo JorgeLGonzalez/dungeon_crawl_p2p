@@ -38,7 +38,7 @@ Then:
     - [x] (e.g. allow blank lines at top and bottom, otherwise all must be same len)
     - [x] require X marker
   - [x] warn if unable to place
-  - [ ] refactor VaultSiteSelector
+  - [x] refactor VaultSiteSelector
   - [ ] document
 - [ ] stairs, amulet and dungeon levels
   - [ ] show level in HUD
