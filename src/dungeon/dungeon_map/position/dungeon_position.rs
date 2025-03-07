@@ -1,5 +1,5 @@
 use super::{MAP_Z_LAYER, X_MAX, X_MIN, Y_MAX, Y_MIN};
-use bevy::math::{Vec2, Vec3};
+use bevy::math::{IVec2, Vec2, Vec3};
 
 /// A position in the dungeon, represented as a pair of x and y coordinates.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -69,6 +69,12 @@ impl DungeonPosition {
 
     pub fn to_vec3(&self, z: f32) -> Vec3 {
         self.to_vec2().extend(z)
+    }
+}
+
+impl From<DungeonPosition> for IVec2 {
+    fn from(pos: DungeonPosition) -> Self {
+        pos.to_vec2().as_ivec2()
     }
 }
 

@@ -28,7 +28,6 @@ Then:
 
 ## TODO
 
-- [ ] prefab dungeon sections
 - [ ] stairs, amulet and dungeon levels
   - [ ] show level in HUD
 - [ ] player sprites
@@ -228,6 +227,18 @@ flowchart TD
   - [x] unit test Tunneler
   - [x] Consider unit testing path finder and player start
 - [x] drunkard walk dungeon generation
+- [x] prefab dungeon sections
+  - [x] clear monsters and items
+  - [x] add items
+  - [x] ensure key vault pos is reachable by each player
+  - [x] Add specific items and monsters
+  - [x] improve vault log entry (monster and item location s?)
+  - [x] validate blueprint
+    - [x] (e.g. allow blank lines at top and bottom, otherwise all must be same len)
+    - [x] require X marker
+  - [x] warn if unable to place
+  - [x] refactor VaultSiteSelector
+  - [x] document
 
 ### Archived Issues
 

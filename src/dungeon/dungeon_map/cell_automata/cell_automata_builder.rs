@@ -1,5 +1,5 @@
 use super::*;
-use crate::{player::PlayerId, prelude::*};
+use crate::prelude::*;
 use rand::prelude::*;
 
 pub struct CellAutomataBuilder {
@@ -17,6 +17,7 @@ impl CellAutomataBuilder {
         .grow_cells()
         .set_center()
         .add_player_starting_positions(rng)
+        .connect_players()
         .add_items(rng)
         .add_monster_starting_positions(rng)
         .map
@@ -26,6 +27,7 @@ impl CellAutomataBuilder {
         self.map.item_positions = self
             .map
             .spawnable_positions()
+            .map(ItemPosition::new)
             .choose_multiple(rng, NUM_ITEMS);
 
         self
@@ -35,6 +37,7 @@ impl CellAutomataBuilder {
         self.map.monster_starting_positions = self
             .map
             .spawnable_positions()
+            .map(MonsterPosition::new)
             .choose_multiple(rng, NUM_MONSTERS);
 
         self
@@ -56,20 +59,24 @@ impl CellAutomataBuilder {
         self
     }
 
+    /// Ensure both players can reach the center of the dungeon, tunneling if
+    /// necessary.
+    fn connect_players(mut self) -> Self {
+        ReachabilityEnsurer::ensure(
+            &Searchers::from_players(&self.map),
+            self.map.center,
+            &mut self.map,
+        );
+
+        self
+    }
+
     /// Determines the starting position for the player in the given dungeon quadrant.
     /// Ensure player can reach dungeon center, creating a tunnel if necessary.
     fn determine_player_pos(&mut self, quadrant: DungeonCorner) -> DungeonPosition {
         let radius = 1;
-        let pos = self.map.find_nearest_floor_tile(quadrant.pos(), radius);
 
-        let player_id = self.map.player_starting_positions.len();
-
-        let finder = AStarPathFinder::find(pos, self.map.center, &self.map);
-        if !finder.path_found() {
-            self.tunnel(player_id, finder.closest_position());
-        }
-
-        pos
+        self.map.find_nearest_floor_tile(quadrant.pos(), radius)
     }
 
     /// Smooth out the randomly assigned tiles by converting tiles to floor unless
@@ -103,21 +110,11 @@ impl CellAutomataBuilder {
 
         self
     }
-
-    /// Tunnel from the player segment to the dungeon center segment.
-    fn tunnel(&mut self, player_id: PlayerId, player_side: DungeonPosition) {
-        warn!("No path found from player {player_id} to center.");
-
-        let center_side =
-            AStarPathFinder::find(self.map.center, player_side, &self.map).closest_position();
-
-        Tunneler::tunnel(&mut self.map, player_side, center_side)
-    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{reachability::AStarPathFinder, *};
 
     #[test]
     fn create_dungeon_with_floor_and_walls() {

@@ -2,12 +2,14 @@ use super::*;
 use crate::{player::Obstacle, prelude::*};
 
 pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
-    let dungeon = match rng.gen_range(0..3) {
+    let mut dungeon = match rng.gen_range(0..3) {
         0 => CellAutomataBuilder::build(rng.as_mut()),
         1 => DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), rng.as_mut()),
         2 => RandomRoomsBuilder::build(rng.as_mut()),
         _ => unreachable!(),
     };
+
+    PrefabVault::from(PrefabBlueprint::Fortress).create_in(&mut dungeon, &mut rng);
 
     for tile in dungeon.tiles() {
         let sprite = create_sprite(tile.tile_type);

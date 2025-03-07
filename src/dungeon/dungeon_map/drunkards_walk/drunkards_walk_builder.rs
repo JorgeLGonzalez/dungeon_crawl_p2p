@@ -31,6 +31,7 @@ impl DrunkardsWalkBuilder {
         self.map.item_positions = self
             .map
             .spawnable_positions()
+            .map(ItemPosition::new)
             .choose_multiple(rng, self.config.num_items);
 
         self
@@ -40,6 +41,7 @@ impl DrunkardsWalkBuilder {
         self.map.monster_starting_positions = self
             .map
             .spawnable_positions()
+            .map(MonsterPosition::new)
             .choose_multiple(rng, self.config.num_monsters);
 
         self
@@ -62,18 +64,11 @@ impl DrunkardsWalkBuilder {
     /// Ensure both players can reach the center of the dungeon, tunneling if
     /// necessary.
     fn connect_players(mut self) -> Self {
-        let center = self.map.center;
-        for player_pos in self.map.player_starting_positions.clone() {
-            let finder = AStarPathFinder::find(player_pos, center, &self.map);
-            if !finder.path_found() {
-                let player_side = finder.closest_position();
-
-                info!("Connecting player at {player_pos} to center at {player_side}");
-                let other_side =
-                    AStarPathFinder::find(center, player_side, &self.map).closest_position();
-                Tunneler::tunnel(&mut self.map, player_side, other_side);
-            }
-        }
+        ReachabilityEnsurer::ensure(
+            &Searchers::from_players(&self.map),
+            self.map.center,
+            &mut self.map,
+        );
 
         self
     }
@@ -153,7 +148,7 @@ impl DrunkardsWalkBuilder {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use super::{reachability::AStarPathFinder, *};
     use rstest::rstest;
 
     #[test]
