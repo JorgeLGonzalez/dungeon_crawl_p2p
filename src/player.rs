@@ -14,6 +14,7 @@ mod local_player;
 mod player_actions {
     mod attack_monster;
     mod do_player_action;
+    mod exit_level;
     mod grab_item;
     mod handle_move_intent;
     mod item_grabber;
@@ -28,6 +29,7 @@ mod player_actions {
 
     pub(super) use attack_monster::attack_monster;
     pub(super) use do_player_action::do_player_action;
+    pub(super) use exit_level::exit_level;
     pub(super) use grab_item::grab_item;
     pub(super) use handle_move_intent::handle_move_intent;
     pub(super) use move_player::move_player;
@@ -51,4 +53,4 @@ pub use events::{InventoryUpdatedEvent, PlayerMovesEvent, WeaponWieldedEvent};
 pub use local_player::{LocalPlayer, PlayersQuery};
 pub use plugin::{PlayerCoreSet, PlayerPlugin, SpawnPlayersSet};
 
-// use crate::config::*;
+use spawn_players::spawn_players;

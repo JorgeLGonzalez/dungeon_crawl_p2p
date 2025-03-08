@@ -1,10 +1,4 @@
-use super::{
-    camera::{follow_with_camera, setup_camera},
-    components::{Inventory, MoveThrottle, Obstacle, Player},
-    events::PlayerEventsPlugin,
-    player_actions::*,
-    spawn_players::spawn_players,
-};
+use super::{camera::*, components::*, events::*, player_actions::*, spawn_players};
 use crate::{
     common,
     config::{game_mode, GameMode},
@@ -35,13 +29,14 @@ impl Plugin for PlayerPlugin {
         let core_systems = (
             do_player_action,
             tick_move_throttle,
-            stop_moving,
-            handle_move_intent,
-            attack_monster,
-            move_player,
+            stop_moving.run_if(on_event::<StopMovingEvent>),
+            handle_move_intent.run_if(on_event::<PlayerMoveIntentEvent>),
+            attack_monster.run_if(on_event::<PlayerAttacksEvent>),
+            move_player.run_if(on_event::<PlayerMovesEvent>),
+            exit_level.run_if(on_event::<PlayerMovesEvent>),
             follow_with_camera,
-            grab_item,
-            use_item,
+            grab_item.run_if(on_event::<GrabItemEvent>),
+            use_item.run_if(on_event::<UseItemEvent>),
         )
             .in_set(PlayerCoreSet)
             .chain()

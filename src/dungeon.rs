@@ -96,7 +96,7 @@ mod reveal_map;
 mod spawn_dungeon;
 mod zoom;
 
-pub use components::{FloorTile, WallTile};
+pub use components::{ExitStairs, FloorTile, WallTile};
 pub use config::{NUM_MONSTERS, TILE_HEIGHT, TILE_WIDTH, VIEWPORT_HEIGHT};
 pub use dungeon_map::{DungeonMap, DungeonPosition};
 pub use events::{RevealDungeonEvent, ZoomEvent};
