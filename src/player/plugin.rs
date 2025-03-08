@@ -1,5 +1,5 @@
 use super::{
-    camera::*, components::*, despawn_players, events::*, player_actions::*, spawn_players,
+    camera::*, components::*, events::*, player_actions::*, spawn_players, transport_players,
 };
 use crate::{
     common,
@@ -23,7 +23,7 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(GameState::DungeonSpawning),
-            (despawn_players, spawn_players, setup_camera)
+            (transport_players, spawn_players, setup_camera)
                 .in_set(SpawnPlayersSet)
                 .chain()
                 .after(SpawnDungeonSet),

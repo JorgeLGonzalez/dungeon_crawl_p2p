@@ -6,7 +6,12 @@ use crate::{
 };
 use bevy_ggrs::AddRollbackCommandExtension;
 
-pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands) {
+pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands, players: Query<&Player>) {
+    if !players.is_empty() {
+        // Players already spawned, do nothing
+        return;
+    }
+
     for (player_idx, &player_pos) in dungeon.player_starting_positions.iter().enumerate() {
         let color = match player_idx {
             0 => config::PLAYER_0_COLOR,
