@@ -31,12 +31,12 @@ impl Plugin for PlayerPlugin {
             tick_move_throttle,
             stop_moving.run_if(on_event::<StopMovingEvent>),
             handle_move_intent.run_if(on_event::<PlayerMoveIntentEvent>),
+            grab_item.run_if(on_event::<GrabItemEvent>),
+            use_item.run_if(on_event::<UseItemEvent>),
             attack_monster.run_if(on_event::<PlayerAttacksEvent>),
             move_player.run_if(on_event::<PlayerMovesEvent>),
             exit_level.run_if(on_event::<PlayerMovesEvent>),
-            follow_with_camera,
-            grab_item.run_if(on_event::<GrabItemEvent>),
-            use_item.run_if(on_event::<UseItemEvent>),
+            follow_with_camera.after(move_player),
         )
             .in_set(PlayerCoreSet)
             .chain()
