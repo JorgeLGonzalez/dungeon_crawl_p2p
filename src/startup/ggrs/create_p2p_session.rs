@@ -24,7 +24,7 @@ pub fn create_p2p_session(
     commands.insert_resource(RandomGenerator::new_for_p2p(&mut socket));
     commands.insert_resource(build_session(players, &mut socket));
 
-    next_state.set(GameState::InGame);
+    next_state.set(GameState::DungeonSpawning);
 }
 
 fn build_session(

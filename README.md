@@ -75,11 +75,9 @@ See [Deploying](./static/README.md)
 
 ### System Sequencing
 
-The `GameState::InGame` state is by far the most complex.
+#### OnEnter(GameState::DungeonSpawning)
 
-#### OnEnter(GameState::InGame)
-
-It is helpful to be deterministic in the order of entity spawning when debugging GGRS. Below is the sequence of system sets that run when entering the `GameState::InGame` state:
+The `DungeonSpawning` state is entered when starting the game (after all players have joined) as well as when changing levels.
 
 ```mermaid
 flowchart TD
@@ -88,7 +86,7 @@ flowchart TD
   SpawnMonstersSet-- before -->SpawnItemsSet
 ```
 
-Note that HUD elements spawn in `GameState::Startup`, well before `GameState::InGame`.
+Note that HUD elements spawn in `GameState::Startup`. The state exits right after entering by running `exit_dungeon_spawning` in the [GameStatesPlugin](./src/game_states/plugin.rs).
 
 #### GameState::InGame Main Loop
 

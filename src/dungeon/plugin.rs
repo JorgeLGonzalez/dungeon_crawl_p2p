@@ -12,7 +12,7 @@ pub struct DungeonPlugin;
 impl Plugin for DungeonPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins(DungeonEventsPlugin).add_systems(
-            OnEnter(GameState::InGame),
+            OnEnter(GameState::DungeonSpawning),
             spawn_dungeon.in_set(SpawnDungeonSet),
         );
 

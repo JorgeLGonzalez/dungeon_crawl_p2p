@@ -20,7 +20,7 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
-            OnEnter(GameState::InGame),
+            OnEnter(GameState::DungeonSpawning),
             (spawn_players, setup_camera)
                 .in_set(SpawnPlayersSet)
                 .after(SpawnDungeonSet),

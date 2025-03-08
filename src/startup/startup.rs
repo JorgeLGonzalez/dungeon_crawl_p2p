@@ -25,12 +25,15 @@ fn connect_to_matchbox(commands: &mut Commands) {
         .add_channel(ChannelConfig::unreliable())
         .into();
     commands.insert_resource(socket);
+
+    // We remain in the startup state until all players join, which is handled
+    //in `create_p2p_session`.
 }
 
 fn start_single_player_mode(commands: &mut Commands, next_state: &mut NextState<GameState>) {
     info!("Starting single player game.");
     commands.insert_resource(RandomGenerator::new());
-    next_state.set(GameState::InGame);
+    next_state.set(GameState::DungeonSpawning);
 }
 
 fn start_sync_test_session(commands: &mut Commands, next_state: &mut NextState<GameState>) {
@@ -51,5 +54,5 @@ fn start_sync_test_session(commands: &mut Commands, next_state: &mut NextState<G
 
     commands.insert_resource(bevy_ggrs::Session::SyncTest(ggrs_session));
     commands.insert_resource(RandomGenerator::new());
-    next_state.set(GameState::InGame);
+    next_state.set(GameState::DungeonSpawning);
 }

@@ -27,7 +27,7 @@ pub struct MonstersPlugin;
 impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<MonsterMoveTracker>().add_systems(
-            OnEnter(GameState::InGame),
+            OnEnter(GameState::DungeonSpawning),
             spawn_monsters
                 .in_set(SpawnMonstersSet)
                 .after(SpawnPlayersSet),
