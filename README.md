@@ -30,6 +30,7 @@ Then:
 
 - [ ] stairs, amulet and dungeon levels
   - [ ] show level in HUD
+  - [ ] avoid putting items on stairs and amulet
 - [ ] player sprites
 - [ ] monster sprites
 - [ ] tile sprites

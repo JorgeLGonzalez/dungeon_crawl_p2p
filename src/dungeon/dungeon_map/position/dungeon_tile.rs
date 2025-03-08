@@ -13,8 +13,6 @@ impl DungeonTile {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum TileType {
-    #[allow(dead_code)]
-    Exit,
     Floor,
     Wall,
 }

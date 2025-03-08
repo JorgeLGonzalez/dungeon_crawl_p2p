@@ -1,7 +1,7 @@
 use bevy::prelude::Component;
 
 #[derive(Component)]
-pub struct ExitTile;
+pub struct ExitStairs;
 
 #[derive(Component)]
 pub struct FloorTile;
