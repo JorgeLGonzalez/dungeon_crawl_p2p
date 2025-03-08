@@ -1,4 +1,4 @@
-use super::{spawn_items::spawn_items, Grabbable, MagicItem, Weapon};
+use super::{despawn_items, spawn_items, Grabbable, MagicItem, Weapon};
 use crate::{monsters::SpawnMonstersSet, prelude::*};
 use bevy::prelude::*;
 use bevy_ggrs::prelude::*;
@@ -9,7 +9,7 @@ impl Plugin for ItemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(GameState::DungeonSpawning),
-            spawn_items.after(SpawnMonstersSet),
+            (despawn_items, spawn_items).chain().after(SpawnMonstersSet),
         );
 
         if !game_mode(GameMode::SinglePlayer) {

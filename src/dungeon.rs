@@ -89,6 +89,7 @@ mod dungeon_map {
     use position::{DungeonCorner, DungeonTile, ItemPosition, MonsterPosition};
     use reachability::{ReachabilityEnsurer, Searchers};
 }
+mod despawn_dungeon;
 mod events;
 mod illuminator;
 mod plugin;
@@ -105,6 +106,7 @@ pub use plugin::{DungeonCoreSet, DungeonPlugin, SpawnDungeonSet};
 
 use components::*;
 use config::*;
+use despawn_dungeon::despawn_dungeon;
 use dungeon_map::*;
 use events::*;
 use reveal_map::reveal_map;

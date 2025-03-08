@@ -9,6 +9,7 @@ mod camera {
     use super::local_player::*;
 }
 mod components;
+mod despawn_players;
 mod events;
 mod local_player;
 mod player_actions {
@@ -53,4 +54,5 @@ pub use events::{InventoryUpdatedEvent, PlayerMovesEvent, WeaponWieldedEvent};
 pub use local_player::{LocalPlayer, PlayersQuery};
 pub use plugin::{PlayerCoreSet, PlayerPlugin, SpawnPlayersSet};
 
+use despawn_players::despawn_players;
 use spawn_players::spawn_players;

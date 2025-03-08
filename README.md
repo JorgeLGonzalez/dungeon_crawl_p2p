@@ -29,8 +29,10 @@ Then:
 ## TODO
 
 - [ ] stairs, amulet
-  - [ ] advance level upon stairs exit
+  - [x] advance level upon stairs exit
+  - [ ] keep player inventory
   - [ ] show level in HUD
+  - [ ] Desync after level gen
   - [ ] remember to hide exit tile! (spawn_dungeon visibility)
   - [ ] remember to downgrade log level for player move in move_player
   - [ ] avoid putting items on stairs and amulet

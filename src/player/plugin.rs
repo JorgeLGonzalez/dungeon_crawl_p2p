@@ -1,4 +1,6 @@
-use super::{camera::*, components::*, events::*, player_actions::*, spawn_players};
+use super::{
+    camera::*, components::*, despawn_players, events::*, player_actions::*, spawn_players,
+};
 use crate::{
     common,
     config::{game_mode, GameMode},
@@ -21,8 +23,9 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             OnEnter(GameState::DungeonSpawning),
-            (spawn_players, setup_camera)
+            (despawn_players, spawn_players, setup_camera)
                 .in_set(SpawnPlayersSet)
+                .chain()
                 .after(SpawnDungeonSet),
         );
 
@@ -35,8 +38,8 @@ impl Plugin for PlayerPlugin {
             use_item.run_if(on_event::<UseItemEvent>),
             attack_monster.run_if(on_event::<PlayerAttacksEvent>),
             move_player.run_if(on_event::<PlayerMovesEvent>),
-            exit_level.run_if(on_event::<PlayerMovesEvent>),
             follow_with_camera.after(move_player),
+            exit_level.run_if(on_event::<PlayerMovesEvent>),
         )
             .in_set(PlayerCoreSet)
             .chain()
