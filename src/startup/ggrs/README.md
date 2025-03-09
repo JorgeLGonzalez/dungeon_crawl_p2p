@@ -43,8 +43,8 @@ Some key notes:
 Since the PRs etc have not gotten any attention, I have developed another way which is:
 
 1. Set `config::GGRS_DEBUG` to true.
-2. Capture the output logged into a file called `p0.log` in the `ggrs-utils` project. When debugging MultiPlayer mode, save the second player's log as `p1.log`.
-3. Run it ggrs-utils. This will parse the log(s) and generate useful output files around the mismatched frame.
+2. Capture the output logged into a file called `p0.log` in the `logs` folder of the `ggrs-utils` project. When debugging MultiPlayer mode, save the second player's log as `p1.log`.
+3. Run ggrs-utils. This will parse the log(s) and generate useful output files around the mismatched frame.
 
 There are two ways to auto-detect desync events:
 

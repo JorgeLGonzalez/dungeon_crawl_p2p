@@ -6,6 +6,8 @@ use crate::{
 };
 use bevy_ggrs::RollbackFrameCount;
 
+/// Log debugging info for GGRS. Note some of these lines (i.e. those that contain
+/// a '|') are parsed by the `ggrs-utils` project/program.
 pub fn debug_ggrs(
     items: Query<(Entity, &MagicItem, &Transform, &Grabbable), With<MagicItem>>,
     monsters: Query<(Entity, &Health, &Monster, &Transform), With<Monster>>,
@@ -19,7 +21,7 @@ pub fn debug_ggrs(
         let pos = transform.translation.truncate().as_ivec2();
         info!("Frame={frame}|Item={item}|Entity={entity}|Pos={pos}");
     }
-    info!("Frame={frame} total items={}", items.iter().count());
+    info!("Frame={frame} Total Items={}", items.iter().count());
 
     for (entity, health, move_throttle, player, transform) in &players {
         let player_id = player.id;
@@ -32,7 +34,7 @@ pub fn debug_ggrs(
             Health={health}|Throttle={throttle}"
         );
     }
-    info!("Frame={frame} total players={}", players.iter().count());
+    info!("Frame={frame} Total Players={}", players.iter().count());
 
     for (entity, health, monster, transform) in &monsters {
         let monster = monster.name();
@@ -41,5 +43,5 @@ pub fn debug_ggrs(
 
         info!("Frame={frame}|Monster={monster}|Entity={entity}|Pos={pos}|Health={health}");
     }
-    info!("Frame={frame} total monsters={}", monsters.iter().count());
+    info!("Frame={frame} Total Monsters={}", monsters.iter().count());
 }
