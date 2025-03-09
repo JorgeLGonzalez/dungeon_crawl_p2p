@@ -109,13 +109,8 @@ impl DrunkardsWalkBuilder {
     /// Take a random step in one of the four cardinal directions. Return None
     /// if we hit the dungeon boundaries.
     fn step(&self, pos: DungeonPosition, rng: &mut RandomGenerator) -> Option<DungeonPosition> {
-        let random_step = match rng.gen_range(0..4) {
-            0 => DungeonPosition::new(pos.x - 1, pos.y),
-            1 => DungeonPosition::new(pos.x + 1, pos.y),
-            2 => DungeonPosition::new(pos.x, pos.y - 1),
-            3 => DungeonPosition::new(pos.x, pos.y + 1),
-            _ => unreachable!(),
-        };
+        let random_step =
+            DungeonPosition::from_vec2(pos.to_vec2() + DIRECTIONS[rng.gen_range(0..4)]);
 
         self.inner_bounds
             .contains(random_step.as_ivec2())
@@ -144,6 +139,9 @@ impl DrunkardsWalkBuilder {
         self
     }
 }
+
+/// Left, right, up, down
+const DIRECTIONS: [Vec2; 4] = [Vec2::NEG_X, Vec2::X, Vec2::NEG_Y, Vec2::Y];
 
 #[cfg(test)]
 mod tests {
