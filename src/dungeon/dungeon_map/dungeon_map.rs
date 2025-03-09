@@ -1,5 +1,7 @@
 use super::{position::MonsterPosition, *};
+use crate::common::RandomGenerator;
 use bevy::prelude::Resource;
+use rand::seq::IteratorRandom;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
 
@@ -25,6 +27,15 @@ impl DungeonMap {
             player_starting_positions: vec![],
             tiles: vec![TileType::Wall; NUM_TILES],
         }
+    }
+
+    /// Add items to random spawnable positions in the dungeon. (Replaces any
+    /// existing item positions.)
+    pub fn add_items(&mut self, count: usize, rng: &mut RandomGenerator) {
+        self.item_positions = self
+            .spawnable_positions()
+            .map(ItemPosition::new)
+            .choose_multiple(rng, count);
     }
 
     /// Find the nearest floor tile to the given origin, within the given radius.
@@ -61,10 +72,11 @@ impl DungeonMap {
 
     /// Returns an iterator over all spawnable positions for monsters and items.
     /// Spawnable positions are floor tiles that are outside the player's safety
-    /// radius.
+    /// radius and exclude the dungeon "center".
     pub fn spawnable_positions(&self) -> impl Iterator<Item = DungeonPosition> + use<'_> {
         self.tiles()
             .filter(|t| t.tile_type == TileType::Floor)
+            .filter(|t| t.pos != self.center)
             .filter(|t| self.far_from_players(t.pos))
             .map(|t| t.pos)
     }

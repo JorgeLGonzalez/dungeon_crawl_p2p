@@ -32,11 +32,7 @@ impl DrunkardsWalkBuilder {
     }
 
     fn add_items(mut self, rng: &mut RandomGenerator) -> Self {
-        self.map.item_positions = self
-            .map
-            .spawnable_positions()
-            .map(ItemPosition::new)
-            .choose_multiple(rng, self.config.num_items);
+        self.map.add_items(self.config.num_items, rng);
 
         self
     }

@@ -24,11 +24,7 @@ impl RandomRoomsBuilder {
     }
 
     fn add_items(mut self, rng: &mut RandomGenerator) -> Self {
-        self.map.item_positions = self
-            .map
-            .spawnable_positions()
-            .map(ItemPosition::new)
-            .choose_multiple(rng, NUM_ITEMS);
+        self.map.add_items(NUM_ITEMS, rng);
 
         self
     }
