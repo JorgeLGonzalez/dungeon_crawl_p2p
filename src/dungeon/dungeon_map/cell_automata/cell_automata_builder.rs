@@ -161,6 +161,6 @@ mod tests {
 
         let map = CellAutomataBuilder::build(1, &mut rng);
 
-        assert_eq!(map.monster_starting_positions.len(), NUM_MONSTERS);
+        assert_eq!(map.monster_starting_positions().count(), NUM_MONSTERS);
     }
 }

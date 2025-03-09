@@ -86,8 +86,7 @@ mod tests {
         let mut map = create_map();
         map.tiles().collect::<Vec<_>>().iter().for_each(|t| {
             map.add_one_item(ItemPosition::new(t.pos));
-            map.monster_starting_positions
-                .push(MonsterPosition::new(t.pos));
+            map.add_one_monster(MonsterPosition::new(t.pos));
         });
         let prefab = PrefabVault::from(PrefabBlueprint::Fortress);
         let expected_item_count = prefab
@@ -121,8 +120,7 @@ mod tests {
             .count();
         assert_eq!(item_count, expected_item_count, "wrong item count");
         let monster_count = map
-            .monster_starting_positions
-            .iter()
+            .monster_starting_positions()
             .filter(|i| vault.contains(i.pos.into()))
             .count();
         assert_eq!(monster_count, expected_monster_count, "wrong monster count");

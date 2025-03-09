@@ -19,8 +19,7 @@ pub fn spawn_monsters(
         || monster_distribution[rng.gen_range(0..monster_distribution.len())].clone();
 
     let stats = dungeon
-        .monster_starting_positions
-        .iter()
+        .monster_starting_positions()
         .map(|monster_pos| {
             (
                 monster_pos.monster.unwrap_or_else(&mut random_monster),

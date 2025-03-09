@@ -254,7 +254,7 @@ mod tests {
 
         let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), 1, &mut rng);
 
-        assert_eq!(map.monster_starting_positions.len(), num_monsters);
+        assert_eq!(map.monster_starting_positions().count(), num_monsters);
     }
 
     fn edge_distance(pos: &DungeonPosition) -> usize {

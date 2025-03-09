@@ -21,6 +21,17 @@ impl MonsterPosition {
     }
 }
 
+impl std::fmt::Display for MonsterPosition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} at {}",
+            self.monster.map_or("Monster".to_string(), |m| m.label()),
+            self.pos
+        )
+    }
+}
+
 impl From<MonsterPosition> for DungeonPosition {
     fn from(monster_pos: MonsterPosition) -> Self {
         monster_pos.pos

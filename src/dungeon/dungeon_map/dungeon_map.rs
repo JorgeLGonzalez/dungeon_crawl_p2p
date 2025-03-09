@@ -11,10 +11,10 @@ pub struct DungeonMap {
     /// or amulet.
     pub center: DungeonPosition,
     pub level: usize,
-    pub monster_starting_positions: Vec<MonsterPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
 
     item_positions: Vec<ItemPosition>,
+    monster_starting_positions: Vec<MonsterPosition>,
     tiles: Vec<TileType>,
 }
 
@@ -51,6 +51,11 @@ impl DungeonMap {
     pub fn add_one_item(&mut self, item: ItemPosition) {
         self.item_positions.push(item);
         trace!("{item} placed at {}", item.pos);
+    }
+
+    pub fn add_one_monster(&mut self, monster: MonsterPosition) {
+        self.monster_starting_positions.push(monster);
+        trace!("{monster} placed at {}", monster.pos);
     }
 
     /// Remove any monsters or items slated for the tiles encompassed by the vault.
@@ -92,6 +97,10 @@ impl DungeonMap {
 
     pub fn item_positions(&self) -> impl Iterator<Item = ItemPosition> + use<'_> {
         self.item_positions.iter().copied()
+    }
+
+    pub fn monster_starting_positions(&self) -> impl Iterator<Item = MonsterPosition> + use<'_> {
+        self.monster_starting_positions.iter().copied()
     }
 
     pub fn set_tile_type(&mut self, pos: &DungeonPosition, tile_type: TileType) {

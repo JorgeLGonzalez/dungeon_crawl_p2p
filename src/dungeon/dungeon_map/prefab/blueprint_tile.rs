@@ -50,14 +50,10 @@ impl BlueprintTile {
                 trace!("Magic Map placed at {pos}");
             }
             BlueprintTile::Monster(pos) => {
-                map.monster_starting_positions
-                    .push(MonsterPosition::new(*pos));
-                trace!("Monster placed at {pos}");
+                map.add_one_monster(MonsterPosition::new(*pos));
             }
             BlueprintTile::Ogre(pos) => {
-                map.monster_starting_positions
-                    .push(MonsterPosition::new_with_monster(*pos, Monster::Orc));
-                trace!("Orc placed at {pos}");
+                map.add_one_monster(MonsterPosition::new_with_monster(*pos, Monster::Orc));
             }
             BlueprintTile::Sword(pos) => {
                 map.add_one_item(ItemPosition::new_with_item(
@@ -123,7 +119,7 @@ mod tests {
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
         assert!(map.item_positions().next().is_none());
-        assert!(map.monster_starting_positions.is_empty());
+        assert!(map.monster_starting_positions().next().is_none());
     }
 
     #[test]
@@ -135,7 +131,7 @@ mod tests {
 
         assert_eq!(map.get_tile_type(&pos), TileType::Wall);
         assert!(map.item_positions().next().is_none());
-        assert!(map.monster_starting_positions.is_empty());
+        assert!(map.monster_starting_positions().next().is_none());
     }
 
     #[test]
@@ -159,9 +155,12 @@ mod tests {
         BlueprintTile::Monster(pos).add_to(&mut map);
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
-        assert_eq!(map.monster_starting_positions.len(), 1);
-        assert_eq!(map.monster_starting_positions[0].pos, pos);
-        assert_eq!(map.monster_starting_positions[0].monster, None);
+        assert_eq!(map.monster_starting_positions().count(), 1);
+        assert_eq!(map.monster_starting_positions().nth(0).unwrap().pos, pos);
+        assert_eq!(
+            map.monster_starting_positions().nth(0).unwrap().monster,
+            None
+        );
     }
 
     #[test]
@@ -172,10 +171,10 @@ mod tests {
         BlueprintTile::Ogre(pos).add_to(&mut map);
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
-        assert_eq!(map.monster_starting_positions.len(), 1);
-        assert_eq!(map.monster_starting_positions[0].pos, pos);
+        assert_eq!(map.monster_starting_positions().count(), 1);
+        assert_eq!(map.monster_starting_positions().nth(0).unwrap().pos, pos);
         assert_eq!(
-            map.monster_starting_positions[0].monster,
+            map.monster_starting_positions().nth(0).unwrap().monster,
             Some(Monster::Orc)
         );
     }
@@ -221,7 +220,7 @@ mod tests {
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
         assert!(map.item_positions().next().is_none());
-        assert!(map.monster_starting_positions.is_empty());
+        assert!(map.monster_starting_positions().next().is_none());
     }
 
     fn center() -> DungeonPosition {
