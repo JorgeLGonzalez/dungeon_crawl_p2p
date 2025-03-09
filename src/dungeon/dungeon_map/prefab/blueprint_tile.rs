@@ -42,13 +42,11 @@ impl BlueprintTile {
         match self {
             BlueprintTile::Floor(_) => {}
             BlueprintTile::Item(pos) => {
-                map.item_positions.push(ItemPosition::new(*pos));
-                trace!("Item placed at {pos}");
+                map.add_one_item(ItemPosition::new(*pos));
             }
             BlueprintTile::KeyMarker(_) => {}
             BlueprintTile::Map(pos) => {
-                map.item_positions
-                    .push(ItemPosition::new_with_item(*pos, MagicItem::Map));
+                map.add_one_item(ItemPosition::new_with_item(*pos, MagicItem::Map));
                 trace!("Magic Map placed at {pos}");
             }
             BlueprintTile::Monster(pos) => {
@@ -62,11 +60,10 @@ impl BlueprintTile {
                 trace!("Orc placed at {pos}");
             }
             BlueprintTile::Sword(pos) => {
-                map.item_positions.push(ItemPosition::new_with_item(
+                map.add_one_item(ItemPosition::new_with_item(
                     *pos,
                     MagicItem::Weapon(Weapon::HugeSword),
                 ));
-                trace!("Huge Sword placed at {pos}");
             }
             BlueprintTile::Wall(_) => {}
         }
@@ -125,7 +122,7 @@ mod tests {
         BlueprintTile::Floor(pos).add_to(&mut map);
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
-        assert!(map.item_positions.is_empty());
+        assert!(map.item_positions().next().is_none());
         assert!(map.monster_starting_positions.is_empty());
     }
 
@@ -137,7 +134,7 @@ mod tests {
         BlueprintTile::Wall(pos).add_to(&mut map);
 
         assert_eq!(map.get_tile_type(&pos), TileType::Wall);
-        assert!(map.item_positions.is_empty());
+        assert!(map.item_positions().next().is_none());
         assert!(map.monster_starting_positions.is_empty());
     }
 
@@ -149,9 +146,9 @@ mod tests {
         BlueprintTile::Item(pos).add_to(&mut map);
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
-        assert_eq!(map.item_positions.len(), 1);
-        assert_eq!(map.item_positions[0].pos, pos);
-        assert_eq!(map.item_positions[0].item, None);
+        assert_eq!(map.item_positions().count(), 1);
+        assert_eq!(map.item_positions().nth(0).unwrap().pos, pos);
+        assert_eq!(map.item_positions().nth(0).unwrap().item, None);
     }
 
     #[test]
@@ -191,10 +188,10 @@ mod tests {
         BlueprintTile::Sword(pos).add_to(&mut map);
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
-        assert_eq!(map.item_positions.len(), 1);
-        assert_eq!(map.item_positions[0].pos, pos);
+        assert_eq!(map.item_positions().count(), 1);
+        assert_eq!(map.item_positions().nth(0).unwrap().pos, pos);
         assert_eq!(
-            map.item_positions[0].item,
+            map.item_positions().nth(0).unwrap().item,
             Some(MagicItem::Weapon(Weapon::HugeSword))
         );
     }
@@ -207,9 +204,12 @@ mod tests {
         BlueprintTile::Map(pos).add_to(&mut map);
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
-        assert_eq!(map.item_positions.len(), 1);
-        assert_eq!(map.item_positions[0].pos, pos);
-        assert_eq!(map.item_positions[0].item, Some(MagicItem::Map));
+        assert_eq!(map.item_positions().count(), 1);
+        assert_eq!(map.item_positions().nth(0).unwrap().pos, pos);
+        assert_eq!(
+            map.item_positions().nth(0).unwrap().item,
+            Some(MagicItem::Map)
+        );
     }
 
     #[test]
@@ -220,7 +220,7 @@ mod tests {
         BlueprintTile::KeyMarker(pos).add_to(&mut map);
 
         assert_eq!(map.get_tile_type(&pos), TileType::Floor);
-        assert!(map.item_positions.is_empty());
+        assert!(map.item_positions().next().is_none());
         assert!(map.monster_starting_positions.is_empty());
     }
 

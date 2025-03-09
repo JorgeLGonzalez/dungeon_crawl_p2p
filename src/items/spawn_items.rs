@@ -18,8 +18,7 @@ pub fn spawn_items(
     let mut random_item = || item_distribution[rng.gen_range(0..item_distribution.len())].clone();
 
     let stats = dungeon
-        .item_positions
-        .iter()
+        .item_positions()
         .map(|item_pos| {
             (
                 item_pos.item.unwrap_or_else(&mut random_item),

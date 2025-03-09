@@ -1,6 +1,6 @@
 use super::{position::MonsterPosition, *};
 use crate::common::RandomGenerator;
-use bevy::prelude::Resource;
+use bevy::prelude::*;
 use rand::seq::IteratorRandom;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
@@ -47,6 +47,11 @@ impl DungeonMap {
             .choose_multiple(rng, count);
     }
 
+    pub fn add_one_item(&mut self, item: ItemPosition) {
+        self.item_positions.push(item);
+        trace!("{item} placed at {}", item.pos);
+    }
+
     /// Find the nearest floor tile to the given origin, within the given radius.
     /// If no floor tile is found within the radius, recursively search with an
     /// increased radius.
@@ -75,19 +80,12 @@ impl DungeonMap {
         MapPos::from(pos).is_valid()
     }
 
-    pub fn set_tile_type(&mut self, pos: &DungeonPosition, tile_type: TileType) {
-        self.tiles[MapPos::from(pos).to_idx()] = tile_type;
+    pub fn item_positions(&self) -> impl Iterator<Item = ItemPosition> + use<'_> {
+        self.item_positions.iter().copied()
     }
 
-    /// Returns an iterator over all spawnable positions for monsters and items.
-    /// Spawnable positions are floor tiles that are outside the player's safety
-    /// radius and exclude the dungeon "center".
-    pub fn spawnable_positions(&self) -> impl Iterator<Item = DungeonPosition> + use<'_> {
-        self.tiles()
-            .filter(|t| t.tile_type == TileType::Floor)
-            .filter(|t| t.pos != self.center)
-            .filter(|t| self.far_from_players(t.pos))
-            .map(|t| t.pos)
+    pub fn set_tile_type(&mut self, pos: &DungeonPosition, tile_type: TileType) {
+        self.tiles[MapPos::from(pos).to_idx()] = tile_type;
     }
 
     pub fn tiles(&self) -> impl Iterator<Item = DungeonTile> + use<'_> {
@@ -113,6 +111,17 @@ impl DungeonMap {
         let y = (idx / W) - (H / 2);
 
         DungeonPosition::new(x, y)
+    }
+
+    /// Returns an iterator over all spawnable positions for monsters and items.
+    /// Spawnable positions are floor tiles that are outside the player's safety
+    /// radius and exclude the dungeon "center".
+    fn spawnable_positions(&self) -> impl Iterator<Item = DungeonPosition> + use<'_> {
+        self.tiles()
+            .filter(|t| t.tile_type == TileType::Floor)
+            .filter(|t| t.pos != self.center)
+            .filter(|t| self.far_from_players(t.pos))
+            .map(|t| t.pos)
     }
 }
 

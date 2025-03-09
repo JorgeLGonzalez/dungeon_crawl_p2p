@@ -152,7 +152,7 @@ mod tests {
 
         let map = CellAutomataBuilder::build(1, &mut rng);
 
-        assert_eq!(map.item_positions.len(), NUM_ITEMS);
+        assert_eq!(map.item_positions().count(), NUM_ITEMS);
     }
 
     #[test]

@@ -243,7 +243,7 @@ mod tests {
 
         let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), 1, &mut rng);
 
-        assert_eq!(map.item_positions.len(), num_items);
+        assert_eq!(map.item_positions().count(), num_items);
     }
 
     #[test]

@@ -21,6 +21,17 @@ impl ItemPosition {
     }
 }
 
+impl std::fmt::Display for ItemPosition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{} at {}",
+            self.item.map_or("Item".to_string(), |i| i.label()),
+            self.pos
+        )
+    }
+}
+
 impl From<ItemPosition> for DungeonPosition {
     fn from(item_pos: ItemPosition) -> Self {
         item_pos.pos

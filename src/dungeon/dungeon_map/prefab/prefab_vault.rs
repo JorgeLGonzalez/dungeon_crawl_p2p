@@ -93,7 +93,7 @@ mod tests {
     fn clear_prior_content() {
         let mut map = create_map();
         map.tiles().collect::<Vec<_>>().iter().for_each(|t| {
-            map.item_positions.push(ItemPosition::new(t.pos));
+            map.add_one_item(ItemPosition::new(t.pos));
             map.monster_starting_positions
                 .push(MonsterPosition::new(t.pos));
         });
@@ -124,8 +124,7 @@ mod tests {
 
         let vault = prefab.vault_rect(center);
         let item_count = map
-            .item_positions
-            .iter()
+            .item_positions()
             .filter(|i| vault.contains(i.pos.into()))
             .count();
         assert_eq!(item_count, expected_item_count, "wrong item count");
