@@ -119,7 +119,7 @@ mod tests {
 
     #[test]
     fn test_floor_tile() {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let pos = center();
 
         BlueprintTile::Floor(pos).add_to(&mut map);
@@ -131,7 +131,7 @@ mod tests {
 
     #[test]
     fn test_wall_tile() {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let pos = center();
 
         BlueprintTile::Wall(pos).add_to(&mut map);
@@ -143,7 +143,7 @@ mod tests {
 
     #[test]
     fn test_item_placement() {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let pos = center();
 
         BlueprintTile::Item(pos).add_to(&mut map);
@@ -156,7 +156,7 @@ mod tests {
 
     #[test]
     fn test_monster_placement() {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let pos = center();
 
         BlueprintTile::Monster(pos).add_to(&mut map);
@@ -169,7 +169,7 @@ mod tests {
 
     #[test]
     fn test_ogre_placement() {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let pos = center();
 
         BlueprintTile::Ogre(pos).add_to(&mut map);
@@ -185,7 +185,7 @@ mod tests {
 
     #[test]
     fn test_huge_sword_placement() {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let pos = center();
 
         BlueprintTile::Sword(pos).add_to(&mut map);
@@ -201,7 +201,7 @@ mod tests {
 
     #[test]
     fn test_map_placement() {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let pos = center();
 
         BlueprintTile::Map(pos).add_to(&mut map);
@@ -214,7 +214,7 @@ mod tests {
 
     #[test]
     fn test_key_marker() {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let pos = center();
 
         BlueprintTile::KeyMarker(pos).add_to(&mut map);

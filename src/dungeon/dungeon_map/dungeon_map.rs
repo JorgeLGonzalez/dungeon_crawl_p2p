@@ -9,16 +9,18 @@ pub struct DungeonMap {
     /// or amulet.
     pub center: DungeonPosition,
     pub item_positions: Vec<ItemPosition>,
+    pub level: usize,
     pub monster_starting_positions: Vec<MonsterPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
     tiles: Vec<TileType>,
 }
 
 impl DungeonMap {
-    pub fn new() -> Self {
+    pub fn new(level: usize) -> Self {
         Self {
             center: DungeonPosition::new(0, 0),
             item_positions: vec![],
+            level,
             monster_starting_positions: vec![],
             player_starting_positions: vec![],
             tiles: vec![TileType::Wall; NUM_TILES],

@@ -151,7 +151,7 @@ mod tests {
     }
 
     fn create_map() -> DungeonMap {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         map.player_starting_positions
             .push(DungeonPosition::new(X_MIN + 1, Y_MIN + 1));
         map.player_starting_positions

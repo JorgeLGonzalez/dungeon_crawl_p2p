@@ -60,12 +60,12 @@ impl PrefabVault {
     /// Ensure that the vault is reachable from all player starting positions.
     fn ensure_reachable(&self, map: &mut DungeonMap, tiles: &[BlueprintTile]) {
         let key_pos = tiles
-        .iter()
-        .find(|t| matches!(t, BlueprintTile::KeyMarker(_)))
-        .expect("Blueprint is missing a KeyMarker tile")
-        .pos();
+            .iter()
+            .find(|t| matches!(t, BlueprintTile::KeyMarker(_)))
+            .expect("Blueprint is missing a KeyMarker tile")
+            .pos();
 
-    ReachabilityEnsurer::ensure(&Searchers::from_players(map), key_pos, map);
+        ReachabilityEnsurer::ensure(&Searchers::from_players(map), key_pos, map);
     }
 
     fn vault_rect(&self, pos: DungeonPosition) -> IRect {
@@ -186,7 +186,7 @@ mod tests {
     }
 
     fn create_map() -> DungeonMap {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         map.player_starting_positions
             .push(DungeonPosition::new(X_MIN + 1, Y_MIN + 1));
         map.player_starting_positions

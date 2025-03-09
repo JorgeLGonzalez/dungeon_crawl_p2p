@@ -9,14 +9,18 @@ pub struct DrunkardsWalkBuilder {
 }
 
 impl DrunkardsWalkBuilder {
-    pub fn build(config: DrunkardsWalkConfig, rng: &mut RandomGenerator) -> DungeonMap {
+    pub fn build(
+        config: DrunkardsWalkConfig,
+        level: usize,
+        rng: &mut RandomGenerator,
+    ) -> DungeonMap {
         info!("Building drunkards walk dungeon.");
 
         let min_floor_count = (MAP_WIDTH * MAP_HEIGHT) * config.percent_floor / 100;
 
         Self {
             config,
-            map: DungeonMap::new(),
+            map: DungeonMap::new(level),
             min_floor_count,
         }
         .add_player_positions(rng)
@@ -157,7 +161,7 @@ mod tests {
         let mut rng = RandomGenerator::new();
         let percent_floor = config.percent_floor;
 
-        let map = DrunkardsWalkBuilder::build(config, &mut rng);
+        let map = DrunkardsWalkBuilder::build(config, 1, &mut rng);
 
         let tile_count = map.tiles().count();
         assert_eq!(tile_count, MAP_WIDTH * MAP_HEIGHT);
@@ -182,7 +186,7 @@ mod tests {
         };
         let mut rng = RandomGenerator::new();
 
-        let map = DrunkardsWalkBuilder::build(config, &mut rng);
+        let map = DrunkardsWalkBuilder::build(config, 1, &mut rng);
 
         assert_eq!(
             map.player_starting_positions.len(),
@@ -210,6 +214,7 @@ mod tests {
                 num_players: 2,
                 ..default()
             },
+            1,
             &mut rng,
         );
 
@@ -227,7 +232,7 @@ mod tests {
         let mut rng = RandomGenerator::new();
 
         for attempt in 1..=10 {
-            let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), &mut rng);
+            let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), 1, &mut rng);
 
             let player_pos = map.player_starting_positions[0];
             let finder = AStarPathFinder::find(player_pos, map.center, &map);
@@ -245,7 +250,7 @@ mod tests {
         let num_items = config.num_items;
         let mut rng = RandomGenerator::new();
 
-        let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), &mut rng);
+        let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), 1, &mut rng);
 
         assert_eq!(map.item_positions.len(), num_items);
     }
@@ -256,7 +261,7 @@ mod tests {
         let num_monsters = config.num_monsters;
         let mut rng = RandomGenerator::new();
 
-        let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), &mut rng);
+        let map = DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), 1, &mut rng);
 
         assert_eq!(map.monster_starting_positions.len(), num_monsters);
     }

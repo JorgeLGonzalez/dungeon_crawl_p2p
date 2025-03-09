@@ -221,7 +221,7 @@ mod tests {
 
     impl MapFixture {
         fn new(x: isize, y: isize) -> Self {
-            let mut map = DungeonMap::new();
+            let mut map = DungeonMap::new(1);
 
             let start = DungeonPosition::new(x, y);
             map.set_tile_type(&start, TileType::Floor);

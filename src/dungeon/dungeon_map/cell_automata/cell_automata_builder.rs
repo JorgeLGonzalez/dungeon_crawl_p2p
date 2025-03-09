@@ -7,11 +7,11 @@ pub struct CellAutomataBuilder {
 }
 
 impl CellAutomataBuilder {
-    pub fn build(rng: &mut RandomGenerator) -> DungeonMap {
+    pub fn build(level: usize, rng: &mut RandomGenerator) -> DungeonMap {
         info!("Building cellular automata dungeon.");
 
         Self {
-            map: DungeonMap::new(),
+            map: DungeonMap::new(level),
         }
         .randomize_tiles(rng)
         .grow_cells()
@@ -120,7 +120,7 @@ mod tests {
     fn create_dungeon_with_floor_and_walls() {
         let mut rng = RandomGenerator::new();
 
-        let map = CellAutomataBuilder::build(&mut rng);
+        let map = CellAutomataBuilder::build(1, &mut rng);
 
         assert_eq!(map.tiles().count(), MAP_WIDTH * MAP_HEIGHT);
         let floor_count = map
@@ -139,7 +139,7 @@ mod tests {
     fn dungeon_center_most_floor_tile() {
         let mut rng = RandomGenerator::new();
 
-        let map = CellAutomataBuilder::build(&mut rng);
+        let map = CellAutomataBuilder::build(1, &mut rng);
 
         assert_eq!(map.get_tile_type(&map.center), TileType::Floor);
     }
@@ -148,7 +148,7 @@ mod tests {
     fn player_position() {
         let mut rng = RandomGenerator::new();
 
-        let map = CellAutomataBuilder::build(&mut rng);
+        let map = CellAutomataBuilder::build(1, &mut rng);
 
         assert_eq!(map.player_starting_positions.len(), 1);
         let player_pos = map.player_starting_positions[0];
@@ -159,7 +159,7 @@ mod tests {
     fn dungeon_has_items() {
         let mut rng = RandomGenerator::new();
 
-        let map = CellAutomataBuilder::build(&mut rng);
+        let map = CellAutomataBuilder::build(1, &mut rng);
 
         assert_eq!(map.item_positions.len(), NUM_ITEMS);
     }
@@ -168,7 +168,7 @@ mod tests {
     fn dungeon_has_monsters() {
         let mut rng = RandomGenerator::new();
 
-        let map = CellAutomataBuilder::build(&mut rng);
+        let map = CellAutomataBuilder::build(1, &mut rng);
 
         assert_eq!(map.monster_starting_positions.len(), NUM_MONSTERS);
     }

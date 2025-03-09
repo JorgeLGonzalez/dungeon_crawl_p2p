@@ -33,8 +33,10 @@ mod inventory {
 mod level {
     mod components;
     mod spawn;
+    mod update;
 
     pub(super) use spawn::spawn_level_ui;
+    pub(super) use update::update_level_ui;
 
     use super::*;
     use components::*;
@@ -104,7 +106,7 @@ use camera_setup::setup_camera;
 use components::*;
 use health::*;
 use inventory::{spawn_inventory_ui, update_inventory};
-use level::spawn_level_ui;
+use level::{spawn_level_ui, update_level_ui};
 use location::{spawn_location_ui, update_location_ui};
 use tooltips::{TooltipCoreSet, TooltipPlugin};
 use weapon::*;

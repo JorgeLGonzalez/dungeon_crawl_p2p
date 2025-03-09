@@ -181,7 +181,7 @@ mod tests {
     }
 
     fn create_test_map(player_pos: DungeonPosition) -> DungeonMap {
-        let mut map = DungeonMap::new();
+        let mut map = DungeonMap::new(1);
         let center = map.center;
         map.set_tile_type(&center, TileType::Floor);
         map.set_tile_type(&player_pos, TileType::Floor);

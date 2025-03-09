@@ -35,12 +35,12 @@ Then:
   - [x] tooltip on exit
   - [x] remove active tooltip on exit level
   - [x] remember to downgrade log level for player move in move_player
-  - [ ] show level in HUD
-  - [ ] Desync after level gen
-  - [ ] remember to hide exit tile! (spawn_dungeon visibility)
+  - [x] show level in HUD
   - [ ] avoid putting items on stairs and amulet
   - [ ] document decision to teleport players
+  - [ ] Desync after level gen
   - [ ] amulet on deepest level
+  - [ ] remember to hide exit tile! (spawn_dungeon visibility)
 - [ ] player sprites
 - [ ] monster sprites
 - [ ] tile sprites

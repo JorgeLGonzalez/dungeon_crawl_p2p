@@ -8,10 +8,10 @@ pub struct RandomRoomsBuilder {
 }
 
 impl RandomRoomsBuilder {
-    pub fn build(rng: &mut RandomGenerator) -> DungeonMap {
+    pub fn build(level: usize, rng: &mut RandomGenerator) -> DungeonMap {
         info!("Building random rooms dungeon.");
         Self {
-            map: DungeonMap::new(),
+            map: DungeonMap::new(level),
             rooms: vec![],
         }
         .create_rooms(rng)

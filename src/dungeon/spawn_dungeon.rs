@@ -1,12 +1,19 @@
 use super::*;
 use crate::{config::ITEM_Z_LAYER, hud::TooltipLabel, player::Obstacle, prelude::*};
 
-pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
-    let mut dungeon = match rng.gen_range(0..3) {
-        0 => CellAutomataBuilder::build(rng.as_mut()),
-        1 => DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), rng.as_mut()),
-        2 => RandomRoomsBuilder::build(rng.as_mut()),
-        _ => unreachable!(),
+pub fn spawn_dungeon(
+    mut commands: Commands,
+    mut rng: ResMut<RandomGenerator>,
+    dungeon: Option<Res<DungeonMap>>,
+) {
+    let level = dungeon.map_or(1, |dungeon| dungeon.level + 1);
+    info!("Spawning dungeon level {level}");
+
+    let mut dungeon = match level {
+        1 => RandomRoomsBuilder::build(level, rng.as_mut()),
+        2 => DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), level, rng.as_mut()),
+        3 => CellAutomataBuilder::build(level, rng.as_mut()),
+        _ => CellAutomataBuilder::build(level, rng.as_mut()),
     };
 
     PrefabVault::from(PrefabBlueprint::Fortress).create_in(&mut dungeon, &mut rng);
