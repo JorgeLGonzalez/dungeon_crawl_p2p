@@ -10,6 +10,7 @@ Tooltip visibility is toggled on/off based on events that are configured to run 
 - `MonsterMovesEvent` triggers [on_monster_move](./on_monster_move.rs)
 - Mouse `CursorMoved` triggers [on_mouse_move](./on_mouse_move.rs)
 - Dungeon `ZoomEvent` triggers [on_zoom](./on_zoom.rs)
+- Entering `GameState::DungeonSpawning` triggers [on_exit_level](./on_exit_level.rs)
 
 All these systems create a [TooltipToggleTrigger](./toggle/trigger.rs) observable trigger event observed by the [toggle_tooltip](./toggle_tooltip.rs) system, which ultimately shows or hides the tooltip based on the `TooltipToggleTrigger` variant.
 
@@ -30,6 +31,10 @@ This system toggles the tooltip visibility based on mouse movement. We want to a
 3. If the tooltip is visible and the mouse is still on it, we do NOT toggle.
 
 Finally, if we get through all that, we then check if the mouse is over any entity that supports a tooltip and show the tooltip. If none are found, we hide the tooltip if it is visible.
+
+### on_exit_level
+
+This is not a Bevy event. Rather, when any player exits a Dungeon level, the game state changes to `GameState::DungeonSpawning`, which triggers this system, which simply hides any visible tooltip for either player (since both players change levels simultaneously).
 
 ### Coordinate Systems
 

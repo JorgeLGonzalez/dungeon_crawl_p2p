@@ -30,7 +30,18 @@ mod inventory {
     use hud_inventory_sync::*;
 }
 
+mod level {
+    mod components;
+    mod spawn;
+
+    pub(super) use spawn::spawn_level_ui;
+
+    use super::*;
+    use components::*;
+}
+
 mod plugin;
+
 mod tooltips {
     mod components;
     mod on_exit_level;
@@ -81,5 +92,6 @@ use camera_setup::setup_camera;
 use components::*;
 use health::*;
 use inventory::{spawn_inventory_ui, update_inventory};
+use level::spawn_level_ui;
 use tooltips::{TooltipCoreSet, TooltipPlugin};
 use weapon::*;

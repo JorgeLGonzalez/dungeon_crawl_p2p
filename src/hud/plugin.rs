@@ -18,6 +18,7 @@ impl Plugin for HudPlugin {
                 setup_health_bar,
                 spawn_inventory_ui,
                 spawn_weapon_ui,
+                spawn_level_ui,
             )
                 .chain()
                 .in_set(HudStartupSet),

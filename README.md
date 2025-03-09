@@ -40,6 +40,7 @@ Then:
   - [ ] remember to downgrade log level for player move in move_player
   - [ ] avoid putting items on stairs and amulet
   - [ ] document decision to teleport players
+  - [ ] amulet on deepest level
 - [ ] player sprites
 - [ ] monster sprites
 - [ ] tile sprites
