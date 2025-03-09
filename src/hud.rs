@@ -43,8 +43,10 @@ mod level {
 mod location {
     mod components;
     mod spawn;
+    mod update;
 
     pub(super) use spawn::spawn_location_ui;
+    pub(super) use update::update_location_ui;
 
     use super::*;
     use components::*;
@@ -103,6 +105,6 @@ use components::*;
 use health::*;
 use inventory::{spawn_inventory_ui, update_inventory};
 use level::spawn_level_ui;
-use location::spawn_location_ui;
+use location::{spawn_location_ui, update_location_ui};
 use tooltips::{TooltipCoreSet, TooltipPlugin};
 use weapon::*;

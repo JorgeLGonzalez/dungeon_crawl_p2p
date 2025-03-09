@@ -25,7 +25,7 @@ pub fn spawn_location_ui(mut commands: Commands, font_assets: Res<FontAssets>) {
         ))
         .with_child((
             LocationText,
-            Text::new("(0,0)"),
+            Text::new("(?,?)"),
             TextFont {
                 font: font_assets.hud_font.clone(),
                 font_size: config::TEXT_SIZE,
