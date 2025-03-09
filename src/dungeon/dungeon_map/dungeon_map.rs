@@ -58,6 +58,17 @@ impl DungeonMap {
         trace!("{monster} placed at {}", monster.pos);
     }
 
+    /// Returns an [`IRect`] that encompasses the entire dungeon map.
+    pub fn bounds(&self) -> IRect {
+        IRect::new(X_MIN as i32, Y_MIN as i32, X_MAX as i32, Y_MAX as i32)
+    }
+
+    /// Returns an [`IRect`] that encompasses the entire dungeon map excluding
+    /// the outermost walls.
+    pub fn bounds_inner(&self) -> IRect {
+        self.bounds().inflate(-1)
+    }
+
     /// Remove any monsters or items slated for the tiles encompassed by the vault.
     /// (Players are NOT removed.)
     pub fn clear_area(&mut self, area: IRect) {
