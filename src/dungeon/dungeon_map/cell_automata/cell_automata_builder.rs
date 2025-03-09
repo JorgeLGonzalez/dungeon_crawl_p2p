@@ -1,6 +1,5 @@
 use super::*;
 use crate::prelude::*;
-use rand::prelude::*;
 
 pub struct CellAutomataBuilder {
     map: DungeonMap,
@@ -30,11 +29,7 @@ impl CellAutomataBuilder {
     }
 
     fn add_monster_starting_positions(mut self, rng: &mut RandomGenerator) -> Self {
-        self.map.monster_starting_positions = self
-            .map
-            .spawnable_positions()
-            .map(MonsterPosition::new)
-            .choose_multiple(rng, NUM_MONSTERS);
+        self.map.add_monsters(NUM_MONSTERS, rng);
 
         self
     }

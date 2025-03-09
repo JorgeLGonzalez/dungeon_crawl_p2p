@@ -1,6 +1,5 @@
 use super::*;
 use crate::prelude::*;
-use rand::prelude::*;
 
 pub struct DrunkardsWalkBuilder {
     config: DrunkardsWalkConfig,
@@ -38,11 +37,7 @@ impl DrunkardsWalkBuilder {
     }
 
     fn add_monsters(mut self, rng: &mut RandomGenerator) -> Self {
-        self.map.monster_starting_positions = self
-            .map
-            .spawnable_positions()
-            .map(MonsterPosition::new)
-            .choose_multiple(rng, self.config.num_monsters);
+        self.map.add_monsters(self.config.num_monsters, rng);
 
         self
     }

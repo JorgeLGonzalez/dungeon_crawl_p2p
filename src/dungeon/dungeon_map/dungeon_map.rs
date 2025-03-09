@@ -38,6 +38,15 @@ impl DungeonMap {
             .choose_multiple(rng, count);
     }
 
+    /// Add monsters to random spawnable positions in the dungeon. (Replaces any
+    /// existing monster positions.)
+    pub fn add_monsters(&mut self, count: usize, rng: &mut RandomGenerator) {
+        self.monster_starting_positions = self
+            .spawnable_positions()
+            .map(MonsterPosition::new)
+            .choose_multiple(rng, count);
+    }
+
     /// Find the nearest floor tile to the given origin, within the given radius.
     /// If no floor tile is found within the radius, recursively search with an
     /// increased radius.
