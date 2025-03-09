@@ -32,8 +32,8 @@ Then:
   - [x] advance level upon stairs exit
   - [x] keep player inventory
   - [x] BIG conceptual problem. It is weird that one player exiting a dungeon drags the other one with him. But if the other player stays behind, sync is seemingly way more complicated. We can't despawn stuff and spawn on the other. Players would both have to keep both sets of entities and each one would be level specific. So transport seems the easy way out.
-  - [ ] tooltip on exit
-  - [ ] remove active tooltip on exit level
+  - [x] tooltip on exit
+  - [x] remove active tooltip on exit level
   - [ ] show level in HUD
   - [ ] Desync after level gen
   - [ ] remember to hide exit tile! (spawn_dungeon visibility)

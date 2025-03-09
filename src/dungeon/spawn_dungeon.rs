@@ -1,5 +1,5 @@
 use super::*;
-use crate::{config::ITEM_Z_LAYER, player::Obstacle, prelude::*};
+use crate::{config::ITEM_Z_LAYER, hud::TooltipLabel, player::Obstacle, prelude::*};
 
 pub fn spawn_dungeon(mut commands: Commands, mut rng: ResMut<RandomGenerator>) {
     let mut dungeon = match rng.gen_range(0..3) {
@@ -49,7 +49,10 @@ fn spawn_exit_stairs(commands: &mut Commands, dungeon: &DungeonMap) {
             custom_size: Some(Vec2::new(TILE_WIDTH, TILE_HEIGHT)),
             ..default()
         },
+        TooltipLabel("Exit Stairs".to_string()),
         Transform::from_translation(dungeon.center.to_vec3(ITEM_Z_LAYER)),
+        // TODO: hide
+        // Visibility::Hidden,
     ));
 
     info!(

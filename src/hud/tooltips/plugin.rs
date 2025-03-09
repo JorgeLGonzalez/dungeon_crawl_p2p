@@ -11,7 +11,8 @@ pub struct TooltipPlugin;
 impl Plugin for TooltipPlugin {
     fn build(&self, app: &mut App) {
         app.add_observer(toggle_tooltip)
-            .add_systems(OnEnter(GameState::Startup), spawn_tooltip);
+            .add_systems(OnEnter(GameState::Startup), spawn_tooltip)
+            .add_systems(OnEnter(GameState::DungeonSpawning), on_exit_level);
 
         common::add_core_systems(
             app,

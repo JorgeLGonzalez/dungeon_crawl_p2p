@@ -160,7 +160,6 @@ mod tests {
             match tile {
                 TileType::Floor => floor_count += 1,
                 TileType::Wall => wall_count += 1,
-                _ => unreachable!(),
             }
         }
         assert_eq!(wall_count, expected_wall_count, "wrong wall count");

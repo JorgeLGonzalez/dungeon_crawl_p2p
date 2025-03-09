@@ -33,6 +33,7 @@ mod inventory {
 mod plugin;
 mod tooltips {
     mod components;
+    mod on_exit_level;
     mod on_monster_move;
     mod on_mouse_move;
     mod on_player_move;
@@ -48,6 +49,7 @@ mod tooltips {
 
     use super::*;
     use components::*;
+    use on_exit_level::on_exit_level;
     use on_monster_move::on_monster_move;
     use on_mouse_move::on_mouse_move;
     use on_player_move::on_player_move;
