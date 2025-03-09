@@ -35,7 +35,7 @@ impl PrefabVault {
 
         let vault = self.vault_rect(center_pos);
 
-        self.clear_content(vault, map);
+        map.clear_area(vault);
 
         let tiles = self.blueprint.tiles(vault).collect::<Vec<_>>();
         tiles.iter().for_each(|tile| {
@@ -47,14 +47,6 @@ impl PrefabVault {
         info!("{:?} prefab vault created at {center_pos}.", self.blueprint);
 
         Some(center_pos)
-    }
-
-    /// Remove any monsters or items slated for the tiles encompassed by the vault.
-    fn clear_content(&self, vault: IRect, map: &mut DungeonMap) {
-        map.item_positions
-            .retain(|&pos| !vault.contains(pos.into()));
-        map.monster_starting_positions
-            .retain(|&pos| !vault.contains(pos.into()));
     }
 
     /// Ensure that the vault is reachable from all player starting positions.

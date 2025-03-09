@@ -10,10 +10,11 @@ pub struct DungeonMap {
     /// Floor tile closest to the center of the dungeon where we put the exit
     /// or amulet.
     pub center: DungeonPosition,
-    pub item_positions: Vec<ItemPosition>,
     pub level: usize,
     pub monster_starting_positions: Vec<MonsterPosition>,
     pub player_starting_positions: Vec<DungeonPosition>,
+
+    item_positions: Vec<ItemPosition>,
     tiles: Vec<TileType>,
 }
 
@@ -50,6 +51,15 @@ impl DungeonMap {
     pub fn add_one_item(&mut self, item: ItemPosition) {
         self.item_positions.push(item);
         trace!("{item} placed at {}", item.pos);
+    }
+
+    /// Remove any monsters or items slated for the tiles encompassed by the vault.
+    /// (Players are NOT removed.)
+    pub fn clear_area(&mut self, area: IRect) {
+        self.item_positions
+            .retain(|&pos| !area.contains(pos.into()));
+        self.monster_starting_positions
+            .retain(|&pos| !area.contains(pos.into()));
     }
 
     /// Find the nearest floor tile to the given origin, within the given radius.
