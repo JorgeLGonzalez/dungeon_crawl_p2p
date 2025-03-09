@@ -37,7 +37,7 @@ Then:
   - [x] remember to downgrade log level for player move in move_player
   - [x] show level in HUD
   - [x] avoid putting items on stairs and amulet
-  - [ ] document decision to teleport players
+  - [x] document decision to teleport players
   - [ ] Desync after level gen
   - [ ] amulet on deepest level
   - [ ] remember to hide exit tile! (spawn_dungeon visibility)
@@ -72,7 +72,7 @@ See [Deploying](./static/README.md)
   - `health`: Health, healing, damage
   - `random_generator`: Random number generation
   - `events`: Events not clearly associated with any other module (e.g. DesyncEvent, SnapshotStateEvent)
-- `dungeon`: Dungeon generation and map
+- [dungeon](./src/dungeon/README.md): Dungeon generation and map
 - `game_states`: The GameState enum and the game_over system
 - [HUD](./src/hud/README.md): Heads-up display, including health bar and tooltips
 - `items`: Items that the player can grab and add to their inventory and use later
@@ -93,7 +93,11 @@ flowchart TD
   SpawnMonstersSet-- before -->SpawnItemsSet
 ```
 
-Note that HUD elements spawn in `GameState::Startup`. The state exits right after entering by running `exit_dungeon_spawning` in the [GameStatesPlugin](./src/game_states/plugin.rs).
+Notes:
+
+- A level change happens simultaneously for both players in a multiplayer game. See [teleport_players](./src/player/teleport.rs).
+- HUD elements spawn in `GameState::Startup`.
+- The state exits right after entering by running `exit_dungeon_spawning` in [GameStatesPlugin](./src/game_states/plugin.rs).
 
 #### GameState::InGame Main Loop
 
