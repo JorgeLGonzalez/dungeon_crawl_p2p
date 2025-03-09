@@ -1,9 +1,5 @@
 use super::{LastAction, Monster};
-use crate::{
-    dungeon::{TileType, WallTile},
-    player::PlayerId,
-    prelude::*,
-};
+use crate::{dungeon::TileType, player::PlayerId, prelude::*};
 use bevy::utils::hashbrown::{HashMap, HashSet};
 
 pub type MonsterQuery<'w, 's, 'd, 'f, 'a, 't> = Query<
@@ -64,10 +60,14 @@ impl MonsterActionParams {
 
     fn create_invalid_position_set(dungeon: &DungeonMap) -> InvalidPositionSet {
         InvalidPositionSet::from_iter(
-            dungeon
-                .tiles()
-                .filter(|t| t.tile_type == TileType::Wall)
-                .map(|t| t.pos.to_vec2().as_ivec2()),
+            std::iter::once(dungeon.center)
+                .chain(
+                    dungeon
+                        .tiles()
+                        .filter(|t| t.tile_type == TileType::Wall)
+                        .map(|t| t.pos),
+                )
+                .map(|p| p.to_vec2().as_ivec2()),
         )
     }
 }

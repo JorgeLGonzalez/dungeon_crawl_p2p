@@ -36,7 +36,7 @@ Then:
   - [x] remove active tooltip on exit level
   - [x] remember to downgrade log level for player move in move_player
   - [x] show level in HUD
-  - [ ] avoid putting items on stairs and amulet
+  - [x] avoid putting items on stairs and amulet
   - [ ] document decision to teleport players
   - [ ] Desync after level gen
   - [ ] amulet on deepest level

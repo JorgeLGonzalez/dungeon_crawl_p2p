@@ -54,10 +54,10 @@ impl MonsterActionDeterminer {
         let MonsterActionParams {
             monsters: monster_positions,
             players,
-            invalid_positions: walls,
+            invalid_positions,
         } = params;
 
-        let valid_moves = self.gather_valid_moves(monster_positions, walls);
+        let valid_moves = self.gather_valid_moves(monster_positions, invalid_positions);
         if valid_moves.is_empty() {
             return None;
         }
