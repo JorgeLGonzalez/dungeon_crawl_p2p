@@ -19,6 +19,7 @@ impl Plugin for HudPlugin {
                 spawn_inventory_ui,
                 spawn_weapon_ui,
                 spawn_level_ui,
+                spawn_location_ui,
             )
                 .chain()
                 .in_set(HudStartupSet),
