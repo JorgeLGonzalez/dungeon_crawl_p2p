@@ -39,8 +39,8 @@ Then:
   - [x] avoid putting items on stairs and amulet
   - [x] document decision to teleport players
   - [x] location UI update for both players
-  - [ ] Can move beyond walls in level 2
-  - [ ] Desync after level gen
+  - [x] Can move beyond walls in level 2
+  - [ ] Desync after level gen. Looks like magic items are a primary culprit. Reduce number to narrow down
   - [ ] amulet on deepest level
   - [ ] remember to hide exit tile! (spawn_dungeon visibility)
 - [ ] player sprites

@@ -17,13 +17,13 @@ impl DrunkardsWalkBuilder {
         info!("Building drunkards walk dungeon.");
 
         let map = DungeonMap::new(level);
-        let inner_bounds = map.bounds();
+        let bounds = map.bounds();
         let min_floor_count =
-            (inner_bounds.width() * inner_bounds.height()) as usize * config.percent_floor / 100;
+            (bounds.width() * bounds.height()) as usize * config.percent_floor / 100;
 
         Self {
             config,
-            inner_bounds,
+            inner_bounds: map.bounds_inner(),
             map,
             min_floor_count,
         }
@@ -219,6 +219,44 @@ mod tests {
             distance > 80.,
             "players too close together at distance {distance}"
         );
+    }
+
+    #[test]
+    fn walled_perimeter() {
+        let config = DrunkardsWalkConfig::default();
+        let mut rng = RandomGenerator::new();
+
+        let map = DrunkardsWalkBuilder::build(config, 1, &mut rng);
+
+        let bounds = map.bounds();
+        for x in bounds.min.x..=bounds.max.x {
+            let bottom = DungeonPosition::new(x as isize, bounds.min.y as isize);
+            assert_eq!(
+                map.get_tile_type(&bottom),
+                TileType::Wall,
+                "wall missing at {bottom}"
+            );
+            let top = DungeonPosition::new(x as isize, bounds.max.y as isize);
+            assert_eq!(
+                map.get_tile_type(&top),
+                TileType::Wall,
+                "wall missing at {top}"
+            );
+        }
+        for y in bounds.min.y..=bounds.max.y {
+            let left = DungeonPosition::new(bounds.min.x as isize, y as isize);
+            assert_eq!(
+                map.get_tile_type(&left),
+                TileType::Wall,
+                "wall missing at {left}"
+            );
+            let right = DungeonPosition::new(bounds.max.x as isize, y as isize);
+            assert_eq!(
+                map.get_tile_type(&right),
+                TileType::Wall,
+                "wall missing at {right}"
+            );
+        }
     }
 
     #[test]
