@@ -27,6 +27,10 @@ impl DungeonPosition {
         Self { x, y }
     }
 
+    pub fn as_ivec2(&self) -> IVec2 {
+        self.to_vec2().as_ivec2()
+    }
+
     /// Returns true if the position is at the perimeter of the dungeon.
     pub fn at_perimeter(&self) -> bool {
         self.x == X_MAX || self.x == X_MIN || self.y == Y_MAX || self.y == Y_MIN
@@ -74,7 +78,7 @@ impl DungeonPosition {
 
 impl From<DungeonPosition> for IVec2 {
     fn from(pos: DungeonPosition) -> Self {
-        pos.to_vec2().as_ivec2()
+        pos.as_ivec2()
     }
 }
 

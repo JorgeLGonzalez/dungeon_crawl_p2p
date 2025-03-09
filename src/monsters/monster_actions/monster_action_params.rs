@@ -67,7 +67,7 @@ impl MonsterActionParams {
                         .filter(|t| t.tile_type == TileType::Wall)
                         .map(|t| t.pos),
                 )
-                .map(|p| p.to_vec2().as_ivec2()),
+                .map(|p| p.as_ivec2()),
         )
     }
 }
