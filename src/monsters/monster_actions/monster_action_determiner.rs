@@ -54,7 +54,7 @@ impl MonsterActionDeterminer {
         let MonsterActionParams {
             monsters: monster_positions,
             players,
-            walls,
+            invalid_positions: walls,
         } = params;
 
         let valid_moves = self.gather_valid_moves(monster_positions, walls);
@@ -121,12 +121,12 @@ impl MonsterActionDeterminer {
     fn gather_valid_moves(
         &self,
         monster_positions: &MonsterPositionSet,
-        walls: &WallPositionSet,
+        invalid_positions: &InvalidPositionSet,
     ) -> Vec<IVec2> {
         [IVec2::Y, IVec2::NEG_Y, IVec2::NEG_X, IVec2::X]
             .iter()
             .map(|&step| step + self.current_pos)
-            .filter(|t_pos| !walls.contains(t_pos))
+            .filter(|t_pos| !invalid_positions.contains(t_pos))
             .filter(|t_pos| !monster_positions.contains(t_pos))
             .collect()
     }

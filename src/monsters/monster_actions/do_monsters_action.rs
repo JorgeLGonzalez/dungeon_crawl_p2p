@@ -6,12 +6,12 @@ pub fn do_monsters_action(
     mut attack_event: EventWriter<MonsterAttacksEvent>,
     mut move_event: EventWriter<MonsterMovesEvent>,
     mut rng: ResMut<RandomGenerator>,
+    dungeon: Res<DungeonMap>,
     monsters: MonsterQuery,
     players: PlayersQuery,
     time: Res<Time>,
-    wall_tiles: WallQuery,
 ) {
-    let mut params = MonsterActionParams::new(&monsters, &players, &wall_tiles);
+    let mut params = MonsterActionParams::new(&dungeon, &monsters, &players);
 
     sorted_determiners(&monsters, &time)
         .into_iter()
