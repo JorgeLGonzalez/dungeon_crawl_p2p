@@ -38,6 +38,8 @@ Then:
   - [x] show level in HUD
   - [x] avoid putting items on stairs and amulet
   - [x] document decision to teleport players
+  - [x] location UI update for both players
+  - [ ] Can move beyond walls in level 2
   - [ ] Desync after level gen
   - [ ] amulet on deepest level
   - [ ] remember to hide exit tile! (spawn_dungeon visibility)

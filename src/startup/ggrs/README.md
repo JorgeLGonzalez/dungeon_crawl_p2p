@@ -46,6 +46,8 @@ Since the PRs etc have not gotten any attention, I have developed another way wh
 2. Capture the output logged into a file called `p0.log` in the `logs` folder of the `ggrs-utils` project. When debugging MultiPlayer mode, save the second player's log as `p1.log`.
 3. Run ggrs-utils. This will parse the log(s) and generate useful output files around the mismatched frame.
 
+WARNING: When entities are re-spawned due to a rollback I don't think they get the same entity ID, so using that as a way to match them up like ggrs-utils does is probably a red-herring. Need to work on this...
+
 There are two ways to auto-detect desync events:
 
 1. Handle the `GgrsEvent::DesyncDetected`, which is generated when `DesyncDetection` is enabled in the P2P session. Enabling happens in `create_p2p_session` while handling happens in `handle_ggrs_events`. The handling tries to log the snapshots, but see [this issue](https://github.com/gschup/bevy_ggrs/issues/117) I logged.
