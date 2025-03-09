@@ -47,7 +47,7 @@ mod player_actions {
 }
 mod plugin;
 mod spawn_players;
-mod transport;
+mod teleport;
 
 pub use components::{Inventory, MoveThrottle, Obstacle, Player, PlayerCamera, PlayerId};
 pub use events::{InventoryUpdatedEvent, PlayerMovesEvent, WeaponWieldedEvent};
@@ -55,4 +55,4 @@ pub use local_player::{LocalPlayer, PlayersQuery};
 pub use plugin::{PlayerCoreSet, PlayerPlugin, SpawnPlayersSet};
 
 use spawn_players::spawn_players;
-use transport::transport_players;
+use teleport::transport_players;
