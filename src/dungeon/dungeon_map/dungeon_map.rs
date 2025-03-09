@@ -182,3 +182,26 @@ impl From<&DungeonPosition> for MapPos {
         Self { x, y }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn bounds() {
+        let map = DungeonMap::new(1);
+
+        let bounds = map.bounds();
+
+        assert_eq!(bounds.min.x, X_MIN as i32, "min x");
+        assert_eq!(bounds.min.y, Y_MIN as i32, "min y");
+        assert_eq!(bounds.max.x, X_MAX as i32, "max x");
+        assert_eq!(bounds.max.y, Y_MAX as i32, "max y");
+        assert_eq!(
+            map.idx_to_position(NUM_TILES - 1),
+            DungeonPosition::new(X_MAX, Y_MAX)
+        );
+        assert_eq!(bounds.width(), MAP_WIDTH as i32 - 1, "width");
+        assert_eq!(bounds.height(), MAP_HEIGHT as i32 - 1, "height");
+    }
+}

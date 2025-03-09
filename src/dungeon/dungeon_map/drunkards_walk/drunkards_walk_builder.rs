@@ -3,6 +3,7 @@ use crate::prelude::*;
 
 pub struct DrunkardsWalkBuilder {
     config: DrunkardsWalkConfig,
+    inner_bounds: IRect,
     map: DungeonMap,
     min_floor_count: usize,
 }
@@ -15,11 +16,15 @@ impl DrunkardsWalkBuilder {
     ) -> DungeonMap {
         info!("Building drunkards walk dungeon.");
 
-        let min_floor_count = (MAP_WIDTH * MAP_HEIGHT) * config.percent_floor / 100;
+        let map = DungeonMap::new(level);
+        let inner_bounds = map.bounds();
+        let min_floor_count =
+            (inner_bounds.width() * inner_bounds.height()) as usize * config.percent_floor / 100;
 
         Self {
             config,
-            map: DungeonMap::new(level),
+            inner_bounds,
+            map,
             min_floor_count,
         }
         .add_player_positions(rng)
@@ -112,10 +117,9 @@ impl DrunkardsWalkBuilder {
             _ => unreachable!(),
         };
 
-        let in_bounds =
-            |p: DungeonPosition| p.x > X_MIN && p.x < X_MAX && p.y > Y_MIN && p.y < Y_MAX;
-
-        in_bounds(random_step).then_some(random_step)
+        self.inner_bounds
+            .contains(random_step.as_ivec2())
+            .then_some(random_step)
     }
 
     /// Repeatedly drunkenly tunnel first starting from the center and each
@@ -156,11 +160,12 @@ mod tests {
 
         let tile_count = map.tiles().count();
         assert_eq!(tile_count, MAP_WIDTH * MAP_HEIGHT);
+        let inner_area = (map.bounds_inner().width() * map.bounds_inner().height()) as usize;
         let floor_count = map
             .tiles()
             .filter(|t| t.tile_type == TileType::Floor)
             .count();
-        let expected = tile_count * percent_floor / 100;
+        let expected = inner_area * percent_floor / 100;
         assert!(
             floor_count >= expected,
             "actual floor={floor_count} expected={expected}"
