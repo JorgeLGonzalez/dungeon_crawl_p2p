@@ -55,4 +55,4 @@ pub use local_player::{LocalPlayer, PlayersQuery};
 pub use plugin::{PlayerCoreSet, PlayerPlugin, SpawnPlayersSet};
 
 use spawn_players::spawn_players;
-use teleport::transport_players;
+use teleport::teleport_players;
