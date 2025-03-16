@@ -5,4 +5,5 @@ pub fn stop_moving(mut commands: Commands, mut event_reader: EventReader<StopMov
     event_reader.read().for_each(|event| {
         commands.entity(event.player).remove::<MoveThrottle>();
     });
+    unreachable!("StopMovingEvent should not be sent");
 }

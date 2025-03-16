@@ -7,16 +7,17 @@ pub fn spawn_dungeon(
     dungeon: Option<Res<DungeonMap>>,
 ) {
     let level = dungeon.map_or(1, |dungeon| dungeon.level + 1);
-    info!("Spawning dungeon level {level}");
+    info!("|HIGHLIGHT| Spawning dungeon level {level}");
 
-    let mut dungeon = match level {
-        1 => RandomRoomsBuilder::build(level, rng.as_mut()),
-        2 => DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), level, rng.as_mut()),
-        3 => CellAutomataBuilder::build(level, rng.as_mut()),
-        _ => CellAutomataBuilder::build(level, rng.as_mut()),
-    };
+    // let mut dungeon = match level {
+    //     1 => RandomRoomsBuilder::build(level, rng.as_mut()),
+    //     2 => DrunkardsWalkBuilder::build(DrunkardsWalkConfig::default(), level, rng.as_mut()),
+    //     3 => CellAutomataBuilder::build(level, rng.as_mut()),
+    //     _ => CellAutomataBuilder::build(level, rng.as_mut()),
+    // };
 
-    PrefabVault::from(PrefabBlueprint::Fortress).create_in(&mut dungeon, &mut rng);
+    // PrefabVault::from(PrefabBlueprint::Fortress).create_in(&mut dungeon, &mut rng);
+    let dungeon = RandomRoomsBuilder::build(level, rng.as_mut());
 
     for tile in dungeon.tiles() {
         let sprite = create_sprite(tile.tile_type);

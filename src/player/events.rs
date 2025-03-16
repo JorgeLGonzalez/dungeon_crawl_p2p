@@ -6,7 +6,9 @@ pub struct PlayerEventsPlugin;
 
 impl Plugin for PlayerEventsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_event::<GrabItemEvent>()
+        app
+        .add_event::<ExitLevelEvent>()
+        .add_event::<GrabItemEvent>()
             .add_event::<InventoryUpdatedEvent>()
             .add_event::<PlayerAttacksEvent>()
             .add_event::<PlayerMovesEvent>()
@@ -14,6 +16,18 @@ impl Plugin for PlayerEventsPlugin {
             .add_event::<StopMovingEvent>()
             .add_event::<UseItemEvent>()
             .add_event::<WeaponWieldedEvent>();
+    }
+}
+
+#[derive(Event)]
+pub struct ExitLevelEvent {
+    pub player: Entity,
+    pub player_id: usize,
+}
+
+impl ExitLevelEvent {
+    pub fn new(player: Entity, player_id: usize) -> Self {
+        Self { player, player_id }
     }
 }
 

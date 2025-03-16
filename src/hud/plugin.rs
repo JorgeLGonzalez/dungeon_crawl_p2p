@@ -26,10 +26,8 @@ impl Plugin for HudPlugin {
                     .in_set(HudStartupSet),
             )
             .add_systems(
-                OnEnter(GameState::DungeonSpawning),
-                (update_level_ui, update_location_ui)
-                    .chain()
-                    .after(SpawnDungeonSet),
+                OnExit(GameState::DungeonSpawning),
+                (update_level_ui, update_location_ui).chain(), // .after(SpawnDungeonSet),
             );
 
         common::add_core_systems(

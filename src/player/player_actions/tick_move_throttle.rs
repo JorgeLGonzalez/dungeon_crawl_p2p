@@ -13,5 +13,6 @@ pub fn tick_move_throttle(
         if movement.just_finished() {
             commands.entity(entity).remove::<MoveThrottle>();
         }
+        unreachable!("MoveThrottle should not exit");
     }
 }

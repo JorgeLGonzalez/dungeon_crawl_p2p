@@ -17,6 +17,9 @@ pub fn teleport_players(
         fov.visible_tiles.clear();
         let player_pos = dungeon.player_starting_positions[player.id];
         transform.translation = player_pos.to_vec3(config::PLAYER_Z_LAYER);
-        info!("Transported player {} to {player_pos}", player.id);
+        info!(
+            "|HIGHLIGHT| Teleported player {} to {player_pos}",
+            player.id
+        );
     }
 }

@@ -1,4 +1,5 @@
 use crate::{
+    dungeon::RespawnState,
     items::{Grabbable, MagicItem},
     monsters::Monster,
     player::MoveThrottle,
@@ -13,8 +14,12 @@ pub fn debug_ggrs(
     monsters: Query<(Entity, &Health, &Monster, &Transform), With<Monster>>,
     players: Query<(Entity, &Health, Option<&MoveThrottle>, &Player, &Transform), With<Player>>,
     frame: Res<RollbackFrameCount>,
+    respawn: Res<RespawnState>,
+    state: Res<State<GameState>>,
 ) {
     let frame = frame.0;
+
+    info!("Frame={frame} State={state:?} Respawn={respawn:?}");
 
     for (entity, item, transform, _) in &items {
         let item = item.label();

@@ -2,11 +2,17 @@ use super::components::{Inventory, Obstacle, Player};
 use crate::{
     config::{PLAYER_HEIGHT, PLAYER_WIDTH},
     hud::TooltipLabel,
+    player::LocalPlayer,
     prelude::*,
 };
-use bevy_ggrs::AddRollbackCommandExtension;
+use bevy_ggrs::{AddRollbackCommandExtension, LocalPlayers};
 
-pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands, players: Query<&Player>) {
+pub fn spawn_players(
+    dungeon: Res<DungeonMap>,
+    mut commands: Commands,
+    local_players: Res<LocalPlayers>,
+    players: Query<&Player>,
+) {
     if !players.is_empty() {
         // Players already spawned, do nothing
         return;
@@ -38,6 +44,10 @@ pub fn spawn_players(dungeon: Res<DungeonMap>, mut commands: Commands, players: 
             .add_rollback()
             .id();
 
-        info!("Spawned player {player_idx} at {player_pos} [{id}]");
+        let kind = match LocalPlayer::is_local_player_id(player_idx, &local_players) {
+            true => "local",
+            false => "remote",
+        };
+        info!("Spawned {kind} player {player_idx} at {player_pos} [{id}]");
     }
 }

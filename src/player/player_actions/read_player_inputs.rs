@@ -1,5 +1,5 @@
 use super::{player_action::PickedItemQuery, PlayerAction};
-use crate::config;
+use crate::{config, prelude::GameState};
 use bevy::{prelude::*, utils::hashbrown::HashMap};
 use bevy_ggrs::{LocalInputs, LocalPlayers};
 
@@ -11,12 +11,18 @@ pub fn read_player_inputs(
     mut keys: ResMut<ButtonInput<KeyCode>>,
     local_players: Res<LocalPlayers>,
     picked_items: PickedItemQuery,
+    state: Res<State<GameState>>,
 ) {
     let local_inputs = local_players
         .0
         .iter()
         .fold(HashMap::new(), |mut acc, &player_handle| {
-            let action = PlayerAction::new(keys.as_mut(), &picked_items);
+            let action = (*state == GameState::InGame)
+                .then(|| PlayerAction::new(keys.as_mut(), &picked_items))
+                .unwrap_or(PlayerAction::None);
+            if action != PlayerAction::None {
+                info!("Local player {player_handle} action: {action:?}");
+            }
             acc.insert(player_handle, action.into());
 
             acc

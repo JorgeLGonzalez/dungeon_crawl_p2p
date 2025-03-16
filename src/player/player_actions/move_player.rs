@@ -17,9 +17,9 @@ pub fn move_player(
             event.pos
         );
         transform.translation = event.pos.as_vec2().extend(PLAYER_Z_LAYER);
-        commands
-            .entity(event.player)
-            .insert(MoveThrottle::default());
+        // commands
+        //     .entity(event.player)
+        //     .insert(MoveThrottle::default());
         recalculate_fov.send(RecalculateFovEvent::new(event.player, event.pos));
     }
 }

@@ -1,6 +1,7 @@
 use super::{position::MonsterPosition, *};
 use crate::common::RandomGenerator;
 use bevy::prelude::*;
+use bevy_ggrs::ggrs::Frame;
 use rand::seq::IteratorRandom;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;
@@ -86,7 +87,7 @@ impl DungeonMap {
         origin: DungeonPosition,
         radius: isize,
     ) -> DungeonPosition {
-        assert!(radius > 0 && radius < 10);
+        assert!(radius > 0 && radius < 100);
         if radius == 1 && self.get_tile_type(&origin) == TileType::Floor {
             return origin;
         }

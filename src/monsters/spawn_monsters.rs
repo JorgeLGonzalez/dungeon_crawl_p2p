@@ -37,7 +37,7 @@ pub fn spawn_monsters(
             acc
         });
 
-    info!("Spawned monsters: {stats:?}");
+    info!("|HIGHLIGHT| Spawned monsters: {stats:?}");
 }
 
 /// Create a distribution of monster templates based on their frequency so that

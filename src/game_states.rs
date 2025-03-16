@@ -5,7 +5,7 @@ pub use plugin::GameStatesPlugin;
 
 use bevy::prelude::*;
 
-#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq, States)]
+#[derive(States, Resource, Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub enum GameState {
     /// Generate the dungeon level and its contents before going into game
     /// after startup or changing levels
@@ -13,6 +13,7 @@ pub enum GameState {
     GameOver,
     /// Main game loop
     InGame,
+    Intermission,
     #[default]
     /// Asset loading
     Loading,

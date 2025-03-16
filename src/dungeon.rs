@@ -102,7 +102,7 @@ pub use config::{NUM_MONSTERS, TILE_HEIGHT, TILE_WIDTH, VIEWPORT_HEIGHT};
 pub use dungeon_map::{DungeonMap, DungeonPosition, TileType};
 pub use events::{RevealDungeonEvent, ZoomEvent};
 pub use illuminator::{FloorQuery, Illuminator, PlayerQuery};
-pub use plugin::{DungeonCoreSet, DungeonPlugin, SpawnDungeonSet};
+pub use plugin::{DungeonCoreSet, DungeonPlugin, RespawnState, SpawnDungeonSet};
 
 use components::*;
 use config::*;

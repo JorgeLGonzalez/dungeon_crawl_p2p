@@ -91,4 +91,3 @@ handle_move_intent-->>move_player: PlayerMoveEvent
 For other key inputs, we mainly want to register a single keystroke, which would normally work by checking `just_released`. However, in multi-player WebAssembly, this does not work very well, with keystrokes often going undetected. So we use a `single_press` function that resets they key state when it is pressed.
 
 This strategy may actually be a better and simpler method for movement too.
-It is not applied for zooming in/out just because I'm lazy.

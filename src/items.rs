@@ -4,7 +4,7 @@ mod plugin;
 mod spawn_items;
 
 pub use components::{Grabbable, MagicItem, MagicItemTemplate, Weapon};
-pub use plugin::ItemsPlugin;
+pub use plugin::{ItemsPlugin, SpawnItemsSet};
 
 use components::MagicItemBundle;
 use despawn_items::despawn_items;

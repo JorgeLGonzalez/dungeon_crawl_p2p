@@ -6,6 +6,7 @@ pub type PickedItemQuery<'w, 's, 'i, 't> =
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum PlayerAction {
+    ExitLevel,
     GrabItem,
     Move(MoveDirection),
     #[default]
@@ -42,6 +43,7 @@ impl From<u8> for PlayerAction {
             4 => PlayerAction::Move(MoveDirection::Right),
             5 => PlayerAction::StopMoving,
             6 => PlayerAction::GrabItem,
+            7 => PlayerAction::ExitLevel,
             v if v >= 10 && v <= 18 => PlayerAction::UseItem(v - 10),
             50 => PlayerAction::ZoomIn,
             51 => PlayerAction::ZoomOut,
@@ -72,14 +74,15 @@ impl From<&mut ButtonInput<KeyCode>> for PlayerAction {
 
         MOVEMENT_KEYS
             .iter()
-            .find(|(key, _)| keys.pressed(*key))
-            .map(|(_, dir)| *dir)
-            .or_else(|| {
-                MOVEMENT_KEYS
-                    .iter()
-                    .find(|(key, _)| keys.just_released(*key))
-                    .map(|_| StopMoving)
-            })
+            .find_map(|(key, dir)| single_press(keys, *key, *dir))
+            // .find(|(key, _)| keys.pressed(*key))
+            // .map(|(_, dir)| *dir)
+            // .or_else(|| {
+            //     MOVEMENT_KEYS
+            //         .iter()
+            //         .find(|(key, _)| keys.just_released(*key))
+            //         .map(|_| StopMoving)
+            // })
             .or_else(|| single_press(keys, Digit1, UseItem(0)))
             .or_else(|| single_press(keys, Digit2, UseItem(1)))
             .or_else(|| single_press(keys, Digit3, UseItem(2)))
@@ -89,6 +92,7 @@ impl From<&mut ButtonInput<KeyCode>> for PlayerAction {
             .or_else(|| single_press(keys, Digit7, UseItem(6)))
             .or_else(|| single_press(keys, Digit8, UseItem(7)))
             .or_else(|| single_press(keys, Digit9, UseItem(8)))
+            .or_else(|| single_press(keys, KeyE, ExitLevel))
             .or_else(|| single_press(keys, KeyG, GrabItem))
             .or_else(|| single_press(keys, KeyM, RevealDungeonCheat))
             .or_else(|| single_press(keys, KeyP, Snapshot))
@@ -112,6 +116,7 @@ impl Into<u8> for PlayerAction {
             PlayerAction::Move(MoveDirection::Down) => 2,
             PlayerAction::Move(MoveDirection::Left) => 3,
             PlayerAction::Move(MoveDirection::Right) => 4,
+            PlayerAction::ExitLevel => 7,
             PlayerAction::GrabItem => 6,
             PlayerAction::RevealDungeonCheat => 101,
             PlayerAction::StopMoving => 5,

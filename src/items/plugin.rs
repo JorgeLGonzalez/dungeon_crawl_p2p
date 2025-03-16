@@ -5,11 +5,18 @@ use bevy_ggrs::prelude::*;
 
 pub struct ItemsPlugin;
 
+#[derive(SystemSet, Debug, Hash, PartialEq, Eq, Clone)]
+pub struct SpawnItemsSet;
+
 impl Plugin for ItemsPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
-            OnEnter(GameState::DungeonSpawning),
-            (despawn_items, spawn_items).chain().after(SpawnMonstersSet),
+            GgrsSchedule,
+            (despawn_items, spawn_items)
+                .in_set(SpawnItemsSet)
+                .chain()
+                .run_if(in_state(GameState::DungeonSpawning))
+                .after(SpawnMonstersSet),
         );
 
         if !game_mode(GameMode::SinglePlayer) {

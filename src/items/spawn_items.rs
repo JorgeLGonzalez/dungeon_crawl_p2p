@@ -36,7 +36,7 @@ pub fn spawn_items(
             acc
         });
 
-    info!("Spawned items: {stats:?}");
+    info!("|HIGHLIGHT| Spawned items: {stats:?}");
 }
 
 /// Create a distribution of item templates based on their frequency so that

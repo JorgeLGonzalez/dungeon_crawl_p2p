@@ -1,6 +1,10 @@
 use super::*;
 use crate::{
-    common, dungeon::ZoomEvent, monsters::MonsterMovesEvent, player::PlayerMovesEvent, prelude::*,
+    common,
+    dungeon::ZoomEvent,
+    monsters::MonsterMovesEvent,
+    player::{PlayerCoreSet, PlayerMovesEvent},
+    prelude::*,
 };
 
 #[derive(SystemSet, Clone, Copy, Debug, Hash, PartialEq, Eq)]
@@ -23,7 +27,8 @@ impl Plugin for TooltipPlugin {
                 on_zoom.run_if(on_event::<ZoomEvent>),
             )
                 .chain()
-                .in_set(TooltipCoreSet),
+                .in_set(TooltipCoreSet)
+                .after(PlayerCoreSet),
         );
     }
 }

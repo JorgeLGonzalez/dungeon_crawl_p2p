@@ -14,6 +14,7 @@ use player_action::PickedItemQuery;
 /// In single-player mode, there's only one local player so inputs are read directly
 /// from the Bevy [`ButtonInput`] resources
 pub fn do_player_action(
+    mut exit_event: EventWriter<ExitLevelEvent>,
     mut grab_event: EventWriter<GrabItemEvent>,
     mut move_event: EventWriter<PlayerMoveIntentEvent>,
     mut snapshot_event: EventWriter<SnapshotStateEvent>,
@@ -36,6 +37,9 @@ pub fn do_player_action(
         };
 
         match action {
+            PlayerAction::ExitLevel => {
+                exit_event.send(ExitLevelEvent::new(player_entity, player.id));
+            }
             PlayerAction::GrabItem => {
                 grab_event.send(GrabItemEvent::new(player_entity, player.id));
             }
@@ -55,6 +59,7 @@ pub fn do_player_action(
             }
             PlayerAction::StopMoving => {
                 stop_moving_event.send(StopMovingEvent::new(player_entity));
+                unreachable!("StopMovingEvent should not be sent ");
             }
             PlayerAction::UseItem(idx) => {
                 use_item_event.send(UseItemEvent::new(player_entity, player.id, idx));

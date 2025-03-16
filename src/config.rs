@@ -7,7 +7,7 @@ use bevy_matchbox::prelude::PeerId;
 
 // Game
 #[cfg(not(target_arch = "wasm32"))]
-pub const GAME_MODE: GameMode = GameMode::SinglePlayer;
+pub const GAME_MODE: GameMode = GameMode::MultiPlayer;
 #[cfg(target_arch = "wasm32")]
 pub const GAME_MODE: GameMode = GameMode::MultiPlayer;
 
@@ -56,7 +56,7 @@ pub const PLAYER_MOVE_THROTTLE_SECONDS: f32 = 0.1;
 pub const PLAYER_Z_LAYER: f32 = 100.;
 
 // Matchbox and GGRS
-pub const GGRS_DEBUG: bool = false;
+pub const GGRS_DEBUG: bool = true;
 pub const GGRS_INPUT_DELAY: usize = if GGRS_DEBUG { 0 } else { 2 };
 // pub const MATCHBOX_ROOM_URL: &str = "ws://127.0.0.1:3536/dungeon_crawl?next=2";
 pub const MATCHBOX_ROOM_URL: &str = "ws://3.147.199.67:3536/dungeon_crawl?next=2";

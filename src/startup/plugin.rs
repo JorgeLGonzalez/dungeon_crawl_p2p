@@ -38,7 +38,11 @@ impl Plugin for StartupPlugin {
                     create_p2p_session.run_if(
                         in_state(GameState::Startup).and(|| game_mode(GameMode::MultiPlayer)),
                     ),
-                    handle_ggrs_events.run_if(in_state(GameState::InGame)),
+                    handle_ggrs_events.run_if(
+                        in_state(GameState::InGame)
+                            .or(in_state(GameState::DungeonSpawning))
+                            .or(in_state(GameState::Intermission)),
+                    ),
                 ),
             );
         }
