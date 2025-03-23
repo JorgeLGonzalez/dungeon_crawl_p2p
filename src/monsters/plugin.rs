@@ -1,8 +1,9 @@
 use super::{
     components::{LastAction, Monster},
+    despawn_monsters,
     events::MonstersEventsPlugin,
     monster_actions::*,
-    spawn_monsters::spawn_monsters,
+    spawn_monsters,
 };
 use crate::{
     common,
@@ -28,7 +29,7 @@ impl Plugin for MonstersPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<MonsterMoveTracker>().add_systems(
             GgrsSchedule,
-            spawn_monsters
+            (despawn_monsters, spawn_monsters)
                 .in_set(SpawnMonstersSet)
                 .run_if(in_state(GameState::DungeonSpawning))
                 .after(SpawnPlayersSet),
