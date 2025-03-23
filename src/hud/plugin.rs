@@ -1,5 +1,5 @@
 use super::*;
-use crate::{common, dungeon::SpawnDungeonSet, player::PlayerMovesEvent, prelude::*};
+use crate::{common, player::PlayerMovesEvent, prelude::*};
 
 #[derive(SystemSet, Clone, Copy, Debug, Hash, PartialEq, Eq)]
 pub struct HudStartupSet;
@@ -27,7 +27,7 @@ impl Plugin for HudPlugin {
             )
             .add_systems(
                 OnExit(GameState::DungeonSpawning),
-                (update_level_ui, update_location_ui).chain(), // .after(SpawnDungeonSet),
+                (log_rng, update_level_ui, update_location_ui).chain(),
             );
 
         common::add_core_systems(
@@ -43,4 +43,8 @@ impl Plugin for HudPlugin {
                 .in_set(HudCoreSet),
         );
     }
+}
+
+fn log_rng(rng: Res<RandomGenerator>) {
+    info!("|HIGHLIGHT| HudPlugin rng={}", rng.counter);
 }

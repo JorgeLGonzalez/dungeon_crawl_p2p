@@ -14,6 +14,7 @@ pub fn spawn_monsters(
     mut commands: Commands,
     mut rng: ResMut<RandomGenerator>,
 ) {
+    info!("|HIGHLIGHT| Spawning monsters (rng={})", rng.counter);
     let monster_distribution = create_distribution(dungeon_data_assets.get(&dungeon_assets.data));
     let mut random_monster =
         || monster_distribution[rng.gen_range(0..monster_distribution.len())].clone();
@@ -37,7 +38,7 @@ pub fn spawn_monsters(
             acc
         });
 
-    info!("|HIGHLIGHT| Spawned monsters: {stats:?}");
+    info!("|HIGHLIGHT| Spawned monsters: {stats:?} (rng={})", rng.counter);
 }
 
 /// Create a distribution of monster templates based on their frequency so that

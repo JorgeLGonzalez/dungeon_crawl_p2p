@@ -1,7 +1,6 @@
 use super::{position::MonsterPosition, *};
 use crate::common::RandomGenerator;
 use bevy::prelude::*;
-use bevy_ggrs::ggrs::Frame;
 use rand::seq::IteratorRandom;
 
 const NUM_TILES: usize = MAP_WIDTH * MAP_HEIGHT;

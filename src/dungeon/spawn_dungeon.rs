@@ -4,10 +4,13 @@ use crate::{config::ITEM_Z_LAYER, hud::TooltipLabel, player::Obstacle, prelude::
 pub fn spawn_dungeon(
     mut commands: Commands,
     mut rng: ResMut<RandomGenerator>,
-    dungeon: Option<Res<DungeonMap>>,
+    respawn: Res<RespawnState>,
 ) {
-    let level = dungeon.map_or(1, |dungeon| dungeon.level + 1);
-    info!("|HIGHLIGHT| Spawning dungeon level {level}");
+    let level = respawn.level();
+    info!(
+        "|HIGHLIGHT| Spawning dungeon level {level} (rng={})",
+        rng.counter
+    );
 
     // let mut dungeon = match level {
     //     1 => RandomRoomsBuilder::build(level, rng.as_mut()),
@@ -34,6 +37,10 @@ pub fn spawn_dungeon(
     spawn_exit_stairs(&mut commands, &dungeon);
 
     commands.insert_resource(dungeon);
+    info!(
+        "|HIGHLIGHT| Dungeon level {level} spawned (rng={})",
+        rng.counter
+    );
 }
 
 fn create_sprite(tile_type: TileType) -> Sprite {

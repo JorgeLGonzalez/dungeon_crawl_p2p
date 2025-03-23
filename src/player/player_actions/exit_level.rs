@@ -9,6 +9,7 @@ pub fn exit_level(
     mut event_reader: EventReader<ExitLevelEvent>,
     mut next_state: ResMut<NextState<GameState>>,
     mut respawn: ResMut<RespawnState>,
+    dungeon: Res<DungeonMap>,
     exit: Query<&Transform, With<ExitStairs>>,
     frame: Res<RollbackFrameCount>,
     player: Query<&Transform, With<Player>>,
@@ -35,5 +36,5 @@ pub fn exit_level(
         event.player_id, exit_pos
     );
     next_state.set(GameState::DungeonSpawning);
-    *respawn = RespawnState::Pending(frame);
+    *respawn = RespawnState::Pending(frame, dungeon.level + 1);
 }

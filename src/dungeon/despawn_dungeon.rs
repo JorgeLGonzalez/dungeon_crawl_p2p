@@ -20,5 +20,5 @@ pub fn despawn_dungeon(
         .chain(exit.iter())
         .for_each(|e| commands.entity(e).despawn_recursive());
 
-    *respawn = RespawnState::Init(frame);
+    *respawn = RespawnState::Init(frame, respawn.level());
 }

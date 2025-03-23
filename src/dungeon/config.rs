@@ -6,7 +6,7 @@ pub const FLOOR_ILLUMINATED_COLOR: Color = Color::srgb(0.7, 0.7, 0.4); // illumi
 pub const MAP_WIDTH: usize = 100;
 pub const MAP_HEIGHT: usize = 52;
 pub const MAP_Z_LAYER: f32 = 10.;
-pub const NUM_ITEMS: usize = 30;
+pub const NUM_ITEMS: usize = 20;
 pub const NUM_MONSTERS: usize = 30;
 
 /// Min distance between starting position of player and any monster

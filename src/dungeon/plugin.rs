@@ -31,10 +31,21 @@ impl Plugin for DungeonPlugin {
 
 #[derive(Resource, Copy, Clone, Debug)]
 pub enum RespawnState {
-    Complete(Frame),
-    Init(Frame),
+    Complete(Frame, usize),
+    Init(Frame, usize),
     None,
-    Pending(Frame),
+    Pending(Frame, usize),
+}
+
+impl RespawnState {
+    pub fn level(&self) -> usize {
+        match self {
+            RespawnState::Complete(_, level) => *level,
+            RespawnState::Init(_, level) => *level,
+            RespawnState::None => 1,
+            RespawnState::Pending(_, level) => *level,
+        }
+    }
 }
 
 fn check_respawn_state(
@@ -48,7 +59,7 @@ fn check_respawn_state(
 
     match *respawn {
         RespawnState::None => {}
-        RespawnState::Pending(_) => {}
+        RespawnState::Pending(..) => {}
         _ => {
             panic!("Attempt to run DungeonSpawn with a RespawnState {respawn:?}");
         }

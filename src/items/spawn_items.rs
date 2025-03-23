@@ -14,6 +14,7 @@ pub fn spawn_items(
     mut commands: Commands,
     mut rng: ResMut<RandomGenerator>,
 ) {
+    info!("|HIGHLIGHT| Spawning items (rng={})", rng.counter);
     let item_distribution = create_distribution(dungeon_data_assets.get(&dungeon_assets.data));
     let mut random_item = || item_distribution[rng.gen_range(0..item_distribution.len())].clone();
 
@@ -36,7 +37,7 @@ pub fn spawn_items(
             acc
         });
 
-    info!("|HIGHLIGHT| Spawned items: {stats:?}");
+    info!("|HIGHLIGHT| Spawned items: {stats:?} (rng={})", rng.counter);
 }
 
 /// Create a distribution of item templates based on their frequency so that

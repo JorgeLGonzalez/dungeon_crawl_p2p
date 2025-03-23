@@ -89,7 +89,7 @@ fn exit2(world: &mut World) {
         world.resource::<NextState<GameState>>(),
         NextState::Pending(GameState::DungeonSpawning)
     );
-    let pending_respawn = matches!(world.resource::<RespawnState>(), RespawnState::Pending(_));
+    let pending_respawn = matches!(world.resource::<RespawnState>(), RespawnState::Pending(..));
 
     if !pending_state && !pending_respawn {
         return;

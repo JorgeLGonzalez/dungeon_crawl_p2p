@@ -1,4 +1,5 @@
 mod components;
+mod despawn_monsters;
 mod events;
 mod monster_actions {
     mod attack_player;
@@ -29,4 +30,6 @@ pub use components::{Monster, MonsterBundle, MonsterTemplate};
 pub use events::MonsterMovesEvent;
 pub use plugin::{MonstersCoreSet, MonstersPlugin, SpawnMonstersSet};
 
+use despawn_monsters::despawn_monsters;
 use monster_actions::*;
+use spawn_monsters::spawn_monsters;
