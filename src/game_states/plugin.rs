@@ -6,7 +6,7 @@ use crate::{
     player::PlayerCoreSet,
     prelude::*,
 };
-use bevy_ggrs::{GgrsApp, GgrsSchedule, RollbackFrameCount};
+use bevy_ggrs::{AdvanceWorldSet, GgrsApp, GgrsSchedule, RollbackFrameCount};
 
 pub struct GameStatesPlugin;
 
@@ -14,27 +14,18 @@ impl Plugin for GameStatesPlugin {
     fn build(&self, app: &mut App) {
         app.init_state::<GameState>()
             .add_systems(OnEnter(GameState::GameOver), game_over)
-            // .add_systems(
-            //     GgrsSchedule,
-            //     intermission
-            //         .run_if(in_state(GameState::Intermission))
-            //         .ambiguous_with(PlayerCoreSet)
-            //         .ambiguous_with(DungeonCoreSet)
-            //         .ambiguous_with(MonstersCoreSet),
-            // )
             .add_systems(
                 GgrsSchedule,
                 exit_dungeon_spawning
                     .run_if(in_state(GameState::DungeonSpawning))
                     .after(SpawnDungeonSet)
                     .after(SpawnItemsSet)
-                    // .ambiguous_with(intermission)
+                    .after(AdvanceWorldSet::Last)
                     .ambiguous_with(DungeonCoreSet)
                     .ambiguous_with(MonstersCoreSet)
                     .ambiguous_with(PlayerCoreSet)
                     .ambiguous_with_all(),
             );
-        // .add_systems(OnEnter(GameState::Intermission), enter_intermission);
 
         if !game_mode(GameMode::SinglePlayer) {
             app.rollback_resource_with_copy::<GameState>();
@@ -45,10 +36,11 @@ impl Plugin for GameStatesPlugin {
 
 fn exit_dungeon_spawning(world: &mut World) {
     let frame = world.resource::<RollbackFrameCount>().0;
-    info!("|HIGHLIGHT| Exiting dungeon spawning (frame {frame})");
+    let rng = world.resource::<RandomGenerator>().counter;
+    info!("|HIGHLIGHT| Exiting dungeon spawning (frame {frame} rng={rng})");
 
-    world.insert_resource(RespawnState::Complete(frame));
     let mut respawn = world.resource_mut::<RespawnState>();
+    *respawn = RespawnState::Complete(frame, respawn.level());
 
     let mut next_state: NextState<GameState> = NextState::default();
     next_state.set(GameState::InGame);
@@ -58,17 +50,17 @@ fn exit_dungeon_spawning(world: &mut World) {
     info!("|HIGHLIGHT| State transitioned to {current_state:?} (frame {frame})");
 }
 
-fn exit_dungeon_spawning_old(
-    mut next_state: ResMut<NextState<GameState>>,
-    mut respawn: ResMut<RespawnState>,
-    frame: Res<RollbackFrameCount>,
-) {
-    let frame = frame.0;
-    info!("|HIGHLIGHT| Exiting dungeon spawning (frame {frame})");
-    next_state.set(GameState::InGame);
+// fn exit_dungeon_spawning_old(
+//     mut next_state: ResMut<NextState<GameState>>,
+//     mut respawn: ResMut<RespawnState>,
+//     frame: Res<RollbackFrameCount>,
+// ) {
+//     let frame = frame.0;
+//     info!("|HIGHLIGHT| Exiting dungeon spawning (frame {frame})");
+//     next_state.set(GameState::InGame);
 
-    *respawn = RespawnState::Complete(frame);
-}
+//     *respawn = RespawnState::Complete(frame);
+// }
 
 #[derive(Resource)]
 struct IntermissionTimer(Timer);
