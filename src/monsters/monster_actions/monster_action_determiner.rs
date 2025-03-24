@@ -1,9 +1,5 @@
 use super::*;
-use crate::{
-    common::RandomCounter,
-    dungeon::{MAP_HEIGHT, MAP_WIDTH},
-    prelude::*,
-};
+use crate::{common::RandomCounter, dungeon::DungeonPosition, prelude::*};
 use bevy::utils::hashbrown::HashSet;
 
 pub enum MonsterAction {
@@ -88,8 +84,7 @@ impl MonsterActionDeterminer {
     }
 
     pub fn sort_key(&self) -> usize {
-        ((self.current_pos.y + MAP_HEIGHT as i32 / 2) * (MAP_WIDTH as i32)
-            + (self.current_pos.x + MAP_WIDTH as i32 / 2)) as usize
+        DungeonPosition::from_ivec2(self.current_pos).to_index()
     }
 
     pub fn target_pos(&self) -> IVec2 {

@@ -11,10 +11,7 @@ pub fn do_monsters_action(
     players: PlayersQuery,
     time: Res<Time>,
 ) {
-    info!(
-        "|HIGHLIGHT| do_monsters_action starts (rng={})",
-        rng.counter
-    );
+    info!("do_monsters_action starts (rng={})", rng.counter);
     let mut params = MonsterActionParams::new(&dungeon, &monsters, &players);
 
     sorted_determiners(&monsters, &time)
@@ -38,7 +35,7 @@ pub fn do_monsters_action(
             acted_events.send(determiner.create_acted_event());
         });
 
-    info!("|HIGHLIGHT| do_monsters_action ends (rng={})", rng.counter);
+    info!("do_monsters_action ends (rng={})", rng.counter);
 }
 
 /// Create a Vec of [`MonsterActionDeterminer`]s to help process the actions.

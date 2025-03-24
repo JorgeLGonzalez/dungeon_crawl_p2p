@@ -98,7 +98,7 @@ mod spawn_dungeon;
 mod zoom;
 
 pub use components::{ExitStairs, FloorTile, WallTile};
-pub use config::{MAP_HEIGHT, MAP_WIDTH, NUM_MONSTERS, TILE_HEIGHT, TILE_WIDTH, VIEWPORT_HEIGHT};
+pub use config::{NUM_MONSTERS, TILE_HEIGHT, TILE_WIDTH, VIEWPORT_HEIGHT};
 pub use dungeon_map::{DungeonMap, DungeonPosition, TileType};
 pub use events::{RevealDungeonEvent, ZoomEvent};
 pub use illuminator::{FloorQuery, Illuminator, PlayerQuery};

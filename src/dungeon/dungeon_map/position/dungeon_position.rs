@@ -1,4 +1,5 @@
 use super::{MAP_Z_LAYER, X_MAX, X_MIN, Y_MAX, Y_MIN};
+use crate::dungeon::{MAP_HEIGHT, MAP_WIDTH};
 use bevy::math::{IVec2, Vec2, Vec3};
 
 /// A position in the dungeon, represented as a pair of x and y coordinates.
@@ -9,6 +10,13 @@ pub struct DungeonPosition {
 }
 
 impl DungeonPosition {
+    pub fn from_ivec2(pos: IVec2) -> Self {
+        Self {
+            x: pos.x as isize,
+            y: pos.y as isize,
+        }
+    }
+
     pub fn from_vec2(pos: Vec2) -> Self {
         Self {
             x: pos.x as isize,
@@ -65,6 +73,12 @@ impl DungeonPosition {
         }
 
         perimeter.into_iter()
+    }
+
+    pub fn to_index(&self) -> usize {
+        const H: isize = MAP_HEIGHT as isize;
+        const W: isize = MAP_WIDTH as isize;
+        ((self.y + H / 2) * W + (self.x + W / 2)) as usize
     }
 
     pub fn to_vec2(&self) -> Vec2 {
